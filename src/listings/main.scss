@@ -1,0 +1,14 @@
+.main {
+  display: flex;
+  flex-direction: column;
+
+  .main__listings {
+    display: flex;
+    box-sizing: border-box;;
+    flex-direction: column;
+    width: 800px;
+    max-width: calc(100vw - 2pc);
+    padding: 1pc;
+    overflow-x: hidden;
+  }
+}

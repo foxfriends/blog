@@ -1,3 +1,3 @@
 # Blog
 
-My (non-existent) blog...
+My blog, in which I talk about my blog (among other things). 
