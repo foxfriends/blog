@@ -49,7 +49,7 @@ end
 puts "{"
 print "  \"articles\":"
 if found == nil
-  puts "[]"
+  puts "[],"
 else
   puts '[' + found.map { |e|
     header = false
