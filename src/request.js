@@ -22,7 +22,7 @@ function request(what, params = {}) {
     const xhr = new XMLHttpRequest();
     xhr.addEventListener('load', () => resolve(JSON.parse(xhr.responseText)));
     xhr.addEventListener('error', () => reject(xhr.status));
-    xhr.open('GET', query `/api/test/${what}.rb?${params}`, true);
+    xhr.open('GET', query `/api/${what}.rb?${params}`, true);
     xhr.send();
   });
 }

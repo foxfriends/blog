@@ -6,7 +6,7 @@ class BlogHeader extends React.Component {
   render() {
     return (
       <header className="page__header">
-        <h1 className="page__header_title"><a href="/">Header</a></h1>
+        <h1 className="page__header_title"><a href="/"></a></h1>
       </header>
     )
   }
