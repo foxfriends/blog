@@ -17,8 +17,10 @@
   },
   "homepage": "http://blog.cameldridge.com",
   "dependencies": {
+    "prismjs": "^1.6.0",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
+    "remarkable": "^1.7.1",
     "reset-css": "^2.2.0"
   },
   "devDependencies": {

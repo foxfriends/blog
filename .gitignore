@@ -1,3 +1,4 @@
 publish
 deploy.rb
 public_html/.htaccess
+node_modules

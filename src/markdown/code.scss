@@ -1,0 +1,55 @@
+$pre-color: #f5f2f0; // as defined by prism stylesheet
+$text-color: rgb(0, 0, 0);
+$type-color: rgb(143, 95, 22);
+$inherit-color: rgb(74, 119, 74);
+$decorator-color: rgb(139, 76, 161);
+$keyword-color: rgb(0, 119, 170);
+$function-color: rgb(221, 74, 104);
+$module-color: rgb(200, 110, 5);
+
+code {
+  color: #777;
+}
+pre {
+  display: block;
+  position: relative;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.token {
+  // override ugly things
+  &.operator {
+    color: $text-color;
+    background: none !important;
+  }
+  &.keyword-operator + &.operator {
+    color: $function-color;
+  }
+
+  // additional styles
+  &.class-name, &.namespace, &.scope {
+    color: $type-color;
+  }
+  // TODO: is there a cleaner way to write this..?
+  &.keyword-extends + &.class-name,
+  &.keyword-implements + &.class-name,
+  &.keyword-public + &.class-name,
+  &.keyword-private + &.class-name,
+  &.keyword-protected + &.class-name,
+  &.keyword-public + &.scope + &.operator + &.class-name,
+  &.keyword-private + &.scope + &.operator + &.class-name,
+  &.keyword-protected + &.scope + &.operator + &.class-name,
+  &.keyword-virtual + &.scope + &.operator + &.class-name {
+    color: $inherit-color;
+  }
+  &.decorator, &.template {
+    color: $decorator-color;
+  }
+  &.directive {
+    color: inherit;
+  }
+  &.module {
+    color: $module-color;
+  }
+}

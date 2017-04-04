@@ -1,0 +1,130 @@
+.markdown {
+  position: relative;
+  box-sizing: border-box;
+  padding-left: 200px;
+  font-family: 'Lato';
+  font-size: 16pt;
+  font-weight: 200;
+  @media only screen and (max-width: 800px) {
+    padding: 1pc;
+    hyphens: auto;
+    text-align: justify;
+    font-size: 12pt;
+  }
+
+  p {
+    line-height: 1.45;
+  }
+
+  p+p, aside+p {
+    margin-top: 0.5pc;
+    text-indent: 1em;
+  }
+
+  img {
+    text-indent: 0;
+    display: block;
+    width: 100%;
+  }
+
+  aside {
+    display: block;
+    margin-top: 0.5pc;
+    text-align: right;
+    color: #999;
+    @media only screen and (min-width: 800px) {
+      box-sizing: border-box;
+      width: 200px;
+      padding-right: 1pc;
+      position: absolute;
+      left: 0;
+      text-align: justify;
+      hyphens: auto;
+    }
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Josefin Sans', sans-serif;
+    margin: 1pc 0;
+  }
+  h1 {
+    font-size: 40pt;
+  }
+  h2 {
+    font-size: 30pt;
+    text-align: right;
+  }
+  h3 {
+    font-size: 25pt;
+  }
+  h4 {
+    text-indent: 1em;
+    font-size: 20pt;
+    letter-spacing: 0.5px;
+  }
+  h5 {
+    font-size: 19pt;
+    letter-spacing: 0.7px;
+  }
+  h6 {
+    font-size: 18pt;
+    letter-spacing: 1px;
+  }
+
+  ul {
+    list-style: disc;
+  }
+  ol {
+    list-style: arabic;
+  }
+
+  ul, ol {
+    margin-left: 1em;
+    font-family: 'Lato', sans-serif;
+  }
+
+  ul, ol, dl {
+    margin-top: 1pc;
+    margin-bottom: 1pc;
+    ul, ol, dl {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+  }
+
+  dt {
+    font-weight: 400;
+    margin-top: 1pc;
+  }
+
+  li, dd {
+    margin: 0.5pc 0 0 1em;
+  }
+
+  pre, pre code {
+    font-size: 12pt;
+    @media only screen and (max-width: 800px) {
+      font-size: 10pt;
+    }
+  }
+
+  table {
+    width: 100%;
+    margin: 1pc 0;
+    td, th {
+      padding: 0.5pc;
+    }
+    thead + tbody, tr + tr {
+      border-top: 1px solid rgba(0, 0, 0, 0.2);
+    }
+    td + td, th + th {
+      border-left: 1px solid rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  blockquote {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 1pc;
+    margin: 1pc 0;
+  }
+}

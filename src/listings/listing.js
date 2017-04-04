@@ -13,7 +13,7 @@ class Listing extends React.Component {
   render() {
     return (
       <div className="listing" onClick={() => this.props.onClick( this.props.article.id )}>
-        { this.props.highlight && this.props.article.image ? <img src={ this.props.article.image } className="listing__image"/> : null }
+        { this.props.highlight && this.props.article.image ? <img src={ `articles/${this.props.article.link}/${this.props.article.image}` } className="listing__image"/> : null }
         <div className="listing__content">
           <span className="listing__content_title">{ this.props.article.title }</span>
           <span className="listing__content_subtitle">{ this.props.article.subtitle }</span>

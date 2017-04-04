@@ -1,0 +1,38 @@
+@import '../color';
+
+.pagination {
+  display: flex;
+  position: relative;
+  height: 2pc;
+  width: 100%;
+
+  .pagination__button {
+    height: 100%;
+    border: none;
+    background: transparent;
+    color: $link-color;
+    cursor: pointer;
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.02);
+      color: $link-hover;
+    }
+  }
+  .pagination__button_back {
+    margin-right: auto;
+    &.pagination__button_fake {
+      visibility: hidden;
+    }
+  }
+  .pagination__button_next {
+    margin-left: auto;
+    &.pagination__button_fake {
+      visibility: hidden;
+    }
+  }
+  .pagination__button_fake {
+    color: #aaa;
+    pointer-events: none;
+  }
+}

@@ -56,7 +56,9 @@ class Blog extends React.Component {
       default:
         return (
           <div className="page">
+            <BlogHeader />
             <BlogArticle article={ this.state.article } />
+            <BlogFooter />
           </div>
         )
     }

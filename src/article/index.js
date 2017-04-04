@@ -3,6 +3,8 @@ import React from 'react';
 
 import BlogLoader from '../loader';
 import request from '../request';
+import Markdown from '../markdown';
+import './article.scss';
 
 class BlogArticle extends React.Component {
   state = { article: null };
@@ -23,8 +25,11 @@ class BlogArticle extends React.Component {
         return <BlogLoader />
       default:
         return (
-          <article>
-            { this.state.article.text }
+          <article className="article">
+            <img className="article__image_header" src={ `articles/${this.state.article.link}/${this.state.article.image}` } />
+            <Markdown interpolation={ this.state.article } >
+              { this.state.article.text }
+            </Markdown>
           </article>
         )
     }

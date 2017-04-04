@@ -2,29 +2,29 @@
 import React from 'react';
 import promisify from '../promisify';
 import navigator from '../navigator';
+import './page.scss';
 
 class BlogPage extends React.Component {
-  state = { page: +this.props.page, more: true };
+  state = { page: +this.props.page, last: +this.props.last };
   setState = promisify(this.setState.bind(this));
 
   async componentWillReceiveProps(props) {
+    console.log(props);
+    this.setState({ last: props.last });
     if(props.page !== this.state.page) {
       await this.setState({ page: props.page });
       this.props.onPaginate(this.state.page);
     }
   }
 
-  async back() {
-    await this.setState({
-      page: this.state.page - 1,
-      more: true
-    });
+  async back(n = 1) {
+    await this.setState({ page: this.state.page - n });
     navigator.go({ page: this.state.page, search: navigator.get().search });
     this.props.onPaginate(this.state.page);
   }
 
-  async next() {
-    await this.setState({ page: this.state.page + 1});
+  async next(n = 1) {
+    await this.setState({ page: this.state.page + n });
     navigator.go({ page: this.state.page, search: navigator.get().search });
     this.props.onPaginate(this.state.page);
   }
@@ -32,8 +32,13 @@ class BlogPage extends React.Component {
   render() {
     return (
       <nav className="pagination">
-        { this.state.page > 1 ? <button className="pagination__button_back" onClick={() => this.back()}>Back</button> : null }
-        { this.state.more ? <button className="pagination__button_next" onClick={() => this.next()}>Next</button> : null }
+        <button className={`pagination__button pagination__button_back ${this.state.page <= 1 ? 'pagination__button_fake' : ''}`} onClick={() => this.back()}>⟵</button>
+        { this.state.page - 2 >= 1 ? <button className="pagination__button pagination__button_page" onClick={() => this.back(2)}>{ this.state.page - 2 }</button> : null }
+        { this.state.page - 1 >= 1 ? <button className="pagination__button pagination__button_page" onClick={() => this.back(1)}>{ this.state.page - 1 }</button> : null }
+        <button className="pagination__button pagination__button_page pagination__button_fake">{ this.state.page }</button>
+        { this.state.page + 1 <= this.state.last ? <button className="pagination__button pagination__button_page" onClick={() => this.next(1)}>{ this.state.page + 1 }</button> : null }
+        { this.state.page + 2 <= this.state.last ? <button className="pagination__button pagination__button_page" onClick={() => this.next(2)}>{ this.state.page + 2 }</button> : null }
+        <button className={`pagination__button pagination__button_next ${this.state.page > this.state.last - 1 ? 'pagination__button_fake' : ''}`} onClick={() => this.next()}>⟶</button>
       </nav>
     )
   }

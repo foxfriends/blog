@@ -29,12 +29,12 @@ class BlogListings extends React.Component {
   }
 
   async updateListing() {
-    const { articles: list, more } = await request('list', { page: this.state.page, search: this.state.search });
+    const { articles: list, last } = await request('search', { page: this.state.page, search: this.state.search });
     await this.setState({
       articles: list.map((article, i) =>
         <Listing article={ article } highlight={ this.state.search === '' && this.state.page === 1 && i === 0 } onClick={id => this.props.onOpenArticle(id)} key={`article-${i}`}/>
       ),
-      more
+      last
     });
   }
 
@@ -45,7 +45,7 @@ class BlogListings extends React.Component {
         <div className="main__listings">
           { this.state.articles || <BlogLoader /> }
         </div>
-        <BlogPage page={ this.props.page } more={ this.state.more } onPaginate={page => this.updatePage(page)} />
+        <BlogPage page={ this.props.page } last={ this.state.last } onPaginate={page => this.updatePage(page)} />
       </main>
     )
   }
