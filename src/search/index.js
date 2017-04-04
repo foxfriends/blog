@@ -20,6 +20,7 @@ class BlogSearch extends React.Component {
 
   async doSearch(event) {
     if(event.key !== 'Enter') return;
+    event.target.blur();
     const query = event.target.value;
     navigator.go({ search: query, page: 1 });
     this.props.onSearch(query);

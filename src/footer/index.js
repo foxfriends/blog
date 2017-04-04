@@ -14,7 +14,7 @@ class BlogFooter extends React.Component {
           <a href="https://twitter.com/OinkIguana/" className="page__footer_link"><img className="page__footer_icon" src={ twitter } width="40" height="40"/></a>
           <a href="http://blog.cameldridge.com/api/rss.rb" className="page__footer_link"><img className="page__footer_icon" src={ rss } width="32" height="32"/></a>
         </div>
-        <h6 className="page__footer_copyright">&copy; 2017 Cameron Eldridge</h6>
+        <h6 className="page__footer_copyright">&copy; 2017 <a href="http://cameldridge.com">Cameron Eldridge</a></h6>
         <svg>
           <filter id="link-color" colorInterpolationFilters="sRGB" x="0" y="0" height="100%" width="100%">
             <feColorMatrix type="matrix"

@@ -9,12 +9,19 @@ $module-color: rgb(200, 110, 5);
 
 code {
   color: #777;
+  font-family: 'Source Code Pro', monospace;
+  letter-spacing: -2px;
+  background-color: $pre-color;
+  padding: 0 4px;
+  border-radius: 3px;
 }
+
 pre {
   display: block;
   position: relative;
   box-sizing: border-box;
   max-width: 100%;
+  code { letter-spacing: normal; }
 }
 
 .token {
