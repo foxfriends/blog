@@ -2,14 +2,13 @@
 import React from 'react';
 import promisify from '../promisify';
 import navigator from '../navigator';
-import './page.scss';
+import './pagination.scss';
 
-class BlogPage extends React.Component {
+class BlogPagination extends React.Component {
   state = { page: +this.props.page, last: +this.props.last };
   setState = promisify(this.setState.bind(this));
 
   async componentWillReceiveProps(props) {
-    console.log(props);
     this.setState({ last: props.last });
     if(props.page !== this.state.page) {
       await this.setState({ page: props.page });
@@ -44,4 +43,4 @@ class BlogPage extends React.Component {
   }
 }
 
-export default BlogPage;
+export default BlogPagination;

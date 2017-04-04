@@ -26,7 +26,7 @@ class BlogArticle extends React.Component {
       default:
         return (
           <article className="article">
-            <img className="article__image_header" src={ `articles/${this.state.article.link}/${this.state.article.image}` } />
+            <img className="article__image_header" src={ `/articles/${this.state.article.link}/${this.state.article.image}` } />
             <Markdown interpolation={ this.state.article } >
               { this.state.article.text }
             </Markdown>

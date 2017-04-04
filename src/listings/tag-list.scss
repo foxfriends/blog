@@ -1,0 +1,11 @@
+@import "../color";
+
+.tag-list {
+  .tag-list__tag {
+    color: $link-color;
+    &:hover {
+      color: $link-hover;
+      text-decoration: underline;
+    }
+  }
+}

@@ -7,16 +7,16 @@ import BlogHeader from './header';
 import BlogListings from './listings';
 import BlogFooter from './footer';
 import BlogArticle from './article';
-
 import navigator from './navigator';
-
 import './index.scss';
 
 const initialState = navigator.get();
-
 function popstate(event) {
-  const { page, search, post: article } = event.state || initialState;
-  this.setState({ page, search, article });
+  if(window.location.hash === '') {
+    // hashes can manage themselves
+    const { page, search, post: article } = event.state || initialState;
+    this.setState({ page, search, article });
+  }
 }
 
 class Blog extends React.Component {

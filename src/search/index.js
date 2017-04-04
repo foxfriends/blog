@@ -28,7 +28,7 @@ class BlogSearch extends React.Component {
   render() {
     return (
       <div className="search" >
-        &gt;<input className="search__input" type="text" value={ this.state.query } onChange={e => this.updateQuery(e)} onKeyPress={e => this.doSearch(e)} />
+        &gt;<input className="search__input" type="text" value={ this.state.query } onChange={e => this.updateQuery(e)} onKeyPress={e => this.doSearch(e)} placeholder="Search" />
       </div>
     )
   }

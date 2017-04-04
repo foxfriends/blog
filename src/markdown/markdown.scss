@@ -16,8 +16,7 @@
     line-height: 1.45;
   }
 
-  p+p, aside+p {
-    margin-top: 0.5pc;
+  p+p, p+aside+p {
     text-indent: 1em;
   }
 

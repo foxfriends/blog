@@ -1,4 +1,5 @@
 publish
 deploy.rb
 public_html/.htaccess
+public_html/api/test
 node_modules
