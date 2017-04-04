@@ -71,7 +71,7 @@ else
     \"image\":\"#{e['image']}\",
     \"author\":\"#{e['author']}\",
     \"date\":\"#{e['date']}\",
-    \"tags\":#{e['tags'].split(',')},
+    \"tags\":[\"#{e['tags'].split(',').join('","')}\"],
     \"link\":\"#{e['link']}\"
   }"
   }.join(',') + '],'
