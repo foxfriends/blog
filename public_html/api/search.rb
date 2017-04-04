@@ -47,7 +47,7 @@ end
 
 # some ghetto json stuff because the server doesn't have the JSON gem??
 puts "{"
-print "  articles:"
+print "  \"articles\":"
 if found == nil
   puts "[]"
 else
@@ -76,5 +76,5 @@ else
   }"
   }.join(',') + '],'
 end
-puts "  last: #{[articles.length - 5, 0].max / 10}"
+puts "  \"last\": #{[articles.length - 5, 0].max / 10}"
 puts "}"
