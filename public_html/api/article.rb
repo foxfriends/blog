@@ -28,7 +28,7 @@ puts "{
   \"image\":\"#{data['image']}\",
   \"author\":\"#{data['author']}\",
   \"date\":\"#{data['date']}\",
-  \"tags\":#{data['tags'].split(',')},
+  \"tags\":[\"#{data['tags'].split(',').join('","')}\"],
   \"link\":\"#{data['link']}\",
   \"text\":\"#{data['text']}\"
 }"
