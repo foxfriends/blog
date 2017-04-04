@@ -7,7 +7,6 @@ cgi = CGI.new
 puts cgi.header("type" => "application/json")
 
 articles = Dir['../articles/*'].sort_by { |e| -e[/\d+/].to_i }
-
 query = (cgi['search'] || '').downcase
 
 if query != ''
@@ -37,9 +36,9 @@ if query != ''
   }
 end
 
-page = cgi['page'].to_i || 0
+page = cgi['page'].to_i || 1
 found = []
-if page == 0
+if page == 1
   found = articles[0...5]
 else
   found = articles[5 + (page - 1) * 10...5 + page * 10]
