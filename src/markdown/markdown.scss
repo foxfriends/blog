@@ -45,16 +45,21 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Josefin Sans', sans-serif;
     margin: 1pc 0;
+    font-weight: 300;
   }
   h1 {
     font-size: 40pt;
   }
   h2 {
-    font-size: 30pt;
-    text-align: right;
+    font-size: 27pt;
+    text-align: left;
   }
   h3 {
     font-size: 25pt;
+    font-weight: 300;
+  }
+  h4, h5, h6 {
+    font-weight: 100;
   }
   h4 {
     text-indent: 1em;
@@ -76,7 +81,7 @@
     list-style: disc;
   }
   ol {
-    list-style: arabic;
+    list-style: decimal;
   }
 
   ul, ol {
@@ -127,5 +132,24 @@
     background: rgba(0, 0, 0, 0.05);
     padding: 1pc;
     margin: 1pc 0;
+  }
+
+  hr {
+    position: relative;
+    border: none;
+    height: 1px;
+    margin: 2pc auto;
+    background-color: transparentize(black, 0.5);
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 20pt;
+    line-height: 3px;
+    color: black;
+    pointer-events: none;
+
+    &::after {
+      content: '///';
+      position: absolute;
+      left: calc(50% - 1ex);
+    }
   }
 }

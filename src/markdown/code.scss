@@ -17,9 +17,11 @@ code {
 }
 
 pre {
+  background-color: $pre-color;
   display: block;
   position: relative;
   box-sizing: border-box;
+  padding: 4px;
   max-width: 100%;
   code { letter-spacing: normal; }
 }

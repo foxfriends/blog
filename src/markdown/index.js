@@ -16,10 +16,7 @@ const md = new Remarkable({
 
   typographer:  true,
   quotes:       '“”‘’',
-  highlight: (str, lang) =>
-    `<pre class='language-${lang}'><code class='block language-${lang}'>` +
-    `${Prism.highlight(str, Prism.languages[lang])}` +
-    `</code></pre>`
+  highlight: (str, lang) => Prism.highlight(str, Prism.languages[lang])
 });
 
 md.block.ruler.enable([
