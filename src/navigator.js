@@ -7,6 +7,7 @@ if((current = window.location.href).indexOf('?') !== -1) {
 } else {
   parsePath(current = window.location.pathname);
 }
+window.setTimeout(() => go(query), 0);
 
 function setLocation(query) {
   page = +query.page || 1;
@@ -25,9 +26,7 @@ function parsePath(loc) {
   for(let i = 0; i < parts.length; i += 2) {
     query[parts[i]] = parts[i + 1];
   }
-  console.log(query);
   setLocation(query);
-  window.setTimeout(() => go(query), 0);
 }
 
 function url() {
