@@ -20,7 +20,7 @@ function query(strings, ...params) {
 function request(what, params = {}) {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    xhr.addEventListener('load', () => resolve(JSON.parse(xhr.responseText)));
+    xhr.addEventListener('load', () => resolve((console.log(xhr.responseText), JSON.parse(xhr.responseText))));
     xhr.addEventListener('error', () => reject(xhr.status));
     xhr.open('GET', query `/api/${what}.rb?${params}`, true);
     xhr.send();
