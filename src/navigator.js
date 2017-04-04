@@ -20,14 +20,12 @@ function parseQuery(loc) {
 }
 
 function parsePath(loc) {
-  const parts = loc.split('/');
-  console.log(parts);
+  const parts = loc.split('/').filter(x => x !== '');
   const query = {};
-  for(let i = 1; i < parts.length; i += 2) {
+  for(let i = 0; i < parts.length; i += 2) {
     query[parts[i]] = parts[i + 1];
   }
   setLocation(query);
-  console.log(query);
 }
 
 function url() {
