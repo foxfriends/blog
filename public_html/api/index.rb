@@ -5,4 +5,4 @@
 
 require 'cgi'
 cgi = CGI.new
-puts cgi.header
+puts cgi.header("type" => "application/json")

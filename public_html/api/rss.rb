@@ -2,7 +2,7 @@
 
 require 'cgi'
 cgi = CGI.new
-puts 'application/rss+xml'
+puts cgi.header("type" => "application/rss+xml")
 
 puts '<?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0"><channel>

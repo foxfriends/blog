@@ -4,7 +4,7 @@
 
 require 'cgi'
 cgi = CGI.new
-puts 'Content-Type: application/json'
+puts cgi.header("type" => "application/json")
 
 articles = Dir['../articles/*'].sort_by { |e| -e[/\d+/].to_i }
 
