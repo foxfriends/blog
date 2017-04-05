@@ -27,7 +27,8 @@ if query != ''
     data
   }
   articleData = articleData.select { |e|
-    (e['tags'].downcase.split(',') & words).length > 0 ||
+    ((e['tags'] || '').downcase.split(',') & words).length > 0 ||
+    ((e['keywords'] || '').downcase.split(',') & words).length > 0 ||
     e['title'].downcase.include?(query) ||
     e['subtitle'].downcase.include?(query)
   }.map { |e| e['link']}
@@ -36,7 +37,7 @@ if query != ''
   }
 end
 
-page = cgi['page'].to_i || 1
+page = cgi['page'].empty? ? 1 : cgi['page'].to_i
 found = []
 if page == 1
   found = articles[0...5]
