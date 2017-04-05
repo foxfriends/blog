@@ -6,7 +6,7 @@ puts cgi.header("type" => "application/rss+xml")
 
 puts '<?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0"><channel>
-<title>Crabs ate the Sky</title>
+<title>Crabs ate the sky</title>
 <link>http://blog.cameldridge.com/</link>
 <description>In which I talk about my blog, among other things</description>'
 

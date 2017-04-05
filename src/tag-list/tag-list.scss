@@ -3,6 +3,7 @@
 .tag-list {
   .tag-list__tag {
     color: $link-color;
+    cursor: pointer;
     &:hover {
       color: $link-hover;
       text-decoration: underline;

@@ -7,15 +7,6 @@ $keyword-color: rgb(0, 119, 170);
 $function-color: rgb(221, 74, 104);
 $module-color: rgb(200, 110, 5);
 
-code {
-  color: #777;
-  font-family: 'Source Code Pro', monospace;
-  background-color: $pre-color;
-  padding: 0 4px;
-  border-radius: 3px;
-  font-size: 0.9em;
-}
-
 pre {
   background-color: $pre-color;
   display: block;
@@ -23,7 +14,20 @@ pre {
   box-sizing: border-box;
   padding: 4px;
   max-width: 100%;
-  code { letter-spacing: normal; }
+  overflow-x: auto;
+  code {
+    letter-spacing: normal;
+    width: 100%;
+  }
+}
+
+code {
+  color: #777;
+  font-family: 'Source Code Pro', monospace;
+  background-color: $pre-color;
+  padding: 0 4px;
+  border-radius: 3px;
+  font-size: 0.9em;
 }
 
 .token {

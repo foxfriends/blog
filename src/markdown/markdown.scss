@@ -27,18 +27,15 @@
   }
 
   aside {
-    display: block;
-    text-align: right;
     color: #999;
     line-height: 1.3;
+    text-align: right;
     @media only screen and (min-width: 800px) {
       box-sizing: border-box;
       width: 200px;
       padding-right: 1pc;
       position: absolute;
       left: 0;
-      // text-align: justify;
-      // hyphens: auto;
     }
   }
 
@@ -46,17 +43,26 @@
     font-family: 'Josefin Sans', sans-serif;
     margin: 1pc 0;
     font-weight: 300;
+    text-align: left;
   }
   h1 {
     font-size: 40pt;
+    margin-bottom: 0;
+  }
+  h1+h2 {
+    margin-top: 0;
   }
   h2 {
     font-size: 27pt;
     text-align: left;
+    margin-left: 1.5em;
   }
   h3 {
     font-size: 25pt;
     font-weight: 300;
+    border-top: 1px solid rgba(0, 0, 0, 0.2);
+    margin-top: 2pc;
+    padding-top: 2pc;
   }
   h4, h5, h6 {
     font-weight: 100;
@@ -112,6 +118,7 @@
     @media only screen and (max-width: 800px) {
       font-size: 10pt;
     }
+    margin: 1pc 0;
   }
 
   table {

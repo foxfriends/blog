@@ -12,7 +12,7 @@ class BlogFooter extends React.Component {
         <div className="page__footer_container">
           <a href="https://github.com/OinkIguana/" className="page__footer_link"><img className="page__footer_icon" src={ github } width="32" height="32"/></a>
           <a href="https://twitter.com/OinkIguana/" className="page__footer_link"><img className="page__footer_icon" src={ twitter } width="40" height="40"/></a>
-          <a href="http://blog.cameldridge.com/api/rss.rb" className="page__footer_link"><img className="page__footer_icon" src={ rss } width="32" height="32"/></a>
+          <a href="/api/rss.rb" className="page__footer_link"><img className="page__footer_icon" src={ rss } width="32" height="32"/></a>
         </div>
         <h6 className="page__footer_copyright">&copy; 2017 <a href="http://cameldridge.com">Cameron Eldridge</a></h6>
         <svg>

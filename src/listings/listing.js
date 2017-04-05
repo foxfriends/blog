@@ -1,7 +1,7 @@
 'use strict';
 import React from 'react';
 
-import TagList from './tag-list';
+import TagList from '../tag-list';
 
 import './listing.scss';
 

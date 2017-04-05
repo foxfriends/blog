@@ -1,20 +1,37 @@
 @import '../color';
 
 .page__header {
+  display: flex;
+  flex-wrap: wrap;
   box-sizing: border-box;
   padding: 2pc;
   width: 100%;
+  align-items: center;
+  font-family: 'Lato', sans-serif;
+  font-weight: 300;
+  font-size: 12pt;
+
+  @media only screen and (max-width: 640px) {
+    padding: 1pc;
+  }
 
   .page__header_title {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
     font-family: 'Josefin Sans', sans-serif;
     font-size: 60pt;
     font-weight: 100;
     @media only screen and (max-width: 640px) {
-      justify-content: flex-start;
       font-size: 40pt;
     }
+  }
+
+  .page__header_subtitle {
+    flex-basis: 190px;
+    flex-grow: 1;
+    margin-left: 1pc;
+  }
+  .page__header_author {
+    position: absolute;
+    left: 400px;
+    top: 98px;
   }
 }

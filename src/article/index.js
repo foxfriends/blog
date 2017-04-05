@@ -4,6 +4,7 @@ import React from 'react';
 import BlogLoader from '../loader';
 import request from '../request';
 import Markdown from '../markdown';
+import TagList from '../tag-list';
 import './article.scss';
 
 class BlogArticle extends React.Component {
@@ -26,10 +27,15 @@ class BlogArticle extends React.Component {
       default:
         return (
           <article className="article">
-            <img className="article__image_header" src={ `/articles/${this.state.article.link}/${this.state.article.image}` } />
+            { this.state.article.image
+              ? <img className="article__image_header" src={ `/articles/${this.state.article.link}/${this.state.article.image}` } />
+              : null }
             <Markdown interpolation={ this.state.article } >
               { this.state.article.text }
             </Markdown>
+            <p className="article__taglist">
+              <TagList tags={ this.state.article.tags } />
+            </p>
           </article>
         )
     }

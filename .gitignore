@@ -2,4 +2,5 @@ publish
 deploy.rb
 public_html/.htaccess
 public_html/api/test
+public_html/api/fake
 node_modules

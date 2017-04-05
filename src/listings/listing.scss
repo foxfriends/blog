@@ -5,6 +5,7 @@
   display: block;
   font-family: 'Lato', sans-serif;
   font-size: 14pt;
+
   &:not(:last-child) {
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   }
@@ -25,6 +26,7 @@
     .listing__content_title {
       display: inline-block;
       color: $link-color;
+      font-weight: 400;
       &:hover {
         color: $link-hover;
         text-decoration: underline;
