@@ -10,10 +10,10 @@ $module-color: rgb(200, 110, 5);
 code {
   color: #777;
   font-family: 'Source Code Pro', monospace;
-  letter-spacing: -2px;
   background-color: $pre-color;
   padding: 0 4px;
   border-radius: 3px;
+  font-size: 0.9em;
 }
 
 pre {
