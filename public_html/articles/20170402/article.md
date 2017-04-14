@@ -6,8 +6,8 @@ author:   Cam
 date:     2017/04/02
 tags:     meta,thoughts
 ---
-# Meta-Article
-## in which I design this blog
+# {{ title }}
+## {{ subtitle }}
 
 // {{ author }} &mdash; {{ date }}
 

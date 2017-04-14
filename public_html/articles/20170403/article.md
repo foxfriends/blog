@@ -6,8 +6,8 @@ author:   Cam
 date:     2017/04/03
 tags:     meta,test
 ---
-# Demonstration
-## in which I check the styles
+# {{ title }}
+## {{ subtitle }}
 
 // {{ author }} &mdash; {{ date }}
 

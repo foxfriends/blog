@@ -16,18 +16,20 @@ pre {
   max-width: 100%;
   overflow-x: auto;
   code {
-    letter-spacing: normal;
     width: 100%;
   }
 }
 
 code {
   color: #777;
-  font-family: 'Source Code Pro', monospace;
   background-color: $pre-color;
-  padding: 0 4px;
+  padding: 0;
   border-radius: 3px;
   font-size: 0.9em;
+  letter-spacing: -1px;
+  &, * {
+    font-family: 'Source Code Pro', monospace;
+  }
 }
 
 .token {

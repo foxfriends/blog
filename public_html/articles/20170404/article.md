@@ -1,5 +1,5 @@
 ---
-title:    A blog in 3 days
+title:    A Blog in 3 Days
 subtitle: or at least most of one
 image:    cover.jpg
 author:   Cam
@@ -7,8 +7,8 @@ date:     2017/04/04
 tags:     meta,javascript,react
 keywords: bem,callback hell,handler threading
 ---
-# A blog in 3 days
-## or at least most of one
+# {{ title }}
+## {{ subtitle }}
 
 // {{ author }} &mdash; {{ date }}
 
