@@ -10,6 +10,8 @@ keywords: hack,test,puzzle
 # {{ title }}
 ## {{ subtitle }}
 
+// {{ author }} &mdash; {{ date }}
+
 This one goes way back, all the way to when I was just another kid in summer
 camp learning how to make a website. I went to this camp many times, but the
 best years were the ones when we had this one counsellor who was way cooler than

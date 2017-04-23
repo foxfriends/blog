@@ -10,6 +10,8 @@ keywords: c,c++,cpp,project,cc3k,waterloo,cs246
 # {{ title }}
 ## {{ subtitle }}
 
+// {{ author }} &mdash; {{ date }}
+
 The final project for CS246 was to make a game
 in C++ using a number of the object-oriented design patterns we learned during
 the term. It was to be a group project for 2 -- 3 people, and my group-mates were
