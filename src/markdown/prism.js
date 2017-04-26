@@ -2,6 +2,8 @@
 import Prism from 'prismjs';
 import 'prismjs/themes/prism.css';
 import 'prismjs/components/prism-jsx.min.js';
+import 'prismjs/components/prism-c.min.js';
+import 'prismjs/components/prism-cpp.min.js';
 import 'prismjs/components/prism-scss.min.js';
 import 'prismjs/plugins/highlight-keywords/prism-highlight-keywords.min.js';
 import 'prismjs/plugins/normalize-whitespace/prism-normalize-whitespace.min.js';
@@ -40,3 +42,82 @@ Prism.languages.insertBefore('javascript', 'string', {
     }
   }
 });
+
+// C++ Extension
+const template = {
+  'template': {
+    pattern: /<.*>/,
+    inside: {
+      'keyword': /\b(void|int|bool|double|float)\b/,
+      'punctuation': /::|,|\.\.\./,
+      'class-name': {
+        pattern: /(\s+([a-z0-9_]+\s*::\s*))?[a-z0-9_]+/i,
+        greedy: true
+      }
+    }
+  }
+};
+
+Prism.languages.cpp.keyword =/\b(alignas|alignof|asm|auto|bool|break|case|catch|char|char16_t|char32_t|class|compl|const|constexpr|const_cast|continue|decltype|default|delete|do|double|dynamic_cast|else|enum|explicit|export|extern|final|float|for|friend|goto|if|inline|int|long|mutable|namespace|new|noexcept|nullptr|override|private|protected|public|register|reinterpret_cast|return|short|signed|sizeof|static|static_assert|static_cast|struct|switch|template|this|thread_local|throw|try|typedef|typeid|typename|union|unsigned|using|virtual|void|volatile|wchar_t|while)\b/
+Prism.languages.cpp['class-name'] = [{
+  pattern: /((class|new|struct)\s+)[a-z_][a-z0-9_]*/i,
+  lookbehind: true
+}, {
+  pattern: /((public|private|protected)\s+(virtual\s+)?([a-z_][a-z0-9_]*\s*::\s*)*)[a-z_][a-z0-9_]*(\s*<.*>)?/i,
+  inside: template,
+  lookbehind: true,
+  greedy: true
+}, {
+  pattern: /(::\s*)[a-z_][a-z0-9_]*(\s*<.*>)?/i,
+  inside: template,
+  lookbehind: true,
+  greedy: true
+}, {
+  pattern: /[a-z_][a-z0-9_]*(\s*<.*>)?\{/i,
+  inside: template,
+  greedy: true
+}];
+Prism.languages.insertBefore('cpp', 'class-name', {
+  'namespace': {
+    pattern: /(namespace\s+)[a-z_][a-z0-9_]*/i,
+    lookbehind: true
+  }
+});
+Prism.languages.insertBefore('cpp', 'class-name', {
+  'scope': {
+    pattern: /[a-z_][a-z0-9_]*(?=::)/i,
+    alias: 'namespace'
+  }
+});
+Prism.languages.insertBefore('cpp', 'function', { // after keyword
+  'typename': {
+    pattern: /[a-z_][a-z0-9_]*(\s*\<.+>)?(\.\.\.|[\*&\s])+(?=[a-z_])/i,
+    inside: template,
+    alias: 'class-name'
+  }
+});
+Prism.languages.insertBefore('cpp', 'function', {
+  'template': {
+    pattern: /(template)\s*<.*>/,
+    lookbehind: true,
+    greedy: true,
+    inside: {
+      'keyword': /\b(typename|class)\b/,
+      'operator': /\.\.\./,
+      'class-name': /[a-z_][a-z0-9_]*/i
+    }
+  }
+});
+Prism.languages.cpp.function = [{
+  pattern: /[a-z_][a-z0-9_]*(\s*\<.+>\s*)?(?=\()/i,
+  inside: template,
+  greedy: true
+}, {
+  pattern: /operator.*(?=\()/,
+  greedy: true,
+  inside: {
+    keyword: /operator/,
+    operator: Prism.languages.cpp.operator,
+    rest: template
+  }
+}];

@@ -1,11 +1,11 @@
 ---
-title:    I'm making a rogue-like
+title:    I'm Making a Roguelike
 subtitle: and it's definitely not CC3K
 image:    cc3k.png
 author:   Cam
 date:     2017/04/22
-tags:     game,plan,roguelike
-keywords: c,c++,cpp,project,cc3k,waterloo,cs246
+tags:     game,roguelike,plan
+keywords: c++,cpp,project,cc3k,waterloo,cs246
 ---
 # {{ title }}
 ## {{ subtitle }}

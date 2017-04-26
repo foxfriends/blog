@@ -49,7 +49,7 @@
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Josefin Sans', sans-serif;
-    margin: 1pc 0;
+    margin: 2pc 0 1pc 0;
     font-weight: 300;
     text-align: left;
   }
@@ -66,14 +66,21 @@
     margin-left: 1.5em;
   }
   h3 {
+    display: flex;
     font-size: 25pt;
     font-weight: 300;
-    border-top: 1px solid rgba(0, 0, 0, 0.2);
-    margin-top: 2pc;
-    padding-top: 2pc;
+    align-items: center;
+    justify-content: space-between;
+    &::after {
+      content: '';
+      border-top: 1px solid rgba(0, 0, 0, 0.2);
+      flex-grow: 1;
+      margin-left: 3pc;
+    }
   }
   h4, h5, h6 {
-    font-weight: 100;
+    // margin: 2pc 0 1pc 0;
+    font-weight: 300;
   }
   h4 {
     text-indent: 1em;
