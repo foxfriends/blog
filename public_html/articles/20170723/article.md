@@ -1,0 +1,139 @@
+---
+title:    Type Systems
+subtitle: why are they so helpless
+image:    typescript-why.png
+author:   Cam
+date:     2017/07/23
+tags:     proof,typescript
+keywords: type,haskell
+---
+# {{ title }}
+
+// {{ author }} &mdash; {{ date }}
+
+It's been a while. I will admit, I forgot about this. That was to be expected,
+but today I remembered and I have something to say, so here we go.
+
+I've been working on a few things lately, mostly web-based projects. Having
+gotten used to the type safety, code completion, and navigational abilities
+that TypeScript and it's associated tools provide, I find it hard to go back to
+vanilla JavaScript so my recent projects have been in TypeScript. But as great
+as it is, it manages to disappoint me every day, so much so that I've gotten to
+writing `// typescript why` wherever I need to put in some dirty type system
+hacks to get around it not knowing better. Here's an example:
+
+// What could possibly be wrong about this? You can see the error it produces in
+// the screenshot above
+```javascript
+enum Size { None, Small, Right, Big };
+let size = Size.None;
+try {
+  const rand = Math.random();
+  if(rand > 0.5) {
+    size = Size.Big;
+    throw new Error('Too big');
+  } else if(rand === 0.5) {
+    size = Size.Right;
+  } else {
+    size = Size.Small;
+    throw new Error('Too small');
+  }
+} catch(error) {
+  switch(size) {
+    case Size.Small:
+      break;
+    case Size.Big:
+      break;
+    case Size.None:
+      break;
+  }
+}
+```
+
+You'd think that would be ok. In the catch block, we expect `size` to be either
+`Big` or `Small`, but TypeScript thinks that it's going to be `None` no matter
+what. The only way to make the error go away is to change it to
+`switch(size as Size)`. Sure, this is a bit of an edge case, but still,
+TypeScript why.
+
+Another problem I run into is that I want my TypeScript function to only accept
+integers but JavaScript doesn't differentiate between integers and decimals and
+so neither can TypeScript.
+
+```javascript
+const array: string[] = [];
+function setInArray<T>(array: T[], index: number, value: T) {
+  array[index] = value;
+}
+setInArray(array, 1, 'Cats');
+setInArray(array, 2, 'Dogs');
+setInArray(array, 2.5, 'Fish'); // what?
+```
+
+Sure that's totally valid and works as expected (`array[2.5]` will evaluate to
+`fish`), but I don't want that to work! That's why I wrote this function to wrap
+my array accesses to try and prevent foolish use.
+
+Finally, and probably my biggest problem with TypeScript, is the terrible
+support it has for tuples and fixed length arrays. If you write the array out in
+full array literal syntax, TypeScript doesn't care about its length and just
+calls it an array. To make it worse, even if you write out by hand that your
+array is actually a pair of strings, you can still access the third value no
+problem, and TypeScript will even infer it to be a string.
+
+```javascript
+const x = ['a', 'b']; // string[]
+const y: [string, string] = ['a', 'b']; // [string, string]
+const z = y[2]; // string
+// Type 'string[]' is not assignable to type '[string, string]'
+const error: [string, string] = x;
+```
+
+This is pretty standard stuff, I would think. Scala does it just fine. I'm sure
+a fixed length array type definition could be written out in TypeScript, but why
+would I want to do that when I can just stick in some type assertions and move
+on.
+
+All that is to say, this got me thinking. Why settle for TypeScript? Why settle
+for type systems at all? Sure they ensure that our code has some chance of
+working, but they don't make sure that it works. They're supposed to reduce bugs
+and make the code more readable, but from my experience using TypeScript leads
+more to a bunch of type casts to `any` to avoid compile errors that don't mean
+anything.
+
+They also don't check that the code does what is advertised at all. There's no
+way to forcefully document the behaviour of the function, only its inputs and
+outputs. I could easily stick this function in some code somewhere and confuse
+people who just use it based on the title.
+
+```javascript
+function double(x) {
+ return x / 2;
+}
+```
+
+It's not an unheard of concept, ensuring that behaviour is as advertised. There
+are proof systems out there, such as [Coq](https://coq.inria.fr/), which require
+us to state what the functions do, and prove to the compiler that that is what
+is happening. The only problem with Coq is that you have to write your code in
+Coq. Maybe some don't mind it, and maybe I wouldn't either with more experience,
+but for now I'd really rather not.
+
+Instead, wouldn't it be better to make something like TypeScript but stronger?
+Annotations that can be put on top of another language, checked by an external
+tool, and removed to provide fully functioning code. Of course, this is sounding
+pretty impossible. To use it with a given language, you would need to have a
+lexer and parser for that language, and then define a transform from the syntax
+tree generated by those into a format that can be consumed by the proof
+compiler, along with annotations (or even better, full proofs) for the entire
+standard library and any package you decide to use.
+
+Suppose we did manage to get all that working, what then? Would this finally
+eliminate bugs from software? Probably not, but it would definitely reduce them.
+I think this is something worth thinking about. Maybe it's beyond the reach
+of the current development ecosystem, but it's worth a shot so I'm going to try.
+I'll probably be in way over my head, but that's the only way to get things
+moving no?
+
+If anyone knows how to do this, please
+[send help](https://github.com/OinkIguana/proof).
