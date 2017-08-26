@@ -10,7 +10,7 @@ import promisify from '../promisify';
 import './main.scss';
 
 class BlogListings extends React.Component {
-  state = { articles: null, page: this.props.page, search: this.props.search, more: false };
+  state = { articles: null, page: this.props.page, search: this.props.search, more: false, last: 1 };
   setState = promisify(this.setState.bind(this));
 
   constructor(props) {

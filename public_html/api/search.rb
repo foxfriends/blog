@@ -76,5 +76,5 @@ else
   }"
   }.join(',') + '],'
 end
-puts "  \"last\": #{[articles.length - 5, 0].max / 10}"
+puts "  \"last\": #{([articles.length - 5, 0].max / 10.0).ceil}"
 puts "}"
