@@ -3,7 +3,7 @@ title:    I'm Making another Roguelike
 subtitle: again?
 image:    roguelike.png
 author:   Cam
-date:     2017/04/22
+date:     2017/08/26
 tags:     game,roguelike,plan
 keywords: rust,cargo,project
 ---
