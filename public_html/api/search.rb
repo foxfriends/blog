@@ -39,10 +39,10 @@ end
 
 page = cgi['page'].empty? ? 1 : cgi['page'].to_i
 found = []
-if page == 1
+if page <= 1
   found = articles[0...5]
 else
-  found = articles[5 + (page - 1) * 10...5 + page * 10]
+  found = articles[5 + (page - 2) * 10...5 + (page - 1) * 10]
 end
 
 # some ghetto json stuff because the server doesn't have the JSON gem??
