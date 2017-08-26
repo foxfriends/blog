@@ -29,8 +29,8 @@ if query != ''
   articleData = articleData.select { |e|
     ((e['tags'] || '').downcase.split(',') & words).length > 0 ||
     ((e['keywords'] || '').downcase.split(',') & words).length > 0 ||
-    e['title'].downcase.include?(query) ||
-    e['subtitle'].downcase.include?(query)
+    (e['title'] || '').downcase.include?(query) ||
+    (e['subtitle'] || '').downcase.include?(query)
   }.map { |e| e['link']}
   articles = articles.select { |e|
     articleData.include? e.split('/').last

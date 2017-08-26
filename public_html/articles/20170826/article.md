@@ -91,6 +91,5 @@ satisfying to develop and extend than it ever has been in C++. Rust is quickly
 becoming my favourite lower-level language, so I suggest trying it out if you
 get a chance!
 
-[repository]: https://github.com/oinkiguana/roguelike
 [Roguelike]: /post/20170422
 [algorithm]: /post/20170425

@@ -33,11 +33,11 @@ class BlogListings extends React.Component {
     await this.setState({
       articles: list.map((article, i) =>
         <Listing
-                article={ article }
-                highlight={ this.state.search === '' && this.state.page === 1 && i === 0 }
-                onClick={id => this.props.onOpenArticle(id)}
-                onTagClick={query => this.updateSearch(query)}
-                key={`article-${i}`}/>
+          article={ article }
+          highlight={ this.state.search === '' && this.state.page === 1 && i === 0 }
+          onClick={id => this.props.onOpenArticle(id)}
+          onTagClick={query => this.updateSearch(query)}
+          key={`article-${i}`}/>
       ),
       last
     });
