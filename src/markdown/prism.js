@@ -5,6 +5,7 @@ import 'prismjs/components/prism-jsx.min.js';
 import 'prismjs/components/prism-c.min.js';
 import 'prismjs/components/prism-cpp.min.js';
 import 'prismjs/components/prism-scss.min.js';
+import 'prismjs/components/prism-haskell.min.js';
 import 'prismjs/plugins/highlight-keywords/prism-highlight-keywords.min.js';
 import 'prismjs/plugins/normalize-whitespace/prism-normalize-whitespace.min.js';
 import './code.scss';

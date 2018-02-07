@@ -72,7 +72,7 @@ are better than my first Hack Test.
 
 Maybe another day I'll go further into the development of the puzzles, but for
 now I think I want to keep them all un-spoiled. I will, however, suggest that
-you [try it out] so that if I ever do get around to writing about it you'll be
+you [try it out][] so that if I ever do get around to writing about it you'll be
 ready. Good luck.
 
 [try it out]: http://cameldridge.com/hack-test/0/

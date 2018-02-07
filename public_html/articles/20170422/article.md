@@ -119,7 +119,7 @@ big features that were in the original version.
 ### Keeping up
 
 Right now, I am somewhere in the middle of step 1. I'll try and update the
-[repository] regularly, and discuss some of the systems I decide to use as I go.
+[repository][] regularly, and discuss some of the systems I decide to use as I go.
 Hopefully this game will be playable by the end of summer? I've done it in two
 weeks before, so I can probably do it a second time in 4 months.
 

@@ -12,7 +12,7 @@ keywords: rust,cargo,project
 
 // {{ author }} &mdash; {{ date }}
 
-Ok ok, I know I just started that [Roguelike] from a few months ago and then
+Ok ok, I know I just started that [Roguelike][] from a few months ago and then
 gave up on it. Why would I be doing another one? Well what I realized is that no
 matter how well you try to write your C++, it is still just C++. It really can't
 be all *that* good. While the project may have been going pretty well, it just
@@ -65,7 +65,7 @@ that away from the game engine itself. Instead, a generator and a populator can
 be passed in to the engine, which it then uses to create dungeon floors. This
 way the engine doesn't even need to know about the set of available actors but
 is able to generically handle all of the many variations. For now, the map
-generation is using essentially the same [algorithm] as before, just translated
+generation is using essentially the same [algorithm][] as before, just translated
 into Rust, and population is hard coded, but switching these out will pose no
 challenge in the future.
 
