@@ -1,46 +1,26 @@
 {
   "name": "blog",
   "version": "1.0.0",
-  "description": "My (non-existent) blog...",
-  "main": "",
+  "description": "",
+  "main": "src/index.html",
   "scripts": {
-    "start": "http-server public_html"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel serve src/index.html",
+    "build": "parcel build src/index.html"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/OinkIguana/blog.git"
+    "url": "git+https://github.com/foxfriends/blog.git"
   },
-  "author": "Cameron Eldridge",
+  "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/OinkIguana/blog/issues"
+    "url": "https://github.com/foxfriends/blog/issues"
   },
-  "homepage": "http://blog.cameldridge.com",
-  "dependencies": {
-    "prismjs": "^1.6.0",
-    "react": "^15.6.1",
-    "react-dom": "^15.6.1",
-    "remarkable": "^1.7.1",
-    "reset-css": "^2.2.1"
-  },
+  "homepage": "https://github.com/foxfriends/blog#readme",
   "devDependencies": {
-    "babel-core": "^6.26.0",
-    "babel-loader": "^6.4.1",
-    "babel-plugin-transform-async-to-generator": "^6.24.1",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-plugin-transform-decorators-legacy": "^1.3.4",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-plugin-transform-react-jsx": "^6.24.1",
-    "css-loader": "^0.28.5",
-    "fast-sass-loader": "^1.2.5",
-    "file-loader": "^0.11.2",
-    "img-loader": "^2.0.0",
-    "node-sass": "^4.5.3",
-    "optimize-css-assets-webpack-plugin": "^3.1.1",
-    "postcss-loader": "^1.3.3",
-    "style-loader": "^0.16.1",
-    "uglifyjs-webpack-plugin": "^1.0.0-beta.2",
-    "url-loader": "^0.5.9",
-    "webpack": "^3.5.5"
+    "parcel-bundler": "^1.12.4",
+    "parcel-plugin-svelte": "^4.0.6",
+    "svelte": "^3.22.2"
   }
 }
