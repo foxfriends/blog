@@ -1,0 +1,3 @@
+[submodule "vendor/cameldridge"]
+	path = vendor/cameldridge
+	url = https://github.com/foxfriends/cameldridge.git
