@@ -4,9 +4,8 @@
   "description": "",
   "main": "src/index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "parcel serve src/index.html",
-    "build": "parcel build src/index.html"
+    "start": "parcel watch src/index.html src/404.html src/article.html",
+    "build": "parcel build src/index.html src/404.html src/article.html"
   },
   "repository": {
     "type": "git",
@@ -20,7 +19,12 @@
   "homepage": "https://github.com/foxfriends/blog#readme",
   "devDependencies": {
     "parcel-bundler": "^1.12.4",
+    "parcel-plugin-compress": "^2.0.2",
     "parcel-plugin-svelte": "^4.0.6",
     "svelte": "^3.22.2"
+  },
+  "dependencies": {
+    "dompurify": "^2.0.11",
+    "marked": "^1.0.0"
   }
 }

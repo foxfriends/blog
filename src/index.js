@@ -1,5 +1,6 @@
-import App from './App.svelte';
+import App from './app/Index.svelte';
 
 const app = new App({
-    target: document.querySelector('#root')
+    target: document.body,
+    props: { articles: window.articles },
 });
