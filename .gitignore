@@ -1,4 +1,6 @@
 node_modules
 .cache
 dist
-
+article/*/index.html
+article/*/index.js
+article/manifest.json
