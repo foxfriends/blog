@@ -15,9 +15,9 @@ const options = {
 };
 
 (async function() {
+  await compileArticles();
   // Initializes a bundler using the entrypoint location and options provided
   const bundler = new Bundler(entryFiles, options);
   bundler.addAssetType('svexy', require.resolve('parcel-plugin-svelte/lib/svelte-asset.js'));
-  bundler.on('buildStart', () => compileArticles());
-  const bundle = await bundler.bundle();
+  await bundler.bundle();
 })();

@@ -9,4 +9,30 @@ writing.
 I have a list of things I would like to share with you all:
 *   A
 *   Bone
-*   Coming through the skin is very bad
+*   Coming through the skin is very bad... but not quite as bad as it would be if this list item were
+    a lot shorter
+    *   This list is in the other one.
+    *   I think it should be less distant.
+
+That list is a bit of a good joke. Here's a real list:
+1.  Milk
+2.  Sugar
+3.  Eggs
+4.  Butter
+5.  Flour
+    *   Get the unbleached all purpose flour
+    *   Bleached is bad
+    *   Whole wheat is yucky
+
+Here's a quick code sample:
+
+```rust
+fn main() {
+    println!("Hello world!");
+}
+```
+
+Notice how it says `println!` in a very excited way. Why?
+
+Printing
+:   Prints the line. This can be very simple, or very complicated, depending on the line that needs printing.
