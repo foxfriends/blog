@@ -1,6 +1,7 @@
 const Bundler = require('parcel-bundler');
 const Path = require('path');
 const compileArticles = require('./compile-articles');
+const Hs = require('http-server');
 
 // Single entrypoint file location:
 const entryFiles = [
@@ -20,4 +21,6 @@ const options = {
   const bundler = new Bundler(entryFiles, options);
   bundler.addAssetType('svexy', require.resolve('parcel-plugin-svelte/lib/svelte-asset.js'));
   await bundler.bundle();
+  const server = new Hs.HttpServer({ root: './dist' });
+  server.listen(1234);
 })();

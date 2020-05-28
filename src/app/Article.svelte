@@ -13,16 +13,17 @@
 <style>
   /** page */
   .article {
+    position: relative;
     margin: 5rem auto;
     width: 60rem;
     font-size: 1.15rem;
-
-    --font-size-title: 1.5em;
-    --font-size-subtitle: 1.3em;
-    --font-size-heading: 1.2em;
-    --font-size-subheading: 1.1em;
+    --font-sub-display: 'Vollkorn SC', sans-serif;
+    --font-size-title: 1.75em;
+    --font-size-subtitle: 1.1em;
+    --font-size-heading: 1.25em;
+    --font-size-subheading: 1em;
     --font-size-body: 1em;
-    --font-size-note: 5/6em;
+    --font-size-note: 0.9em;
   }
 
   .content {
@@ -47,7 +48,7 @@
     font-weight: 600;
   }
 
-  .content :global(i, emph) {
+  .content :global(i, emph, cite) {
     font-style: italic;
   }
 
@@ -63,41 +64,64 @@
 
   /** Headings */
 
-  .content :global(h1, h2, h3, h4) {
+  .content :global(h1, h3, h4) {
     font-family: var(--font-display);
   }
 
   .content :global(h1) {
     font-size: var(--font-size-title);
-    text-align: center;
+    margin-left: 2rem;
   }
 
   .content :global(h2) {
+    font-family: var(--font-sub-display);
     font-size: var(--font-size-subtitle);
-    text-align: center;
+    text-transform: lowercase;
+    margin-left: 2rem;
+    letter-spacing: -0.01em;
   }
 
   .content :global(h3) {
-    font-size: var(--font-size-header);
-    text-align: left;
+    font-size: var(--font-size-heading);
+    margin-top: 4rem;
+    font-weight: 500;
   }
 
   .content :global(h4) {
-    font-size: var(--font-size-subheader);
-    text-align: left;
+    font-size: var(--font-size-subheading);
+    margin-top: 3rem;
+    font-weight: 600;
   }
 
   .content :global(h5) {
     font-family: var(--font-accent);
     font-size: var(--font-size-body);
-    text-align: left;
-    font-variant-caps: all-small-caps;
+    margin-top: 2rem;
+    margin-bottom: -0.5rem;
   }
 
   .content :global(h6) {
     font-family: var(--font-body);
     font-size: var(--font-size-note);
     text-align: right;
+  }
+
+  /** Rules */
+
+  .content :global(hr) {
+    border: none;
+    height: 1px;
+    width: 10rem;
+    background-color: rgba(0, 0, 0, 0.25);
+  }
+
+  .content :global(h2 + hr) {
+    border: none;
+    width: calc(100% + 4rem);
+    margin-left: -2rem;
+    margin-bottom: 3rem;
+    height: 1px;
+    background-image: linear-gradient(to right, black, rgba(0, 0, 0, 0.2));
   }
 
   /** Lists */
@@ -139,14 +163,13 @@
   .content :global(dt::before) {
     content: 'Def. ';
     font-family: var(--font-accent);
-    text-transform: none;
+    text-transform: lowercase;
     font-size: 0.85em;
     font-weight: 400;
-    font-variant-caps: all-small-caps;
   }
 
   .content :global(dd) {
     display: block;
-    margin-left: 2pc;
+    margin-left: 2rem;
   }
 </style>
