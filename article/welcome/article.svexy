@@ -9,6 +9,9 @@ write a real first blog post another day. Until then, please enjoy this list of 
 Here's another paragraph, because I should be testing that. Second paragraphs get indented (even though
 first paragraphs do not). Is this normal? I don't know, but I always kind of liked it.
 
+Anyway, you may have noticed that this is not very interesting, so maybe you should just go check out
+my [website](https://cameldridge.com).
+
 ### The content
 
 This paragraph is much longer than the first. I need it to span multiple lines so that I can test that.
@@ -42,8 +45,15 @@ That list is a bit of a good joke. Here's a real list:
 Here's a quick code sample:
 
 ```rust
-fn main() {
-    println!("Hello world!");
+#[derive(StructOpt)]
+struct Opts {
+    #[structopt(short, long)]
+    name: String,
+}
+
+#[paw::main]
+fn main(opts: Opts) {
+    println!("Hello {}!", opts.name);
 }
 ```
 

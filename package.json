@@ -24,7 +24,6 @@
     "parcel-bundler": "^1.12.4",
     "parcel-plugin-compress": "^2.0.2",
     "parcel-plugin-svelte": "^4.0.6",
-    "prismjs": "^1.20.0",
     "rimraf": "^3.0.2",
     "svelte": "^3.22.2",
     "toml": "^3.0.0"

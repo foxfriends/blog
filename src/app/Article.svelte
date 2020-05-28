@@ -58,8 +58,8 @@
     font-variant-numeric: unset;
   }
 
-  .content :global(:not(pre) code::before, :not(pre) code::after) {
-    content: ' ';
+  .content :global(:not(pre) code) {
+    padding: 0 0.2rem;
   }
 
   /** Headings */
@@ -104,6 +104,8 @@
     font-family: var(--font-body);
     font-size: var(--font-size-note);
     text-align: right;
+    margin-top: -0.6rem;
+    margin-right: 2rem;
   }
 
   /** Rules */
@@ -171,5 +173,42 @@
   .content :global(dd) {
     display: block;
     margin-left: 2rem;
+  }
+
+  /** Code */
+
+  .content :global(pre) {
+    padding: 1em;
+    background-color: var(--color__one-dark--black);
+    color: var(--color__one-dark--white);
+  }
+
+  /** Quotes */
+
+  .content :global(blockquote) {
+    margin-top: 1rem;
+    margin-left: 1rem;
+    padding-left: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-left: 3px groove rgba(0, 0, 0, 0.5);
+  }
+
+  .content :global(blockquote p) {
+    text-indent: 0;
+  }
+
+  .content :global(blockquote p:first-child) {
+    margin: 0;
+  }
+
+  .content :global(a:link, a:visited, a:active) {
+    color: var(--link--color);
+    text-decoration: none;
+  }
+
+  .content :global(a:hover, a:focus) {
+    color: var(--link--color-hover);
+    text-decoration: underline;
   }
 </style>
