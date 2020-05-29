@@ -28,7 +28,9 @@ const app = new Article({ target: document.body });
 `;
 
 module.exports = function compileArticles() {
-  Fs.unlinkSync('./article/manifest.json');
+  if (Fs.existsSync('./article/manifest.json')) {
+    Fs.unlinkSync('./article/manifest.json');
+  }
   const articles = [];
   const dir = Fs.readdirSync('./article/');
   for (const id of dir) {
