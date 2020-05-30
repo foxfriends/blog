@@ -19,7 +19,7 @@ const options = {
   await compileArticles();
   // Initializes a bundler using the entrypoint location and options provided
   const bundler = new Bundler(entryFiles, options);
-  bundler.addAssetType('svexy', require.resolve('parcel-plugin-svelte/lib/svelte-asset.js'));
+  bundler.addAssetType('svx', require.resolve('parcel-plugin-svelte/lib/svelte-asset.js'));
   await bundler.bundle();
   const server = new Hs.HttpServer({ root: './dist' });
   server.listen(1234);

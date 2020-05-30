@@ -29,19 +29,28 @@ const atoh = new AtoH({
 });
 
 module.exports = {
+  extensions: ['svelte', 'svx'],
   preprocess: mdsvex({
-    parser: md => md
-      .use(require('markdown-it-deflist')),
-    extension: '.svexy',
-    layout: '../../src/app/Article.svelte',
-    markdownOptions: {
-      typographer: true,
-      highlight(source, language) {
+    extension: '.svx',
+    remarkPlugins: [require('remark-containers'), require('remark-deflist')],
+    layout: Path.resolve(__dirname, './src/app/Article.svelte'),
+    layoutRoot: __dirname,
+    smartypants: {
+      quotes: true,
+      ellipses: true,
+      backticks: false,
+      dashes: 'oldschool',
+    },
+    highlight: {
+      highlighter(source, language) {
         const { stdout } = Cp.spawnSync('syncat', ['-l', language], {
           input: source,
           encoding: 'UTF-8',
         });
-        return atoh.toHtml(stdout);
+        const result = `<pre><code>${atoh.toHtml(stdout)}</code></pre>`;
+        return result
+          .replace(/\{/g, '&#123;')
+          .replace(/\}/g, '&#125;');
       },
     },
   }),

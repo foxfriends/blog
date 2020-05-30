@@ -15,7 +15,7 @@
 
 <div class='index'>
   <Header />
-  
+
   {#await articles then articles}
     {#each articles.filter(filter) as article (article.id)}
       <Summary {...article} on:filter={applyFilter} />

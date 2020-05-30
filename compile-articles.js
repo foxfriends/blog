@@ -1,6 +1,6 @@
 const Path = require('path');
 const Fs = require('fs');
-const Toml = require('toml');
+const fm = require('front-matter');
 const rimraf = require('rimraf');
 
 const html = article => `<!DOCTYPE HTML>
@@ -23,7 +23,7 @@ const html = article => `<!DOCTYPE HTML>
 </html>
 `;
 
-const js = id => `import Article from '../../article/${id}/article.svexy'
+const js = id => `import Article from './article.svx';
 const app = new Article({ target: document.body });
 `;
 
@@ -34,10 +34,11 @@ module.exports = function compileArticles() {
   const articles = [];
   const dir = Fs.readdirSync('./article/');
   for (const id of dir) {
-      const article = Toml.parse(Fs.readFileSync(`./article/${id}/article.toml`));
-      Fs.writeFileSync(`./article/${id}/index.html`, html(article));
-      Fs.writeFileSync(`./article/${id}/index.js`, js(id));
-      articles.push({ ...article, id });
+    const article = Fs.readFileSync(`./article/${id}/article.svx`).toString();
+    const { attributes } = fm(article);
+    Fs.writeFileSync(`./article/${id}/index.html`, html(attributes));
+    Fs.writeFileSync(`./article/${id}/index.js`, js(id));
+    articles.push({ ...attributes, id });
   }
 
   articles.sort((a, b) => new Date(a.date) < new Date(b.date));

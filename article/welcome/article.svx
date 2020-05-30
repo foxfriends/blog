@@ -1,0 +1,22 @@
+---
+title: Welcome
+subtitle: I have a subtitle.
+date: 2020-05-29
+tags: ['personal', 'meta']
+author: Cameron Eldridge
+---
+
+# Welcome
+## I have a subtitle.
+
+---
+
+Hello this is the things.
+
+```rust
+fn main() {
+    println!("Hello world");
+}
+```
+
+This is the end?
