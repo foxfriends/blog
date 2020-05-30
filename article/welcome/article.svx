@@ -2,7 +2,9 @@
 title: Welcome
 subtitle: I have a subtitle.
 date: 2020-05-29
-tags: ['personal', 'meta']
+tags: 
+- personal
+- meta
 author: Cameron Eldridge
 ---
 

@@ -21,6 +21,6 @@ const options = {
   const bundler = new Bundler(entryFiles, options);
   bundler.addAssetType('svx', require.resolve('parcel-plugin-svelte/lib/svelte-asset.js'));
   await bundler.bundle();
-  const server = new Hs.HttpServer({ root: './dist' });
+  const server = new Hs.HttpServer({ root: './dist', cache: -1 });
   server.listen(1234);
 })();

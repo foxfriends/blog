@@ -55,6 +55,7 @@
   .summary {
     width: 50rem;
     height: 6rem;
+    margin-bottom: 1rem;
   }
 
   .content {
