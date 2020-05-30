@@ -15,7 +15,20 @@
   $: prevArticle = [...ARTICLES].reverse().find((article) => new Date(article.date) < dateObject);
 
   function format(date) {
-    const month = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][date.getUTCMonth()];
+    const month = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ][date.getUTCMonth()];
     const day = date.getUTCDate();
     const year = date.getUTCFullYear();
 
