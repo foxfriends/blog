@@ -112,15 +112,6 @@
     background-color: rgba(0, 0, 0, 0.25);
   }
 
-  .content :global(h2 + hr) {
-    border: none;
-    width: calc(100% + 4rem);
-    margin-left: -2rem;
-    margin-bottom: 3rem;
-    height: 1px;
-    background-image: linear-gradient(to right, black, rgba(0, 0, 0, 0.2));
-  }
-
   /** Lists */
 
   .content :global(ul, ol) {
@@ -173,9 +164,17 @@
   /** Code */
 
   .content :global(pre) {
+    position: relative;
     padding: 1em;
     background-color: var(--color__one-dark--black);
     color: var(--color__one-dark--white);
+  }
+
+  .content :global(pre code::after) {
+    position: absolute;
+    content: attr(data-language);
+    right: 2em;
+    bottom: 0em;
   }
 
   /** Quotes */

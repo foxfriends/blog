@@ -1,7 +1,7 @@
 ---
-title: Welcome
-subtitle: I have a subtitle.
-date: 2020-05-29
+title: New work!
+subtitle: This is coming along.
+date: 2020-05-30
 tags: ['personal', 'meta']
 author: Cameron Eldridge
 ---

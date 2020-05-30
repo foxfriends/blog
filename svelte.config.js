@@ -47,7 +47,7 @@ module.exports = {
           input: source,
           encoding: 'UTF-8',
         });
-        const result = `<pre><code>${atoh.toHtml(stdout)}</code></pre>`;
+        const result = `<pre><code data-language='${language}' class='language-${language}'>${atoh.toHtml(stdout)}</code></pre>`;
         return result
           .replace(/\{/g, '&#123;')
           .replace(/\}/g, '&#125;');

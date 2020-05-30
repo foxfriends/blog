@@ -3,6 +3,7 @@
   import Text from '../../vendor/cameldridge/src/component/Text.svelte';
   import Image from '../../vendor/cameldridge/src/component/Image.svelte';
   import Link from '../../vendor/cameldridge/src/component/Link.svelte';
+  import { BLOG_TITLE, BLOG_SUBTITLE } from '../constants';
 </script>
 
 <div class='header'>
@@ -10,12 +11,12 @@
     <div class='content'>
       <div class='title'>
         <Text heading>
-          Cameron's Blog
+          {BLOG_TITLE}
         </Text>
       </div>
       <div class='subtitle'>
         <Text sc>
-          There's not much here.
+          {BLOG_SUBTITLE}
         </Text>
       </div>
       <div class='links'>
