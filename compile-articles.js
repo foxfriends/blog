@@ -1,7 +1,6 @@
 const Path = require('path');
 const Fs = require('fs');
 const fm = require('front-matter');
-const rimraf = require('rimraf');
 
 const html = article => `<!DOCTYPE HTML>
 <html>
@@ -27,20 +26,50 @@ const js = id => `import Article from './article.svx';
 const app = new Article({ target: document.body });
 `;
 
-module.exports = function compileArticles() {
-  if (Fs.existsSync('./article/manifest.json')) {
-    Fs.unlinkSync('./article/manifest.json');
+function equal(a, b) {
+  if (a === b) { return true; }
+  if (a instanceof Date || b instanceof Date) {
+    if (a instanceof Date && b instanceof Date) {
+      return a.valueOf() === b.valueOf();
+    }
+    return false;
   }
+  if (Array.isArray(a) && Array.isArray(b)) {
+    return a.length === b.length && a.every((ai, i) => equal(ai, b[i]));
+  }
+  if (typeof a === 'object' && typeof b === 'object') {
+    const akeys = Object.keys(a).sort();
+    const bkeys = Object.keys(b).sort();
+    return equal(akeys, bkeys) && akeys.every((i) => equal(a[i], b[i]));
+  }
+  return false;
+}
+
+function dater(key, value) {
+  if (key === 'date') { return new Date(value); }
+  return value;
+}
+
+module.exports = function compileArticles(force = false) {
   const articles = [];
   const dir = Fs.readdirSync('./article/');
+  const previousManifest = JSON.parse(Fs.readFileSync('./article/manifest.json'), dater);
+
   for (const id of dir) {
+    if (id === 'manifest.json') continue;
     const article = Fs.readFileSync(`./article/${id}/article.svx`).toString();
     const { attributes } = fm(article);
-    Fs.writeFileSync(`./article/${id}/index.html`, html(attributes));
-    Fs.writeFileSync(`./article/${id}/index.js`, js(id));
+    if (force || !Fs.existsSync(`./article/${id}/index.html`) || !Fs.existsSync(`./article/${id}/index.js`)) {
+      console.log(`Replacing article ${id}`);
+      Fs.writeFileSync(`./article/${id}/index.html`, html(attributes));
+      Fs.writeFileSync(`./article/${id}/index.js`, js(id));
+    }
     articles.push({ ...attributes, id });
   }
 
   articles.sort((a, b) => new Date(a.date) < new Date(b.date));
-  Fs.writeFileSync('./article/manifest.json', JSON.stringify(articles));
-}
+  if (!equal(previousManifest, articles)) {
+    console.log('Replacing manifest');
+    Fs.writeFileSync('./article/manifest.json', JSON.stringify(articles));
+  }
+};
