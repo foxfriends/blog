@@ -19,20 +19,22 @@
 <div class='summary'>
   <Paper>
     <div class='content'>
-      <div class='title'>
-        <Link href="/article/{id}">
-          <Text heading>
-            { title }
-          </Text>
-        </Link>
-      </div>
-      {#if subtitle}
-        <div class='subtitle'>
-          <Text heading>
-            { subtitle }
-          </Text>
+      <div class='titles'>
+        <div class='title'>
+          <Link href="/article/{id}">
+            <Text heading>
+              { title }
+            </Text>
+          </Link>
         </div>
-      {/if}
+        {#if subtitle}
+          <div class='subtitle'>
+            <Text accent>
+              { subtitle }
+            </Text>
+          </div>
+        {/if}
+      </div>
       {#if tags}
         <div class='tags'>
           {#each tags as tag}
@@ -67,18 +69,24 @@
     justify-items: flex-start;
     grid-template-areas:
       "t t t h h"
-      "s s s s d";
+      "t t t d d";
+  }
+
+  .titles {
+    grid-area: t;
+    line-height: 1.3;
   }
 
   .title {
     font-size: var(--font-size-heading);
-    grid-area: t;
+    margin-right: 4rem;
   }
 
   .subtitle {
     color: var(--color-ink-light);
-    font-size: var(--font-size-body);
-    grid-area: s;
+    font-size: var(--font-size-note);
+    text-transform: lowercase;
+    text-align: right;
   }
 
   .tags {

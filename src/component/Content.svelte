@@ -54,8 +54,9 @@
     font-family: var(--font-sub-display);
     font-size: var(--font-size-subtitle);
     text-transform: lowercase;
-    margin-left: 2rem;
+    margin-right: 2rem;
     letter-spacing: -0.01em;
+    text-align: right;
   }
 
   .content :global(h3) {
@@ -122,6 +123,10 @@
   .content :global(li) {
     margin-left: 0;
     padding-left: 0;
+  }
+
+  .content :global(li + li) {
+    margin-top: 0.5rem;
   }
 
   .content :global(ul > li) {

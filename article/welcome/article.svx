@@ -1,19 +1,32 @@
 ---
-title: Hello world!
-subtitle: I have a subtitle.
-date: 2020-05-29
-tags: 
+title: Hello friends, and welcome.
+subtitle:
+date: 2020-05-31
+tags:
 - personal
-- meta
-author: Cameron Eldridge
+author: Cam
 ---
 
-Hello this is the things.
+I think it might be about time I started blogging. Why? Well, I don't know. I just feel like it.
+I wouldn't have thought I'd enjoy writing or teaching or whatever this will become. Really I kind
+of hated it whenever we had to write things in school. Turns out the issues were the content and the
+motivation. I didn't really *care* about those things. I mean really, who *wants* to write an essay
+on an old book, or a paragraph on workplace ethics? Nobody, that's who.
 
-```rust
-fn main() {
-    println!("Hello world");
-}
-```
+What I have found since then is that sometimes, when I am interested in what I am writing about, I
+actually kind of enjoy it. I think they taught us how to write, but not why. I have found some why
+for myself, and it comes in two parts:
+1.  I kind of like teaching, and (sometimes) I come up with things that might be worth sharing. Most
+    (all?) of it will be related to programming---that's really the only thing I'm any good at these
+    days---but I won't restrict myself to that just yet.
+2.  I like the way words look on paper. Or in this case, on screen (though at the time of writing,
+    I have made the screen look like a paper). One of my (very few) interests in something that isn't
+    programming is typography. Though, maybe it's more related than I think---I spend a lot of time
+    looking at text, and it helps when it looks good.
 
-This is the end?
+I haven't really got much of a plan from here. I wanted to write, so I gathered some papers, but now I need
+something to put on them. I suspect it will come. I had a lot of fun building this---it's built of hacks
+on hacks on hacks but actually seems to have turned out. Maybe I'll tell you about it sometime. Maybe 
+some of the other projects I've done in the last little while too.
+
+We will see how this goes.

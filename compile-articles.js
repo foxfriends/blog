@@ -59,12 +59,13 @@ module.exports = function compileArticles(force = false) {
     if (id === 'manifest.json') continue;
     const article = Fs.readFileSync(`./article/${id}/article.svx`).toString();
     const { attributes } = fm(article);
-    if (force || !Fs.existsSync(`./article/${id}/index.html`) || !Fs.existsSync(`./article/${id}/index.js`)) {
+    attributes.id = id;
+    if (!equal(attributes, previousManifest.find((entry) => entry.id === id))) {
       console.log(`Replacing article ${id}`);
       Fs.writeFileSync(`./article/${id}/index.html`, html(attributes));
       Fs.writeFileSync(`./article/${id}/index.js`, js(id));
     }
-    articles.push({ ...attributes, id });
+    articles.push(attributes);
   }
 
   articles.sort((a, b) => new Date(a.date) < new Date(b.date));
