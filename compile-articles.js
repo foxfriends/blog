@@ -53,7 +53,7 @@ function dater(key, value) {
 module.exports = function compileArticles(force = false) {
   const articles = [];
   const dir = Fs.readdirSync('./article/');
-  let previousManifest = {};
+  let previousManifest = [];
   if (Fs.existsSync('./article/manifest.json')) {
     previousManifest = JSON.parse(Fs.readFileSync('./article/manifest.json'), dater);
   }
