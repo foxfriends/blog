@@ -12,7 +12,7 @@ const entryFiles = [
 
 // Bundler options
 const options = {
-  publicUrl: '/', // The url to serve on, defaults to '/'
+  watch: process.env.NODE_ENV !== 'production',
 };
 
 (async function() {
@@ -22,6 +22,8 @@ const options = {
   bundler.addAssetType('svx', require.resolve('parcel-plugin-svelte/lib/svelte-asset.js'));
   bundler.on('buildStart', () => compileArticles());
   await bundler.bundle();
-  const server = new Hs.HttpServer({ root: './dist', cache: -1 });
-  server.listen(1234);
+  if (process.env.NODE_ENV !== 'production') {
+    const server = new Hs.HttpServer({ root: './dist', cache: -1 });
+    server.listen(1234);
+  }
 })();
