@@ -30,7 +30,5 @@
     "remark-deflist": "^0.2.1",
     "svelte": "^3.23.0"
   },
-  "dependencies": {
-    "src": "^1.1.2"
-  }
+  "dependencies": {}
 }
