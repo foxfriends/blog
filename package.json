@@ -25,6 +25,7 @@
     "mdsvex": "github:foxfriends/MDsveX",
     "parcel-bundler": "^1.12.4",
     "parcel-plugin-compress": "^2.0.2",
+    "parcel-plugin-nuke-dist": "^1.0.1",
     "parcel-plugin-svelte": "^4.0.6",
     "remark-containers": "^1.1.2",
     "remark-deflist": "^0.2.1",
