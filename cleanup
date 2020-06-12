@@ -1,0 +1,4 @@
+#!/bin/bash cleanup
+rm article/manifest.json
+rm article/*/index.js
+rm article/*/index.html

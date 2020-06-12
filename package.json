@@ -28,7 +28,7 @@
     "parcel-plugin-svelte": "^4.0.6",
     "remark-containers": "^1.1.2",
     "remark-deflist": "^0.2.1",
-    "svelte": "^3.23.0"
+    "svelte": "^3.23.2"
   },
   "dependencies": {}
 }

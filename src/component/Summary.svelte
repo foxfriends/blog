@@ -79,14 +79,13 @@
 
   .title {
     font-size: var(--font-size-heading);
-    margin-right: 4rem;
   }
 
   .subtitle {
     color: var(--color-ink-light);
     font-size: var(--font-size-note);
     text-transform: lowercase;
-    text-align: right;
+    text-indent: 1em;
   }
 
   .tags {

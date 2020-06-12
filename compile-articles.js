@@ -71,7 +71,7 @@ module.exports = function compileArticles(force = false) {
     articles.push(attributes);
   }
 
-  articles.sort((a, b) => new Date(a.date) < new Date(b.date));
+  articles.sort((a, b) => new Date(b.date) - new Date(a.date));
   if (!equal(previousManifest, articles)) {
     console.log('Replacing manifest');
     Fs.writeFileSync('./article/manifest.json', JSON.stringify(articles));

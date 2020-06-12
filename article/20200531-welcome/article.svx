@@ -1,6 +1,6 @@
 ---
 title: Hello friends, and welcome.
-subtitle:
+subtitle: A brief introduction
 date: 2020-05-31
 tags:
 - personal

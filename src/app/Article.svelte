@@ -47,7 +47,7 @@
                 <Image name='arrow-left' alt='Previous article' />
               </span>
               <span class='link-text'>
-                <Text accent>{prevArticle.title}</Text>
+                <Text>{prevArticle.title}</Text>
               </span>
             </div>
           </Link>
@@ -65,7 +65,7 @@
           <Link href='/article/{nextArticle.id}'>
             <div class='link'>
               <span class='link-text'>
-                <Text accent>{nextArticle.title}</Text>
+                <Text>{nextArticle.title}</Text>
               </span>
               <span class='link-icon'>
                 <Image name='arrow-right' alt='Next article' />
@@ -107,7 +107,7 @@
             <Text semibold>{format(dateObject)}</Text>
           </span>
         {/if}
-        {#if tags.length}
+        {#if tags && tags.length}
           <span class='meta-head'>
             <Text accent>Tagged</Text>
           </span>
@@ -174,13 +174,19 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    padding: 1rem 8.5rem;
+    padding: 1rem 5rem;
   }
 
   .nav-item {
     display: flex;
     flex-basis: 0;
     flex-grow: 1;
+    align-items: center;
+  }
+
+  .nav-item :global(a) {
+    /** This is a bit of a hack to get the ellipsis to work... but it worked */
+    max-width: 100%;
   }
 
   .nav-item.left { justify-content: flex-start; }
@@ -204,7 +210,12 @@
   }
 
   .link-text {
-    text-transform: lowercase;
+    flex-basis: 0;
+    flex-grow: 1;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    transform: translateY(2px);
   }
 
   .meta-content {
