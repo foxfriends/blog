@@ -5,7 +5,7 @@
 <style>
   .content {
     box-sizing: border-box;
-    padding: 10rem 10rem;
+    padding: 10rem 0;
     font-family: var(--font-body);
   }
 
@@ -19,6 +19,10 @@
     margin-top: 1rem;
   }
 
+  .content :global(p, dl, :not(li) > ul, :not(li) > ol, figure) {
+    margin: 1rem 10rem 0;
+  }
+
   /** inlines */
 
   .content :global(b, strong) {
@@ -29,10 +33,15 @@
     font-style: italic;
   }
 
-  .content :global(code) {
-    font-size: 0.85em;
+  .content :global(code),
+  .content :global(pre) {
     font-family: var(--font-mono);
     font-variant-numeric: unset;
+  }
+
+  .content :global(pre),
+  .content :global(:not(pre) code) {
+    font-size: 0.85em;
   }
 
   .content :global(:not(pre) code) {
@@ -171,6 +180,9 @@
   .content :global(pre) {
     position: relative;
     padding: 1em;
+    width: 80ch;
+    margin-left: auto;
+    margin-right: auto;
     background-color: var(--color__one-dark--black);
     color: var(--color__one-dark--white);
   }

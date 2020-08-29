@@ -1,0 +1,222 @@
+---
+title: 'Concept: Game Scripting with Logic Programming'
+date: 2020-08-28
+tags:
+- gamedev
+- prolog
+author: Cam
+---
+
+In game development, from what I've heard, they often use scripts to implement various things,
+rather than implementing the whole game in a compiled language. I don't really have any experience
+in this area to know for sure, but I can see a few benefits right away:
+1.  There is no need to recompile to make tweaks to whatever was implemented in the script.
+2.  It is easier for less experienced developers (a game designer perhaps?) to try out different behaviours.
+3.  Can change things on-the-fly, without even stopping the game.
+4.  Can expose some sort of scripting to the players to permit modding.
+
+Pretty much everywhere I look, it's Lua being used for this purpose. I have, in the past, attempted
+to learn Lua, but it just... did not catch my attention? When I learn a new language, I expect it to
+teach me to think in new ways in order to come up with an elegant solution to the problem. When I
+looked at Lua, I just got bored. Maybe I just didn't look closely enough (very possible, I did not
+try very hard), but nothing looked new. I saw no particular beauty in Lua.
+
+Clearly Lua must work well, or it wouldn't have the popularity it does. I suppose for a real, big
+project, you would have to pick something reliable and performant, which are requirements I do think
+Lua can satisfy, but for my own personal projects I try to consider things that are more interesting
+and fun than useful, mainstream, or performant. Especially given the fact that my projects rarely
+reach a stage where I need to implement any features, I think this is fair.
+
+In the past I have considered embedding [Io][] or [Ketos][], mainly because they looked like fun, but
+I think I ran into trouble with both. Not because of the language itself, but the process of embedding
+it. My most recent fascination is to try to use [Prolog][] (or at least, some form of logic programming)
+to allow users to write scripts for a moddable turn-based strategy game.
+
+[Io]: http://iolanguage.com/
+[Ketos]: https://github.com/murarth/ketos
+[Prolog]: https://en.wikipedia.org/wiki/Prolog
+
+I'm always looking for excuses to use logic programming in my projects. It's not a paradigm I have
+had a lot of opportunity to work with, but in what little experience I do have, the elegance and
+beauty that I am always looking for is there. The first criteria of "good scripting language" is
+satisfied.
+
+So how can this be applied to a game? Well as I am sure you are aware, a game (and in particular,
+a turn-based strategy game) has __state__ (where the pieces are, what resources the player has)
+and __rules__ (where and when the pieces are allowed to move, how they interact). Meanwhile, a
+logic program has __facts__ (statements about the problem) and __rules__ (how the facts interact)...
+You *must* see some similarities here.
+
+Let's start with the game. Say there are two players, call them `blue` and `red`, and they are
+having some sort of battle. This battle takes place on a grid, on which each player has a few
+types of units with different properties (say `sword` units and `bow` units), and a castle.
+Taking turns, the players move their units and use them to attack the other player. The first
+player to destroy the enemy castle wins.
+
+Simple enough? Let's try and describe this game using logic programming. Here is one possible
+approach to describing the game state using facts. This is not necessarily the most useful or
+best approach, but it is simple.
+
+```prolog
+% The map is a 16x16 tile grid. Let's say (1, 1) is the top left corner and
+% (16, 16) is the bottom right.
+map(16, 16).
+
+% There are two players, blue and red.
+player(blue).
+player(red).
+
+% They each have a castle.
+castle(blue, 2, 2).  % blue near the top left
+castle(red, 15, 15). % red near the bottom right
+
+% They have some money they can use to buy new units.
+gold(blue, 20).
+gold(red, 20).
+
+% And they also have a few soldiers.
+unit(blue, bow, 3, 3).
+unit(blue, sword, 3, 4).
+unit(blue, sword, 4, 3).
+unit(blue, sword, 4, 4).
+unit(red, bow, 14, 14).
+unit(red, sword, 14, 13).
+unit(red, sword, 13, 14).
+unit(red, sword, 13, 13).
+```
+
+Of course there are more things we might want to include in an actual implementation of this
+idea, like whose turn is it, which units have moved, how much health does each unit have,
+but for now we can ignore those. Other than that, this was not so bad, right? The next step
+is to come up with some rules. This is also pretty easy:
+
+```prolog
+distance(FromX, FromY, ToX, ToY, D) :-
+    DX is abs(FromX - ToX),
+    DY is abs(FromY - ToY),
+    D is DX + DY.
+
+% Units can move some distance based on their type.
+move(sword, 3).
+move(bow, 4).
+canMove(T, FromX, FromY, ToX, ToY) :-
+    move(T, M),
+    distance(FromX, FromY, ToX, ToY, D),
+    D <= M,
+    not(unit(_, _, ToX, ToY)).
+
+% They can also attack enemy units from some distance.
+range(bow, 3).
+range(sword, 1).
+canAttack(P, T, FromX, FromY, ToX, ToY) :-
+    range(T, R),
+    distance(FromX, FromY, ToX, ToY, D),
+    D <= R,
+    unit(P2, _, ToX, ToY),
+    P2 \= P.
+
+% Players can buy new units from the castle for gold.
+cost(bow, 5).
+cost(sword, 3).
+canBuyUnit(P, T) :-
+    gold(P, G),
+    cost(T, C),
+    C <= T.
+```
+
+The next thing we need to do is tell the player what actions they can take with each
+entity in the game. Conveniently, Prolog is able to return multiple answers to any
+question, so we can write something like the following:
+
+```prolog
+% Units can move
+actions(unit(_, T, FromX, FromY), move(FromX, FromY, ToX, ToY)) :-
+    canMove(T, FromX, FromY, ToX, ToY).
+
+% Units can attack
+actions(unit(_, T, FromX, FromY), attack(ToX, ToY)) :-
+    canAttack(T, FromX, FromY, ToX, ToY).
+
+% Castles can spawn units
+actions(castle(P, FromX, FromY), spawn(unit(P, T, ToX, ToY))) :-
+    distance(FromX, FromY, ToX, ToY, 1),
+    canBuyUnit(P, T).
+```
+
+Finally, we need to actually implement the actions---describe how the state of the game
+will change when each is performed. Prolog provides `assert` and `retract` predicates
+that allow us to modify the facts and rules that are in effect while the program is
+running, so let's try to use those:
+
+```prolog
+% Remove the unit from the old location, add it to the new one
+perform(move(FromX, FromY, ToX, ToY)) :-
+    unit(P, T, FromX, FromY),
+    retract(unit(P, T, FromX, FromY)),
+    assert(unit(P, T, ToX, ToY)).
+
+% Remove the enemy unit from the target location
+perform(attack(ToX, ToY)) :-
+    unit(_, _, ToX, ToY),
+    retract(unit(_, _, ToX, ToY)).
+
+% Decrease the player's funds, and then create a new unit.
+perform(spawn(unit(P, T, ToX, ToY))) :-
+    gold(P, G),
+    cost(T, C),
+    G2 is G - C,
+    retract(gold(P, G)),
+    assert(gold(P, G2)),
+    assert(unit(P, T, ToX, ToY)).
+```
+
+So it's possible to describe the state, rules, and actions of the game using Prolog. Good.
+Now is it possible to embed this within a game engine that is able to:
+1.  present the state to the players with nice graphics and menus;
+2.  save and resume games and allow players to play over the Internet; and
+3.  allow players to define new units/buildings/actions?
+
+Well... I don't see why not. It's fairly straight forward to convert arbitrary data
+into Prolog terms, and some adjustments to `assert` and `retract` the Prolog could be
+made to modify this state instead of just modifying the facts database. With a few
+"special" predicates (like `actions` and `perform` above) that are known to the game
+engine, the script should be able to communicate sufficiently with the engine to
+actually provide information to the player and handle their inputs. Assuming the state
+structure leaves sufficent room for user defined data, a player should be able to
+implement whatever new behaviours they want.
+
+So why hasn't this been done before (or has it and I just don't know)? I would think
+mainly because of the relatively low popularity of logic programming---not only might
+the designers on the team have trouble changing the scripts, the actual developers
+likely won't have that much experience either. Opening up access to scripts for modding
+would run in to the same issues: the players won't have any experience with it either.
+
+Another issue could be performance---I'm not sure the performance characteristics of
+Prolog, but I would assume it isn't quite as good as Lua would be. For a turn-based
+game like this one that might not matter a lot, but for most games I can see it being
+an issue.
+
+Also, specific to a turn-based or strategy game, the declarative nature of Prolog
+lends itself quite well to describing the problem. For a regular game (think an RPG
+or FPS game) state is changing constantly, actions are performed in real time, and
+the possible actions taken at any moment are not typically determined by the state.
+It just wouldn't make sense to try and describe that kind of game in this way.
+
+Lastly is the actual issue of integration. Lua, for example, was built to be embedded,
+while Prolog was... not? I haven't put tons of effort into it, but I have not found
+as many resources on how to embed Prolog into another codebase. In JavaScript I know
+[Tau Prolog][] exists and would work well for this purpose. For C and friends there's
+[SWI-Prolog][] that claims to be embeddable.
+
+[Tau Prolog]: http://tau-prolog.org/
+[SWI-Prolog]: https://www.swi-prolog.org/
+
+The one I am most interested in is [Scryer Prolog][], which implements Prolog in Rust.
+Unfortunately it is not made available as a library (only as a standalone executable),
+which makes it a bit hard to embed. I am most interested in this one because I have 
+already started implementing this hypothetical scriptable turn-based strategy game,
+in Rust, [here](https://github.com/foxfriends/paper-wars). As always, I am nowhere 
+near the part where I need to actually implement the scripting feature and embed the
+language, but I do hope someday to have the opportunity to try this idea out.
+
+[Scryer Prolog]: https://github.com/mthom/scryer-prolog

@@ -81,44 +81,46 @@
 <div class='article'>
   <Paper>
     <Content>
-      {#if title}
-        <h1>{title}</h1>
-      {/if}
-      {#if subtitle}
-        <h2>{subtitle}</h2>
-      {/if}
-      {#if title || subtitle}
-        <hr class='heading-separator' />
-      {/if}
-      <div class='meta-content'>
-        {#if author}
-          <span class='meta-head'>
-            <Text accent>By</Text>
-          </span>
-          <span class='meta-value'>
-            <Text semibold>{author}</Text>
-          </span>
+      <div class='meta'>
+        {#if title}
+          <h1>{title}</h1>
         {/if}
-        {#if dateObject}
-          <span class='meta-head'>
-            <Text accent>On</Text>
-          </span>
-          <span class='meta-value'>
-            <Text semibold>{format(dateObject)}</Text>
-          </span>
+        {#if subtitle}
+          <h2>{subtitle}</h2>
         {/if}
-        {#if tags && tags.length}
-          <span class='meta-head'>
-            <Text accent>Tagged</Text>
-          </span>
-          <span class='meta-value'>
-            {#each tags as tag}
-              <span class='tag'>
-                <Text semibold>#{tag}</Text>
-              </span>
-            {/each}
-          </span>
+        {#if title || subtitle}
+          <hr class='heading-separator' />
         {/if}
+        <div class='meta-content'>
+          {#if author}
+            <span class='meta-head'>
+              <Text accent>By</Text>
+            </span>
+            <span class='meta-value'>
+              <Text semibold>{author}</Text>
+            </span>
+          {/if}
+          {#if dateObject}
+            <span class='meta-head'>
+              <Text accent>On</Text>
+            </span>
+            <span class='meta-value'>
+              <Text semibold>{format(dateObject)}</Text>
+            </span>
+          {/if}
+          {#if tags && tags.length}
+            <span class='meta-head'>
+              <Text accent>Tagged</Text>
+            </span>
+            <span class='meta-value'>
+              {#each tags as tag}
+                <span class='tag'>
+                  <Text semibold>#{tag}</Text>
+                </span>
+              {/each}
+            </span>
+          {/if}
+        </div>
       </div>
       <slot />
     </Content>
@@ -216,6 +218,10 @@
     text-overflow: ellipsis;
     overflow: hidden;
     transform: translateY(2px);
+  }
+
+  .meta {
+    padding: 0 10rem;
   }
 
   .meta-content {
