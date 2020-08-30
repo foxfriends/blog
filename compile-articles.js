@@ -1,5 +1,6 @@
 const Path = require('path');
 const Fs = require('fs');
+const Cp = require('child_process');
 const fm = require('front-matter');
 
 const html = article => `<!DOCTYPE HTML>
@@ -67,6 +68,15 @@ module.exports = function compileArticles(force = false) {
       console.log(`Replacing article ${id}`);
       Fs.writeFileSync(`./article/${id}/index.html`, html(attributes));
       Fs.writeFileSync(`./article/${id}/index.js`, js(id));
+    }
+    if (attributes.outline) {
+      for (const { language, output } of attributes.outline) {
+        console.log(`Tangling ${id} as ${language}`);
+        const input = Fs.readFileSync(`./article/${id}/article.svx`);
+        const { stdout: tangle } = Cp.spawnSync('outline', ['-l', language], { input });
+        const filename = output || `article.${language}`;
+        Fs.writeFileSync(`./article/${id}/${output}`, tangle);
+      }
     }
     articles.push(attributes);
   }

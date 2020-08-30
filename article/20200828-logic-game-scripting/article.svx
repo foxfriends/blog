@@ -5,6 +5,9 @@ tags:
 - gamedev
 - prolog
 author: Cam
+outline: 
+- language: prolog
+  output: game.pl
 ---
 
 In game development, from what I've heard, they often use scripts to implement various things,
