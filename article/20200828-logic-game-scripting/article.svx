@@ -177,6 +177,8 @@ will change when each is performed. Prolog provides `assert` and `retract` predi
 that allow us to modify the facts and rules that are in effect while the program is
 running, so let's try to use those:
 
+<PlayProlog src={game}>
+
 ```prolog
 % Remove the unit from the old location, add it to the new one
 perform(move(FromX, FromY, ToX, ToY)) :-
@@ -198,6 +200,8 @@ perform(spawn(unit(P, T, ToX, ToY))) :-
     assertz(gold(P, G2)),
     assertz(unit(P, T, ToX, ToY)).
 ```
+
+</PlayProlog>
 
 So it's possible to describe the state, rules, and actions of the game using Prolog. Good.
 Now is it possible to embed this within a game engine that is able to:
