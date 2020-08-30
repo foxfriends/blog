@@ -71,11 +71,13 @@ module.exports = function compileArticles(force = false) {
     }
     if (attributes.outline) {
       for (const { language, output } of attributes.outline) {
-        console.log(`Tangling ${id} as ${language}`);
         const input = Fs.readFileSync(`./article/${id}/article.svx`);
         const { stdout: tangle } = Cp.spawnSync('outline', ['-l', language], { input });
         const filename = output || `article.${language}`;
-        Fs.writeFileSync(`./article/${id}/${output}`, tangle);
+        const previous = Fs.readFileSync(`./article/${id}/${output}`);
+        if (Buffer.compare(previous, tangle) !== 0) {
+          Fs.writeFileSync(`./article/${id}/${output}`, tangle);
+        }
       }
     }
     articles.push(attributes);

@@ -27,9 +27,18 @@
     "parcel-plugin-compress": "^2.0.2",
     "parcel-plugin-nuke-dist": "^1.0.1",
     "parcel-plugin-svelte": "^4.0.6",
-    "remark-containers": "^1.1.2",
+    "parcel-plugin-text": "github:foxfriends/parcel-plugin-text",
+    "remark-containers": "^1.2.0",
     "remark-deflist": "^0.2.1",
-    "svelte": "^3.23.2"
+    "svelte": "^3.24.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "tau-prolog": "^0.2.81"
+  },
+  "parcel-plugin-text": {
+    "extensions": [
+      "pl"
+    ]
+  },
+  "browserslist": "last 1 firefox version, last 1 chrome version"
 }

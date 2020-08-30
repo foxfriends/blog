@@ -5,10 +5,15 @@ tags:
 - gamedev
 - prolog
 author: Cam
-outline: 
+outline:
 - language: prolog
   output: game.pl
 ---
+
+<script>
+    import PlayProlog from '../../src/component/PlayProlog.svelte';
+    import game from './game.pl';
+</script>
 
 In game development, from what I've heard, they often use scripts to implement various things,
 rather than implementing the whole game in a compiled language. I don't really have any experience
@@ -60,6 +65,8 @@ Simple enough? Let's try and describe this game using logic programming. Here is
 approach to describing the game state using facts. This is not necessarily the most useful or
 best approach, but it is simple.
 
+<PlayProlog src={game}>
+
 ```prolog
 % The map is a 16x16 tile grid. Let's say (1, 1) is the top left corner and
 % (16, 16) is the bottom right.
@@ -88,12 +95,19 @@ unit(red, sword, 13, 14).
 unit(red, sword, 13, 13).
 ```
 
+</PlayProlog>
+
 Of course there are more things we might want to include in an actual implementation of this
-idea, like whose turn is it, which units have moved, how much health does each unit have,
+idea such as whose turn it is, which units have moved, how much health each unit currently has,
 but for now we can ignore those. Other than that, this was not so bad, right? The next step
 is to come up with some rules. This is also pretty easy:
 
+<PlayProlog src={game}>
+
 ```prolog
+% NOTE: there are some issues with this implementation of `distance` and its
+% usage later on in `actions`. Will have to come up with a fix some day, but
+% you get the idea.
 distance(FromX, FromY, ToX, ToY, D) :-
     DX is abs(FromX - ToX),
     DY is abs(FromY - ToY),
@@ -105,8 +119,8 @@ move(bow, 4).
 canMove(T, FromX, FromY, ToX, ToY) :-
     move(T, M),
     distance(FromX, FromY, ToX, ToY, D),
-    D <= M,
-    not(unit(_, _, ToX, ToY)).
+    D =< M,
+    \+(unit(_, _, ToX, ToY)).
 
 % They can also attack enemy units from some distance.
 range(bow, 3).
@@ -114,7 +128,7 @@ range(sword, 1).
 canAttack(P, T, FromX, FromY, ToX, ToY) :-
     range(T, R),
     distance(FromX, FromY, ToX, ToY, D),
-    D <= R,
+    D =< R,
     unit(P2, _, ToX, ToY),
     P2 \= P.
 
@@ -124,12 +138,16 @@ cost(sword, 3).
 canBuyUnit(P, T) :-
     gold(P, G),
     cost(T, C),
-    C <= T.
+    C =< G.
 ```
+
+</PlayProlog>
 
 The next thing we need to do is tell the player what actions they can take with each
 entity in the game. Conveniently, Prolog is able to return multiple answers to any
 question, so we can write something like the following:
+
+<PlayProlog src={game}>
 
 ```prolog
 % Units can move
@@ -146,6 +164,8 @@ actions(castle(P, FromX, FromY), spawn(unit(P, T, ToX, ToY))) :-
     canBuyUnit(P, T).
 ```
 
+</PlayProlog>
+
 Finally, we need to actually implement the actions---describe how the state of the game
 will change when each is performed. Prolog provides `assert` and `retract` predicates
 that allow us to modify the facts and rules that are in effect while the program is
@@ -156,7 +176,7 @@ running, so let's try to use those:
 perform(move(FromX, FromY, ToX, ToY)) :-
     unit(P, T, FromX, FromY),
     retract(unit(P, T, FromX, FromY)),
-    assert(unit(P, T, ToX, ToY)).
+    assertz(unit(P, T, ToX, ToY)).
 
 % Remove the enemy unit from the target location
 perform(attack(ToX, ToY)) :-
@@ -169,8 +189,8 @@ perform(spawn(unit(P, T, ToX, ToY))) :-
     cost(T, C),
     G2 is G - C,
     retract(gold(P, G)),
-    assert(gold(P, G2)),
-    assert(unit(P, T, ToX, ToY)).
+    assertz(gold(P, G2)),
+    assertz(unit(P, T, ToX, ToY)).
 ```
 
 So it's possible to describe the state, rules, and actions of the game using Prolog. Good.
@@ -216,9 +236,9 @@ as many resources on how to embed Prolog into another codebase. In JavaScript I 
 
 The one I am most interested in is [Scryer Prolog][], which implements Prolog in Rust.
 Unfortunately it is not made available as a library (only as a standalone executable),
-which makes it a bit hard to embed. I am most interested in this one because I have 
+which makes it a bit hard to embed. I am most interested in this one because I have
 already started implementing this hypothetical scriptable turn-based strategy game,
-in Rust, [here](https://github.com/foxfriends/paper-wars). As always, I am nowhere 
+in Rust, [here](https://github.com/foxfriends/paper-wars). As always, I am nowhere
 near the part where I need to actually implement the scripting feature and embed the
 language, but I do hope someday to have the opportunity to try this idea out.
 
