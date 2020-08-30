@@ -105,10 +105,14 @@ is to come up with some rules. This is also pretty easy:
 <PlayProlog src={game}>
 
 ```prolog
-% NOTE: there are some issues with this implementation of `distance` and its
-% usage later on in `actions`. Will have to come up with a fix some day, but
-% you get the idea.
+isTile(X, Y) :-
+    map(W, H),
+    between(1, W, X),
+    between(1, H, Y).
+
 distance(FromX, FromY, ToX, ToY, D) :-
+    isTile(FromX, FromY),
+    isTile(ToX, ToY),
     DX is abs(FromX - ToX),
     DY is abs(FromY - ToY),
     D is DX + DY.
@@ -151,12 +155,14 @@ question, so we can write something like the following:
 
 ```prolog
 % Units can move
-actions(unit(_, T, FromX, FromY), move(FromX, FromY, ToX, ToY)) :-
+actions(unit(P, T, FromX, FromY), move(FromX, FromY, ToX, ToY)) :-
+    unit(P, T, FromX, FromY),
     canMove(T, FromX, FromY, ToX, ToY).
 
 % Units can attack
-actions(unit(_, T, FromX, FromY), attack(ToX, ToY)) :-
-    canAttack(T, FromX, FromY, ToX, ToY).
+actions(unit(P, T, FromX, FromY), attack(ToX, ToY)) :-
+    unit(P, T, FromX, FromY),
+    canAttack(P, T, FromX, FromY, ToX, ToY).
 
 % Castles can spawn units
 actions(castle(P, FromX, FromY), spawn(unit(P, T, ToX, ToY))) :-

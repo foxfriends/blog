@@ -74,7 +74,9 @@ module.exports = function compileArticles(force = false) {
         const input = Fs.readFileSync(`./article/${id}/article.svx`);
         const { stdout: tangle } = Cp.spawnSync('outline', ['-l', language], { input });
         const filename = output || `article.${language}`;
-        const previous = Fs.readFileSync(`./article/${id}/${output}`);
+        const previous = Fs.existsSync(`./article/${id}/${output}`)
+          ? Fs.readFileSync(`./article/${id}/${output}`)
+          : Buffer.from('');
         if (Buffer.compare(previous, tangle) !== 0) {
           Fs.writeFileSync(`./article/${id}/${output}`, tangle);
         }
