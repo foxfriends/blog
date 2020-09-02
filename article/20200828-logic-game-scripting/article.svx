@@ -210,7 +210,7 @@ Now is it possible to embed this within a game engine that is able to:
 3.  allow players to define new units/buildings/actions?
 
 Well... I don't see why not. It's fairly straight forward to convert arbitrary data
-into Prolog terms, and some adjustments to `assert` and `retract` the Prolog could be
+into Prolog terms, and with some adjustments to `assert` and `retract` the Prolog could be
 made to modify this state instead of just modifying the facts database. With a few
 "special" predicates (like `actions` and `perform` above) that are known to the game
 engine, the script should be able to communicate sufficiently with the engine to
