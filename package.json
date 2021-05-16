@@ -5,6 +5,7 @@
   "main": "src/index.html",
   "scripts": {
     "start": "node bundler",
+    "serve": "hs dist",
     "build": "NODE_ENV=production node bundler",
     "postinstall": "cd node_modules/mdsvex && npm install && npm run build"
   },

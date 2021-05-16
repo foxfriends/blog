@@ -1,0 +1,168 @@
+---
+title: Good Magic
+date: 2021-05-16
+tags:
+- architecture
+author: Cam
+---
+
+The world we live in is so unbelievably complex. When you think about any one idea and how it
+came to be, you find layers on layers of other ideas, often seeming more complex than the last,
+that needed to exist first. At each step of the way someone has taken something nobody else
+wants to think about---something ugly and scary and confusing---and made it into something useful.
+When that transformation is done well, and you forget that underneath the surface some terrifying
+mess of complexity awaits, there is no other way but to consider it as magic.
+
+Pick anything you see in front of you and try and trace it back all the way to the beginning.
+For me right now, in front of me is the computer on which I am writing this post. On my computer
+is some software, built by writing code. That code is somehow transformed from text that a human
+can read to electrical signals which are interpreted by the hardware. That hardware is actually
+just circuitry, set up in such a way that when electricity is fed into the computer, the
+signals happen to represent the software conceived by the person that wrote the code. The
+electricity itself, however, knows nothing about the circuitry. In fact, it knows nothing about
+being electricity---really it's just the movement of subatomic particles, electrons, according to
+some yet unknown laws of the universe.
+
+To the people who were initially discovering electricty and how it worked, they had no idea that
+it could be used to eventually create a computer, and if they were faced with a computer now
+the very likely might believe it was some sort of magic that powers it. Meanwhile I, as a software
+developer, find it pretty magical that somehow the code I write is able to be transformed into
+electrical signals that actually have the effect I intended by writing the code. Yet, despite
+not knowing entirely how the other parts of this system work, there is one area in these layers
+where I have hope of being able to do magic of my own: the writing code part.
+
+In reality, the all this "magic" is actually just *abstraction*: taking a complex idea and
+hiding the details behind a different idea that is easier to reason about. Much of the work
+of a programmer is to design and build little bits of magic---abstractions---usually with the
+end goal of using them to solve problems for customers. When done well, how the magic works
+can be ignored entirely, and makes programming complex things significantly easier. However,
+just as a poorly performed magic trick cannot hide its own secret, a poorly designed abstraction
+will not properly disguise the original idea, leading to something that's even harder to work
+with than what you started with.
+
+More concretely, programming languages are an abstraction that allows a developer, despite not
+knowing all that much (if anything) about the actual instructions the computer would need to
+follow, to write useful programs anyway. This abstraction created by programming languages
+is so complete that there is almost no need to ever think about assembly instructions directly.
+Only the lowest of the low level code ever written requires the developer to sometimes have
+to write small snippets of assembly, and typically even then it is just for optimizations or
+to access other very specific features of a particular instruction set.
+
+Within a programming language, we continue to abstract more and more of the specifics of the
+how the computer is structured away. We no longer need to think about allocating and reallocating
+heap space for growing arrays of data, it just happens automatically when the list gets full.
+We don't need to know anything about network protocols, just pass the URL to a function and it
+will all be handled without any extra thought.
+
+While working with these seeming magical abstractions is already so much easier than having
+to deal with assembly manually, there is still no way anyone wants to be writing any significant
+software without a little magic of their own; hiding each little problem behind its own
+abstraction until the whole program is just a single call to `main()`. The constant challenge
+to the programmer is to ensure that, for each piece of magic added to the system, it continues
+to be __good magic__. If any bad magic gets into the system, it tends to spread and corrupt
+everything it touches, until the whole thing becomes a tangled mess.
+
+This means, being able to differentiate the good and bad forms of magic is an important skill.
+Unfortunately, what makes one magic better than another is, admittedly, a bit subjective. Depending
+on the situation, the solution to a very similar problem may be different each time. In general
+however, a good abstraction tends to satisfy these three points:
+1.  It solves a problem that actually exists.
+2.  It does one thing well, and nothing more.
+3.  It never gets in the way, even when it leaks.
+
+The first point is pretty obvious: don't attempt to abstract things that are already easy
+enough as they are; that just leads to overcomplication. Though this is something I
+have seen in the past it's relatively easy to spot and resolve. It's the next two points
+that are more often overlooked, so are worth exploring in more detail.
+
+### It does one thing well, and nothing more.
+
+What I find to be one one of the biggest pitfalls in making an abstraction of your own is to
+try and have it handle too many things at once. I'd say that most, if not all, of the
+abstractions I build fall into this category at some point---occasionally I catch it early,
+before it gets used too significantly, but sometimes it's harder to notice and I end up building
+entire programs on top of them before it starts to break down and I have to start over.
+
+Often what it comes down to is that you don't typically fully understand the problem until
+you've solved it and look back. Once you have taken the time to fully appreciate every
+aspect of the problem and solution can you accurately identify its natural breaks and use
+those breaks to limit the scope of each part of the abstraction.
+
+Since your knowledge of the problem will naturally grow over time, the key here is not to
+try to always do it right on the first try, but to be able identify when the magic is
+starting to fade and be ready to fix it. Identifying the right moment is somewhat subjective,
+but also very intuitive: when you spend a significant amount of time figuring out how to use
+an abstraction, compared to the time you actually spend using it, it's probably getting close.
+Some common signs are:
+1.  A growing number of flags and configuration parameters to a function. Typically, big
+    branches in a function implementation, especially when the branch is triggered by the
+    presence of a flag or optional argument, are a sign that you need multiple functions.
+2.  Any two parameters that are either both required or both optional (required together).
+    This is another sign of needing two functions.
+3.  When any general use function tries to implement something for a specific caller. A
+    wrapper function scoped more closely to the caller may be more appropriate.
+4.  Arguments not apparently relevant to the current function, but are required to be
+    passed on to something that will be called later. Usually this is a sign that the
+    function is doing something too specific, and would be better as multiple calls at
+    the top level.
+
+Above it says "function", but really it could be anything (structures/classes with tons
+of fields, interfaces with getter/setter methods, UI components with tons of props). Any
+time the configuration is getting larger than implementation, it's probably a sign that
+something can be broken out.
+
+Related to this is the [Rule of three][]: after the third time you run into the same
+problem is around the time you likely have enough information to make an attempt at
+a reasonable abstraction. Until then, it would be best to just keep things as simple
+as possible.
+
+[Rule of three]: https://en.wikipedia.org/wiki/Rule_of_three_(computer_programming)
+
+### It never gets in the way, even when it leaks.
+
+The meaning of "leak" here comes from another article on abstraction that I always find
+myself returning to. [The Law of Leaky Abstractions][] (Joel Spolsky, 2002) states the
+following:
+
+> All non-trivial abstractions, to some degree, are leaky.
+
+[The Law of Leaky Abstractions]: https://www.joelonsoftware.com/2002/11/11/the-law-of-leaky-abstractions/
+
+To go back to some of the examples of "good magic" from before, we can see that even they
+have leaks:
+1.  Programming languages, which abstract away assembly and the computer's binary
+    representation of a program, as mentioned before, leaks when writing low-level code
+    that needs to take advantage of particular instructions for optimization or other
+    specific tasks.
+2.  Lists, whether resized automatically or manually, will gradually consume the available
+    memory as they grow, causing the program to slow down and eventually crash despite
+    the abstraction allowing you to use them as if they were limitless. This is actually
+    the leak of the underlying abstraction (finite memory being presented as infinite),
+    more than the leak of the list itself.
+3.  Network requests disguised as functions leak when the network is down, at which
+    point a timeout or other network-related error makes its way into the program,
+    despite that not being one of the expected results of whatever API was being called.
+
+What is worth noting about all these leaks is that they occur only in *extreme situations*.
+For the average user, these cases can basically be ignored without any extra considerations
+getting in the way.
+
+As the law would imply, it is impossible to build an abstraction that does not leak, just
+as there's always a way to figure out how a magic trick is performed. Without knowing this,
+the first instinct of the developer may be to add more and more flags and configuration so
+that their abstraction can handle every possible case, but as anyone who has gone this route
+before should have realized, plugging holes this way is like playing whack-a-mole.
+
+More important than making it hard to find leaks is to make it easy to recover from them,
+and that is usually best done by providing a way to get into the underlying system---an
+"escape hatch" of sorts---allowing the programmer to make the best judgement of how to
+handle the exceptional situation on a case-by-case basis. In the examples above, this is
+exactly what was done:
+1.  Languages in which you are likely to want to access the assembly provide means to do
+    so ([C](https://en.cppreference.com/w/c/language/asm),
+    [C++](https://en.cppreference.com/w/cpp/language/asm),
+    and [Rust](https://doc.rust-lang.org/unstable-book/library-features/asm.html), among
+    others, provide such a thing).
+2.  When your computer runs out of memory, you can go to the store and buy more memory.
+3.  If the network is down, networking libraries typically throw an exception which can be
+    handled as would any other exception.

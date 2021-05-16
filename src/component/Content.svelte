@@ -15,11 +15,11 @@
     text-indent: 1em;
   }
 
-  .content :global(p, dl, :not(li) > ul, :not(li) > ol, pre, figure) {
+  .content :global(p, h3, h4, h5, h6, dl, :not(li) > ul, :not(li) > ol, blockquote, pre, figure) {
     margin-top: 1rem;
   }
 
-  .content :global(p, dl, :not(li) > ul, :not(li) > ol, figure) {
+  .content :global(p, h3, h4, h5, h6, dl, :not(li) > ul, :not(li) > ol, blockquote, figure) {
     margin: 1rem 10rem 0;
   }
 
@@ -197,11 +197,10 @@
   /** Quotes */
 
   .content :global(blockquote) {
-    margin-top: 1rem;
-    margin-left: 1rem;
+    margin-left: 11rem;
     padding-left: 1rem;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
     border-left: 3px groove rgba(0, 0, 0, 0.5);
   }
 
