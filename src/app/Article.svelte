@@ -173,9 +173,9 @@
   }
 
   .nav-content {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 2rem;
     padding: 1rem 5rem;
   }
 
@@ -184,6 +184,7 @@
     flex-basis: 0;
     flex-grow: 1;
     align-items: center;
+    min-width: 0;
   }
 
   .nav-item :global(a) {
