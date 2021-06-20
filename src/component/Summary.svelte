@@ -21,7 +21,7 @@
     <div class='content'>
       <div class='titles'>
         <div class='title'>
-          <Link href="/article/{id}">
+          <Link href="/article/{id}/">
             <Text heading>
               { title }
             </Text>

@@ -1,23 +1,20 @@
-const Path = require('path');
-const Fs = require('fs');
-const Cp = require('child_process');
+const path = require('path');
+const fs = require('fs');
+const cp = require('child_process');
 const fm = require('front-matter');
 
 const html = article => `<!DOCTYPE HTML>
 <html>
   <head>
     <title>Cam Eldridge | ${article.title}</title>
-    <base href="/" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
     <meta charset='UTF-8' />
-    <script src='./index.js' defer></script>
-    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Spectral+SC:wght@400;500&family=Vollkorn:wght@400;500;600&family=Vollkorn+SC&display=swap" rel="stylesheet" />
-    <style>
-      @import '../../vendor/cameldridge/src/base.css';
-      @import '../../vendor/cameldridge/src/fonts.css';
-      @import '../../vendor/cameldridge/src/variables.css';
-    </style>
+    <script type='module' src='./index.js' defer></script>
+    <link rel='preconnect' href='https://fonts.gstatic.com/' crossorigin />
+    <link href='https://fonts.googleapis.com/css2?family=Spectral+SC:wght@400;500&family=Vollkorn:wght@400;500;600&family=Vollkorn+SC&display=swap' rel='stylesheet' />
+    <link rel='stylesheet' href='../../vendor/cameldridge/src/base.css' />
+    <link rel='stylesheet' href='../../vendor/cameldridge/src/fonts.css' />
+    <link rel='stylesheet' href='../../vendor/cameldridge/src/variables.css' />
   </head>
   <body></body>
 </html>
@@ -55,32 +52,32 @@ function dater(key, value) {
 
 module.exports = function compileArticles(force = false) {
   const articles = [];
-  const dir = Fs.readdirSync('./article/');
+  const dir = fs.readdirSync('./article/');
   let previousManifest = [];
-  if (Fs.existsSync('./article/manifest.json')) {
-    previousManifest = JSON.parse(Fs.readFileSync('./article/manifest.json'), dater);
+  if (fs.existsSync('./article/manifest.json')) {
+    previousManifest = JSON.parse(fs.readFileSync('./article/manifest.json'), dater);
   }
 
   for (const id of dir) {
     if (id === 'manifest.json') continue;
-    const article = Fs.readFileSync(`./article/${id}/article.svx`).toString();
+    const article = fs.readFileSync(`./article/${id}/article.svx`).toString();
     const { attributes } = fm(article);
     attributes.id = id;
     if (!equal(attributes, previousManifest.find((entry) => entry.id === id))) {
       console.log(`Replacing article ${id}`);
-      Fs.writeFileSync(`./article/${id}/index.html`, html(attributes));
-      Fs.writeFileSync(`./article/${id}/index.js`, js(id));
+      fs.writeFileSync(`./article/${id}/index.html`, html(attributes));
+      fs.writeFileSync(`./article/${id}/index.js`, js(id));
     }
     if (attributes.outline) {
       for (const { language, output } of attributes.outline) {
-        const input = Fs.readFileSync(`./article/${id}/article.svx`);
-        const { stdout: tangle } = Cp.spawnSync('outline', ['-l', language], { input });
+        const input = fs.readFileSync(`./article/${id}/article.svx`);
+        const { stdout: tangle } = cp.spawnSync('outline', ['-l', language], { input });
         const filename = output || `article.${language}`;
-        const previous = Fs.existsSync(`./article/${id}/${output}`)
-          ? Fs.readFileSync(`./article/${id}/${output}`)
+        const previous = fs.existsSync(`./article/${id}/${output}`)
+          ? fs.readFileSync(`./article/${id}/${output}`)
           : Buffer.from('');
         if (Buffer.compare(previous, tangle) !== 0) {
-          Fs.writeFileSync(`./article/${id}/${output}`, tangle);
+          fs.writeFileSync(`./article/${id}/${output}`, tangle);
         }
       }
     }
@@ -90,6 +87,6 @@ module.exports = function compileArticles(force = false) {
   articles.sort((a, b) => new Date(b.date) - new Date(a.date));
   if (!equal(previousManifest, articles)) {
     console.log('Replacing manifest');
-    Fs.writeFileSync('./article/manifest.json', JSON.stringify(articles));
+    fs.writeFileSync('./article/manifest.json', JSON.stringify(articles));
   }
 };

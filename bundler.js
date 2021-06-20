@@ -1,29 +1,41 @@
-const Bundler = require('parcel-bundler');
-const Path = require('path');
+const { promisify } = require('util');
+const path = require('path');
+const vite = require('vite');
+const glob = require('glob');
 const compileArticles = require('./compile-articles');
-const Hs = require('http-server');
 
-// Single entrypoint file location:
-const entryFiles = [
-  './index.html',
-  './404.html',
-  './article/*/index.html',
-]
+const entryFiles = async () => {
+  const articles = await promisify(glob)('./article/*/index.html');
+  return {
+    home: path.resolve(__dirname, './index.html'),
+    404: path.resolve(__dirname, './404.html'),
+    ...Object.fromEntries(articles.map((file) => {
+      const [, name] = file.match(/\.\/article\/([^\/]+)\/index\.html/);
+      return [name, path.resolve(__dirname, file)];
+    })),
+  };
+}
 
-// Bundler options
-const options = {
-  watch: process.env.NODE_ENV !== 'production',
-};
+const config = async () => ({
+  build: {
+    rollupOptions: {
+      input: await entryFiles(),
+    }
+  },
+});
 
-(async function() {
+async function build() {
   compileArticles();
-  // Initializes a bundler using the entrypoint location and options provided
-  const bundler = new Bundler(entryFiles, options);
-  bundler.addAssetType('svx', require.resolve('parcel-plugin-svelte/lib/svelte-asset.js'));
-  bundler.on('buildStart', () => compileArticles());
-  await bundler.bundle();
-  if (process.env.NODE_ENV !== 'production') {
-    const server = new Hs.HttpServer({ root: './dist', cache: -1 });
-    server.listen(1234);
-  }
-})();
+  await vite.build(await config());
+}
+
+async function dev() {
+  compileArticles();
+  const server = await vite.createServer(await config());
+  await server.listen();
+}
+
+switch (process.argv[2]) {
+  case 'build': build(); break;
+  default: dev(); break;
+}

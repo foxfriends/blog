@@ -12,7 +12,7 @@ outline:
 
 <script>
     import PlayProlog from '../../src/component/PlayProlog.svelte';
-    import game from './game.pl';
+    import game from './game.pl?raw';
 </script>
 
 In game development, from what I've heard, they often use scripts to implement various things,

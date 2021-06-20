@@ -41,7 +41,7 @@
     <nav class='nav-content'>
       <div class='nav-item left'>
         {#if prevArticle}
-          <Link href='/article/{prevArticle.id}'>
+          <Link href='/article/{prevArticle.id}/'>
             <div class='link'>
               <span class='link-icon'>
                 <Image name='arrow-left' alt='Previous article' />
@@ -62,7 +62,7 @@
       </div>
       <div class='nav-item right'>
         {#if nextArticle}
-          <Link href='/article/{nextArticle.id}'>
+          <Link href='/article/{nextArticle.id}/'>
             <div class='link'>
               <span class='link-text'>
                 <Text>{nextArticle.title}</Text>
