@@ -39,6 +39,8 @@ function equal(a, b) {
     return a.length === b.length && a.every((ai, i) => equal(ai, b[i]));
   }
   if (typeof a === 'object' && typeof b === 'object') {
+    if (a === null && b !== null) { return false; }
+    if (b === null && a !== null) { return false; }
     const akeys = Object.keys(a).sort();
     const bkeys = Object.keys(b).sort();
     return equal(akeys, bkeys) && akeys.every((i) => equal(a[i], b[i]));
