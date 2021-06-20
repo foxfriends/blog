@@ -118,6 +118,8 @@ tutorials written with a multilingual perspective.
 
 [Coroutines]: https://en.wikipedia.org/wiki/Coroutine
 [async/await]: https://en.wikipedia.org/wiki/Async/await
+[Concurrency]: https://en.wikipedia.org/wiki/Concurrent_computing
+
 [Prototypal inheritance]: https://en.wikipedia.org/wiki/Prototype-based_programming
 
 [monad]: https://en.wikipedia.org/wiki/Monad_(functional_programming)
