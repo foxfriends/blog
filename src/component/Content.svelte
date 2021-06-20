@@ -118,8 +118,9 @@
   .content :global(hr) {
     border: none;
     height: 1px;
-    width: 10rem;
-    background-color: rgba(0, 0, 0, 0.25);
+    width: 14rem;
+    background-color: rgba(0, 0, 0, 0.5);
+    margin: 2rem auto;
   }
 
   /** Lists */

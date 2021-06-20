@@ -1,0 +1,131 @@
+---
+title: Multilingual Perspective
+subtitle: Programs exist beyond programming languages
+date: 2021-06-20
+tags:
+author: Cam
+---
+
+If there could be one single thing that has benefitted me the most in my
+work as a programmer, it would be having learned many languages. I wouldn't
+say that I have mastered most (if any) of the languages I have used, but
+even just having tried them at all is often enough.
+
+At first, the benefits seem simple: learn a new language, and you can use
+it to build new things. For example, to build an iPhone application, you
+are almost certainly going to want to know Swift. To build a website,
+you're going to want to know Javascript, HTML, CSS. Learning a new
+language opens up new opportunities.
+
+As you grow comfortable with the new language, you start to get used to
+some of the features and ideas that are made obvious by that language:
+moving from Swift to Javascript, you miss the static types, the enums,
+the pattern matching. When forced to switch back to regular old `switch`
+statements from a language with proper pattern matching, the ideas that
+you were previously able to express so naturally are no longer
+immediately expressible.
+
+Yet, were you never to have learned such a language, to have learned Javascript
+and Javascript alone, this is not something you would have noticed. You
+understand the `switch` statement, you understand destructuring, but without
+being exposed to a language which combines the two into pattern matching,
+this concept simply does not exist in your mind and you carry on; happy
+with what you have, unaware of what you are missing.
+
+Learning a programming language is not learning programming. The language
+itself is actually just a *notation* by which we express programs. Notation
+itself is just a tool that we use to visualize and communicate concepts, to
+store and represent ideas outside of the mind.
+
+For example, with musical notation, to be able to read and write sheet music
+is not to be able to write or play a song. The concepts, the notes that sound
+good together, exist whether we write it down this way or not.
+
+For programming, it is the same. To be able to read and write one programming
+language is not to be able to write a program. The concepts we use to build
+programs exist beyond the language, and we are just using the language to
+write our ideas down.
+
+Much like how music is written in different clefs and key signatures---the
+same symbols interpreted differently to put the common notes for a particular
+range of instruments into focus---programs are written in different programming
+languages which make it easier to express certain concepts common for certain
+types of programs.
+
+To learn a new programming language is more than just learning how to build a
+new kind of application. In learning a language, you also learn about the
+problems and solutions that the language was designed to solve. The ideas
+on which the language was built, which may be less obvious in languages you are
+already familiar with, become front of mind for the first time. You are challenged
+to understand these ideas on a new level, and when it comes time to change
+languages again, those ideas stick with you and remain relevant. To learn a new
+programming language is to become a better programmer.
+
+Of course, this comes with an "everything in moderation" warning: to become a
+better programmer is not *only* to learn more languages. Just as there are
+things to learn from new languages, there are just as many things to learn by
+going deeper into each one. Wait until you are comfortable with a language
+before moving on to too many more. Then, once you're comfortable with a few,
+take the time to switch back to languages you thought you knew and use new
+concepts and discover that, in fact, *you don't know them as well as you thought*.
+
+-----
+
+For those of you looking to find some languages with interesting concepts not
+made obvious in all others, here are some ideas:
+1.  [Pattern matching][]: As mentioned earlier, available in [Swift][], [Rust][],
+    [Haskell][], and many more (typically functional and functional-supporting
+    languages). Notably missing from many common imperative languages such as
+    Javascript (destructuring is *close*), Java, C++. One of the most useful
+    language features, and one of the saddest to not have available.
+2.  [Prototypal inheritance][]: Popularized by [Javascript][], but most obvious
+    in [Io][]. Take the time to learn Io (it's real quick). Write a few little
+    scripts, play with the prototyping, and suddenly you'll have a new appreciation
+    for prototypes when you go back to Javascript.
+3.  [Coroutines][]: Honestly, full on coroutines are not often available, but
+    to at least learn generators, as found in [Javascript][] and [Python][],
+    is a good time. Relatedly, [async/await][] is another common language feature
+    (available in [Javascript][], [Python][], [Rust][]), which can be implemented
+    easily using generators, so give that a try.
+4.  [Ownership][], referencing, and moves: Made most obvious in [Rust][], once you
+    understand ownership you start to feel nervous about passing mutable data
+    around all over the place, as is common in... well, most languages really.
+    Particularly, switching back to C++ after moving data in Rust is a real
+    experience. Even without ownership being enforced by the compiler, thinking
+    about data in this way, and building your own in-head borrow checker leads
+    to writing cleaner, easier to follow code in all situations.
+5.  [Concurrency][]: A step up from async/await, coroutines, and generators is
+    real concurrency. Not available in some languages (Javascript), and not
+    particularly interesting in many other languages, try out [Rust][] or [Go][]
+    to get a real appreciation for the complexity of concurrent programming.
+    To learn it in a safe environment, such as Rust, gives you a sense of what
+    *not* to do when faced with the relatively unprotected concurrency you find
+    in other languages, like C++ or Java.
+6.  The [monad][]: [Haskell][] is famously full of monads, a concept notorious
+    for being hard to understand. Once you figure it out though, you'll start to
+    see them everywhere. Promises/futures (as in Javascript/Rust) start to feel
+    like monads. Options (Rust/Swift/etc) are monads. Iterators. Observables.
+    UI interaction. Practically everything can be a monad if you try hard enough.
+    If you've learned generators by now, try and implement an approximation of
+    Haskell's `do` notation with `yield` (hint: it's a lot like implementing
+    async/await with `yield`).
+
+Maybe someday I'll go into more detail on these things---a series of concept
+tutorials written with a multilingual perspective.
+
+[Pattern matching]: https://en.wikipedia.org/wiki/Pattern_matching
+
+[Coroutines]: https://en.wikipedia.org/wiki/Coroutine
+[async/await]: https://en.wikipedia.org/wiki/Async/await
+[Prototypal inheritance]: https://en.wikipedia.org/wiki/Prototype-based_programming
+
+[monad]: https://en.wikipedia.org/wiki/Monad_(functional_programming)
+[Ownership]: https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html
+
+[Swift]: https://docs.swift.org/swift-book/ReferenceManual/Patterns.html
+[Javascript]: https://developer.mozilla.org/en-US/docs/Web/JavaScript
+[Python]: https://www.python.org/
+[Io]: https://iolanguage.org/
+[Rust]: https://www.rust-lang.org/
+[Go]: https://golang.org/
+[Haskell]: https://www.haskell.org/
