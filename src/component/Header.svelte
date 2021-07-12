@@ -21,12 +21,12 @@
       </div>
       <div class='links'>
         <div class='link'>
-          <Link href='https://cameldridge.com' discrete>
+          <Link href='https://cameldridge.com' discreet>
             <span class='logo'><Image name='home' alt='Homepage' /></span>
           </Link>
         </div>
         <div class='link'>
-          <Link href='https://github.com/foxfriends' external discrete>
+          <Link href='https://github.com/foxfriends' external discreet>
             <span class='logo'><Image name='github' alt='GitHub' /></span>
           </Link>
         </div>
