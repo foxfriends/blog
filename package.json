@@ -12,7 +12,7 @@
     "type": "git",
     "url": "git+https://github.com/foxfriends/blog.git"
   },
-  "author": "",
+  "author": "Cameron Eldridge",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/foxfriends/blog/issues"
@@ -26,9 +26,9 @@
     "mdsvex": "github:foxfriends/MDsveX",
     "remark-containers": "^1.2.0",
     "remark-deflist": "^0.2.1",
+    "scattered-papers": "git+https://github.com/foxfriends/scattered-papers.git#main",
     "svelte": "^3.38.2",
-    "vite": "^2.3.8",
-    "scattered-papers": "git+https://github.com/foxfriends/scattered-papers.git#main"
+    "vite": "^2.4.2"
   },
   "dependencies": {
     "tau-prolog": "^0.2.81"
