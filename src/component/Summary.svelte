@@ -1,8 +1,8 @@
 <script>
   import { createEventDispatcher } from 'svelte';
-  import Paper from '../../vendor/cameldridge/src/component/Paper.svelte';
-  import Text from '../../vendor/cameldridge/src/component/Text.svelte';
-  import Link from '../../vendor/cameldridge/src/component/Link.svelte';
+  import Paper from 'scattered-papers/Paper.svelte';
+  import Text from 'scattered-papers/Text.svelte';
+  import Link from 'scattered-papers/Link.svelte';
   export let tags, title, subtitle, date, id;
 
   const dispatcher = createEventDispatcher();

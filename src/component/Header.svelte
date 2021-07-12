@@ -1,8 +1,8 @@
 <script>
-  import Paper from '../../vendor/cameldridge/src/component/Paper.svelte';
-  import Text from '../../vendor/cameldridge/src/component/Text.svelte';
-  import Image from '../../vendor/cameldridge/src/component/Image.svelte';
-  import Link from '../../vendor/cameldridge/src/component/Link.svelte';
+  import Paper from 'scattered-papers/Paper.svelte';
+  import Text from 'scattered-papers/Text.svelte';
+  import Image from 'scattered-papers/Image.svelte';
+  import Link from 'scattered-papers/Link.svelte';
   import { BLOG_TITLE, BLOG_SUBTITLE } from '../constants';
 </script>
 

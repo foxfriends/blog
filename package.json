@@ -27,7 +27,8 @@
     "remark-containers": "^1.2.0",
     "remark-deflist": "^0.2.1",
     "svelte": "^3.38.2",
-    "vite": "^2.3.8"
+    "vite": "^2.3.8",
+    "scattered-papers": "git+https://github.com/foxfriends/scattered-papers.git#main"
   },
   "dependencies": {
     "tau-prolog": "^0.2.81"
