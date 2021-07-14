@@ -3,7 +3,7 @@
   import Text from 'scattered-papers/Text.svelte';
   import Image from 'scattered-papers/Image.svelte';
   import Link from 'scattered-papers/Link.svelte';
-  import Content from '../component/Content.svelte';
+  import Content from 'scattered-papers/Content.svelte';
   import { BLOG_TITLE } from '../constants';
   import ARTICLES from '../../article/manifest.json';
   ARTICLES.sort((a, b) => new Date(a.date) - new Date(b.date));
