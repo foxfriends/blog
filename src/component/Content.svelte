@@ -15,21 +15,43 @@
     text-indent: 1em;
   }
 
-  .content :global(p, h3, h4, h5, h6, dl, :not(li) > ul, :not(li) > ol, blockquote, pre, figure) {
+  .content :global(p),
+  .content :global(h3),
+  .content :global(h4),
+  .content :global(h5),
+  .content :global(h6),
+  .content :global(dl),
+  .content > :global(ul),
+  .content > :global(ol),
+  .content :global(blockquote),
+  .content :global(pre),
+  .content :global(figure) {
     margin-top: 1rem;
   }
 
-  .content :global(p, h3, h4, h5, h6, dl, :not(li) > ul, :not(li) > ol, blockquote, figure) {
+  .content :global(p),
+  .content :global(h3),
+  .content :global(h4),
+  .content :global(h5),
+  .content :global(h6),
+  .content :global(dl),
+  .content > :global(ul),
+  .content > :global(ol),
+  .content :global(blockquote),
+  .content :global(figure) {
     margin: 1rem 10rem 0;
   }
 
   /** inlines */
 
-  .content :global(b, strong) {
+  .content :global(b),
+  .content :global(strong) {
     font-weight: 600;
   }
 
-  .content :global(i, emph, cite) {
+  .content :global(i),
+  .content :global(emph),
+  .content :global(cite) {
     font-style: italic;
   }
 
@@ -50,7 +72,9 @@
 
   /** Headings */
 
-  .content :global(h1, h3, h4) {
+  .content :global(h1),
+  .content :global(h3),
+  .content :global(h4) {
     font-family: var(--font-display);
   }
 
@@ -125,7 +149,8 @@
 
   /** Lists */
 
-  .content :global(ul, ol) {
+  .content :global(li ul),
+  .content :global(li ol) {
     margin-left: 0;
     padding-left: 2em;
   }
@@ -213,12 +238,15 @@
     margin: 0;
   }
 
-  .content :global(a:link, a:visited, a:active) {
+  .content :global(a:link),
+  .content :global(a:visited),
+  .content :global(a:active) {
     color: var(--link--color);
     text-decoration: none;
   }
 
-  .content :global(a:hover, a:focus) {
+  .content :global(a:focus),
+  .content :global(a:hover) {
     color: var(--link--color-hover);
     text-decoration: underline;
   }
@@ -230,7 +258,12 @@
     line-height: 1.3;
   }
 
-  .content :global(table, thead, tbody, tr, td, th) {
+  .content :global(table),
+  .content :global(thead),
+  .content :global(tbody),
+  .content :global(tr),
+  .content :global(td),
+  .content :global(th) {
     border-collapse: collapse;
     border-spacing: 0;
   }
@@ -239,7 +272,8 @@
     font-weight: 600;
   }
 
-  .content :global(td, th) {
+  .content :global(td),
+  .content :global(th) {
     border-bottom: 1px solid rgba(0, 0, 0, 0.5);
     border-top: 1px solid rgba(0, 0, 0, 0.5);
     padding: 0.6rem 1rem;

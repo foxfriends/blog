@@ -1,5 +1,4 @@
 <script>
-  import ImageProvider from 'scattered-papers/ImageProvider.svelte';
   import Paper from 'scattered-papers/Paper.svelte';
   import Text from 'scattered-papers/Text.svelte';
   import Image from 'scattered-papers/Image.svelte';
@@ -8,11 +7,6 @@
   import { BLOG_TITLE } from '../constants';
   import ARTICLES from '../../article/manifest.json';
   ARTICLES.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-  const images = Object
-    .fromEntries(Object
-      .entries(import.meta.globEager('../../vendor/cameldridge/src/image/**/*.{png,svg}'))
-      .map(([path, value]) => [path.slice('../../vendor/cameldridge/src/image/'.length), value]));
 
   export let tags, date, author, title, subtitle;
 
@@ -42,98 +36,96 @@
   }
 </script>
 
-<ImageProvider {images}>
-  <div class='navigation'>
-    <Paper>
-      <nav class='nav-content'>
-        <div class='nav-item left'>
-          {#if prevArticle}
-            <Link href='/article/{prevArticle.id}/'>
-              <div class='link'>
-                <span class='link-icon'>
-                  <Image name='arrow-left' alt='Previous article' />
-                </span>
-                <span class='link-text'>
-                  <Text>{prevArticle.title}</Text>
-                </span>
-              </div>
-            </Link>
-          {/if}
-        </div>
-        <div class='nav-item center'>
-          <Link href='/'>
+<div class='navigation'>
+  <Paper>
+    <nav class='nav-content'>
+      <div class='nav-item left'>
+        {#if prevArticle}
+          <Link href='/article/{prevArticle.id}/'>
             <div class='link'>
-              <Text accent>{BLOG_TITLE}</Text>
+              <span class='link-icon'>
+                <Image name='arrow-left' alt='Previous article' />
+              </span>
+              <span class='link-text'>
+                <Text>{prevArticle.title}</Text>
+              </span>
             </div>
           </Link>
-        </div>
-        <div class='nav-item right'>
-          {#if nextArticle}
-            <Link href='/article/{nextArticle.id}/'>
-              <div class='link'>
-                <span class='link-text'>
-                  <Text>{nextArticle.title}</Text>
-                </span>
-                <span class='link-icon'>
-                  <Image name='arrow-right' alt='Next article' />
-                </span>
-              </div>
-            </Link>
-          {/if}
-        </div>
-      </nav>
-    </Paper>
-  </div>
-
-  <div class='article'>
-    <Paper>
-      <Content>
-        <div class='meta'>
-          {#if title}
-            <h1>{title}</h1>
-          {/if}
-          {#if subtitle}
-            <h2>{subtitle}</h2>
-          {/if}
-          {#if title || subtitle}
-            <hr class='heading-separator' />
-          {/if}
-          <div class='meta-content'>
-            {#if author}
-              <span class='meta-head'>
-                <Text accent>By</Text>
-              </span>
-              <span class='meta-value'>
-                <Text semibold>{author}</Text>
-              </span>
-            {/if}
-            {#if dateObject}
-              <span class='meta-head'>
-                <Text accent>On</Text>
-              </span>
-              <span class='meta-value'>
-                <Text semibold>{format(dateObject)}</Text>
-              </span>
-            {/if}
-            {#if tags && tags.length}
-              <span class='meta-head'>
-                <Text accent>Tagged</Text>
-              </span>
-              <span class='meta-value'>
-                {#each tags as tag}
-                  <span class='tag'>
-                    <Text semibold>#{tag}</Text>
-                  </span>
-                {/each}
-              </span>
-            {/if}
+        {/if}
+      </div>
+      <div class='nav-item center'>
+        <Link href='/'>
+          <div class='link'>
+            <Text accent>{BLOG_TITLE}</Text>
           </div>
+        </Link>
+      </div>
+      <div class='nav-item right'>
+        {#if nextArticle}
+          <Link href='/article/{nextArticle.id}/'>
+            <div class='link'>
+              <span class='link-text'>
+                <Text>{nextArticle.title}</Text>
+              </span>
+              <span class='link-icon'>
+                <Image name='arrow-right' alt='Next article' />
+              </span>
+            </div>
+          </Link>
+        {/if}
+      </div>
+    </nav>
+  </Paper>
+</div>
+
+<div class='article'>
+  <Paper>
+    <Content>
+      <div class='meta'>
+        {#if title}
+          <h1>{title}</h1>
+        {/if}
+        {#if subtitle}
+          <h2>{subtitle}</h2>
+        {/if}
+        {#if title || subtitle}
+          <hr class='heading-separator' />
+        {/if}
+        <div class='meta-content'>
+          {#if author}
+            <span class='meta-head'>
+              <Text accent>By</Text>
+            </span>
+            <span class='meta-value'>
+              <Text semibold>{author}</Text>
+            </span>
+          {/if}
+          {#if dateObject}
+            <span class='meta-head'>
+              <Text accent>On</Text>
+            </span>
+            <span class='meta-value'>
+              <Text semibold>{format(dateObject)}</Text>
+            </span>
+          {/if}
+          {#if tags && tags.length}
+            <span class='meta-head'>
+              <Text accent>Tagged</Text>
+            </span>
+            <span class='meta-value'>
+              {#each tags as tag}
+                <span class='tag'>
+                  <Text semibold>#{tag}</Text>
+                </span>
+              {/each}
+            </span>
+          {/if}
         </div>
-        <slot />
-      </Content>
-    </Paper>
-  </div>
-</ImageProvider>
+      </div>
+      <slot />
+    </Content>
+  </Paper>
+</div>
 
 <style>
   .article {

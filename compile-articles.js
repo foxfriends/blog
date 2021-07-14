@@ -12,9 +12,7 @@ const html = article => `<!DOCTYPE HTML>
     <script type='module' src='./index.js' defer></script>
     <link rel='preconnect' href='https://fonts.gstatic.com/' crossorigin />
     <link href='https://fonts.googleapis.com/css2?family=Spectral+SC:wght@400;500&family=Vollkorn:wght@400;500;600&family=Vollkorn+SC&display=swap' rel='stylesheet' />
-    <link rel='stylesheet' href='../../vendor/cameldridge/src/base.css' />
-    <link rel='stylesheet' href='../../vendor/cameldridge/src/fonts.css' />
-    <link rel='stylesheet' href='../../vendor/cameldridge/src/variables.css' />
+    <link rel='stylesheet' href='scattered-papers/papers.css' />
   </head>
   <body></body>
 </html>

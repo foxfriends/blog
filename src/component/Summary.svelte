@@ -21,7 +21,7 @@
     <div class='content'>
       <div class='titles'>
         <div class='title'>
-          <Link href="/article/{id}/">
+          <Link href='/article/{id}/'>
             <Text heading>
               { title }
             </Text>
@@ -29,7 +29,7 @@
         </div>
         {#if subtitle}
           <div class='subtitle'>
-            <Text accent>
+            <Text accent sc>
               { subtitle }
             </Text>
           </div>
@@ -63,18 +63,19 @@
   .content {
     box-sizing: border-box;
     height: 100%;
-    padding: 1rem;
+    padding: 1.5rem;
     display: grid;
     align-items: center;
     justify-items: flex-start;
     grid-template-areas:
-      "t t t h h"
-      "t t t d d";
+      't t t h h'
+      't t t d d';
   }
 
   .titles {
     grid-area: t;
-    line-height: 1.3;
+    line-height: 1.2;
+    padding-top: 2px;
   }
 
   .title {
@@ -83,9 +84,8 @@
 
   .subtitle {
     color: var(--color-ink-light);
-    font-size: var(--font-size-note);
+    x-font-size: var(--font-size-note);
     text-transform: lowercase;
-    text-indent: 1em;
   }
 
   .tags {
