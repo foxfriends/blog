@@ -134,6 +134,7 @@
     width: 60rem;
     font-size: 1.15rem;
     font-variant-numeric: proportional-nums;
+    max-width: calc(100vw - 2rem);
 
     --font-sub-display: 'Vollkorn SC', sans-serif;
     --font-size-title: 1.75em;
@@ -164,12 +165,27 @@
     --color__code--text: var(--color__code--white);
   }
 
+  .meta {
+    padding: 0 10rem;
+  }
+
+  @media (max-width: 60rem) {
+    .article {
+      --Content--outer-space: 2rem;
+    }
+
+    .meta {
+      padding: 0 4rem;
+    }
+  }
+
   .navigation {
     font-size: 1.15rem;
     width: 60rem;
     margin: 0 auto;
     margin-top: 5rem;
     font-variant-numeric: tabular-nums;
+    max-width: calc(100vw - 2rem);
   }
 
   .nav-content {
@@ -219,10 +235,6 @@
     text-overflow: ellipsis;
     overflow: hidden;
     transform: translateY(2px);
-  }
-
-  .meta {
-    padding: 0 10rem;
   }
 
   .meta-content {

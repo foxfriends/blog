@@ -39,6 +39,7 @@
   .header {
     width: 60rem;
     margin: 4rem;
+    max-width: calc(100vw - 2rem);
   }
 
   .content {

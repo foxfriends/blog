@@ -58,6 +58,7 @@
     width: 50rem;
     height: 6rem;
     margin-bottom: 1rem;
+    max-width: calc(100vw - 4rem);
   }
 
   .content {

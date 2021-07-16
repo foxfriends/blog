@@ -43,10 +43,11 @@ module.exports = {
     },
     highlight: {
       highlighter(source, language) {
-        const { stdout } = Cp.spawnSync('syncat', ['-l', language], {
+        let { stdout } = Cp.spawnSync('syncat', ['-l', language], {
           input: source,
           encoding: 'UTF-8',
         });
+        if (!stdout) { stdout = source; }
         const result = `<pre><code data-language='${language}' class='language-${language}'>${atoh.toHtml(stdout)}</code></pre>`;
         return result
           .replace(/\{/g, '&#123;')
