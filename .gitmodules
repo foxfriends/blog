@@ -1,0 +1,9 @@
+[submodule "vendor/FiraSans"]
+	path = vendor/FiraSans
+	url = https://github.com/mozilla/Fira.git
+[submodule "vendor/FiraCode"]
+	path = vendor/FiraCode
+	url = https://github.com/tonsky/FiraCode.git
+[submodule "vendor/Spectral"]
+	path = vendor/Spectral
+	url = https://github.com/productiontype/Spectral

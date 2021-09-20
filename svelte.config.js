@@ -34,7 +34,7 @@ module.exports = {
     extension: '.svx',
     remarkPlugins: [require('remark-containers'), require('remark-deflist')],
     layout: Path.resolve(__dirname, './src/app/Article.svelte'),
-    layoutRoot: __dirname,
+    // layoutRoot: __dirname,
     smartypants: {
       quotes: true,
       ellipses: true,

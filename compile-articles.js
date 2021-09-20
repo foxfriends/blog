@@ -13,6 +13,7 @@ const html = article => `<!DOCTYPE HTML>
     <link rel='preconnect' href='https://fonts.gstatic.com/' crossorigin />
     <link href='https://fonts.googleapis.com/css2?family=Spectral+SC:wght@400;500&family=Vollkorn:wght@400;500;600&family=Vollkorn+SC&display=swap' rel='stylesheet' />
     <link rel='stylesheet' href='scattered-papers/papers.css' />
+    <link rel='stylesheet' href='../../fonts.css' />
   </head>
   <body></body>
 </html>
