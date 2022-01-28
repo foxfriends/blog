@@ -1,0 +1,416 @@
+---
+title: A simple functional API client
+subtitle: Reduce friction in your API layer
+date: 2022-01-25
+tags:
+- architecture
+- functional-programming
+author: Cam
+---
+
+> This article outlines the design of the API client I choose when starting a
+> new project. It is presented as a logical evolution from using the 'built-in',
+> base level HTTP client that comes with a language of choice, to the client as
+> I use it today.
+>
+> Code examples are included to illustrate the way our API client looks at each
+> step of the way. The examples are written in fairly specific Javascript, as
+> that is the language in which I find this pattern most frequently useful, but
+> the same ideas can be applied in any language. Such translation is left as
+> an exercise to the reader.
+>
+> Anyway, enough of that, on with the story!
+
+In my experience, pretty much every app these days&mdash;mobile apps, web apps,
+or whatever other kind of app you can imagine&mdash;is just a fancy wrapper
+around one API or another. As such, the core of every app is its API client
+which, despite the fact that we must use it for every single feature,
+is often the oldest, smelliest, crustiest bit of code in the project.
+
+If not paying attention, it's only a matter of time before your app becomes a
+mess of calls to `fetch` and strings containing URLs hardcoded all over the
+place. In one file you've interpreted the response one way, and in another file
+the same request is used for different data, who knows which one is correct.
+No one has even *considered* trying to figure out what to do with errors, and
+half the time you don't even check for them. Why spend time on error handling
+when they're all unexpected anyway.
+
+```javascript
+const response = await fetch(`/users/${id}`, {
+  method: 'POST',
+  headers: {
+    Authorization: `Bearer ${bearer}`,
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ username }),
+});
+const { user: updatedUser } = await response.json();
+```
+
+It should be clear that having this code scattered around the codebase will not do.
+There's so much friction involved in just writing a single API call:
+1.  What was the URL?
+2.  What HTTP method should it be?
+3.  Is that parameter supposed to be a query parameter, a URL segment, or in the body?
+4.  Is the body a JSON body or a form?
+
+Of course, the obvious next step is to just make a function for that so we don't need
+to remember those things. Unfortunately, we not only need relevant info like the
+user ID and username, but also unrelated stuff like the `bearer` token. While I assume
+that was somehow acessible to the application level code you were writing earlier, now
+that our API call function is moved to a separate file, maybe not? Let's just pass that
+in for now.
+
+```javascript
+async function updateUsername(id, username, bearer) {
+  const response = await fetch(`/users/${id}`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${bearer}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ username }),
+  });
+  const { user } = await response.json();
+  return user;
+}
+
+const updatedUser = await updateUsername(id, username, bearer);
+```
+
+This certainly will not do. Nobody wants to be thinking about what tokens are
+required for each API call---that's not something a normal function has to deal
+with. We want to make these API calls as frictionless as possible. Everyone's first
+instinct is to try OOP, so let's make a `Client` class and put all the common request
+stuff in there. Given that we had access to the `bearer` token before, we can just
+put this client wherever that was and still have access to it at any moment we need it,
+no problem.
+
+```javascript
+class Client {
+  constructor(bearer) {
+    this.bearer = bearer;
+  }
+
+  async updateUsername(id, username) {
+    const response = await fetch(`/users/${id}`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${this.bearer}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username }),
+    });
+    const { user } = await response.json();
+    return user;
+  }
+}
+
+const client = new Client(bearer);
+const updatedUser = await client.updateUsername(id, username);
+```
+
+This looks ok for now, but as the API grows there is no chance that I want to be
+putting *every single request* into one massive file. Going the class-based
+approach was the wrong call. This is not a surprise... since when are classes
+ever the right answer?
+
+Let's get those functions back into separate files, but try and keep this
+`client` instance idea. We can represent each API call as an object and
+pass those to the client to invoke them with the correct parameters.
+
+```javascript
+class Client {
+  constructor(bearer) {
+    this.bearer = bearer;
+  }
+
+  invoke(request) {
+    const headers = new Headers(request.init.headers);
+    headers.set('Authorization', `Bearer ${bearer}`);
+    return fetch(request.url, { ...request.init, headers });
+  }
+}
+
+function updateUsername(id, username) {
+  return {
+    url: `/users/${id}`,
+    init: {
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username }),
+    },
+  };
+}
+
+const client = new Client(bearer);
+const updatedUser = await client.invoke(updateUsername(id, username))
+  .then((response) => response.json())
+  .then((response) => response.user);
+```
+
+Something here sure looks redundant... Such verbosity for so little gain. We've even
+gone a step backwards, the common process of extracting data from the result object (and
+checking for errors if we were to bother to do such a thing) have to be repeated at every
+call site. The friction is back.
+
+Not only that, we have this object of `{ url, init }` that every single request function
+needs to construct. Nobody's going to remember those details, it'll just be copy pasted
+all over the place, so let's go ahead and make a constructor for that. While we're at it,
+to make this class less prone to unwanted introspection, let's just make it a regular
+closure.
+
+```javascript
+function client({ bearer }) {
+  return function invoke(request) {
+    const headers = new Headers(request.init.headers);
+    headers.set('Authorization', `Bearer ${bearer}`);
+    return fetch(request.url, { ...request.init, headers });
+  }
+}
+
+function request(url, init) {
+  return { url, init };
+}
+
+function updateUsername(id, username) {
+  return request(`/users/${id}`, {
+    body: JSON.stringify({ username }),
+  });
+}
+
+const invoke = client({ bearer });
+const updatedUser = await invoke(updateUsername(id, username))
+  .then((response) => response.json())
+  .then((response) => response.user);
+```
+
+We're getting closer, that first line `invoke(updateUser(id, username))` is pretty
+frictionless, but there are still those two `.then()` calls tacked on to the end of every
+invocation that we need to get rid of.
+
+We can do that by flipping the client inside out. Instead of having the request object
+passed to the invoker, let's pass the invoker to a request *function*. That way, the request
+function can do whatever postprocessing it needs to do. We can do this transformation
+invisibly to keep the `invoke(request)` structure as it was.
+
+```javascript
+function client({ bearer }) {
+  function invoke(request) {
+    // ... invoke has not changed
+  }
+
+  return (request) => request(invoke);
+}
+
+function request(url, init) {
+  return { url, init };
+}
+
+function updateUsername(id, username) {
+  return async (invoke) => {
+    const response = await invoke(request(`/users/${id}`, {
+      body: JSON.stringify({ username }),
+    }));
+    const { user } = await response.json();
+    return user;
+  };
+}
+
+const invoke = client({ bearer });
+const updatedUser = await invoke(updateUsername(id, username));
+```
+
+Now it's starting to look pretty good! Making an API call has been boiled down to
+a single frictionless line. As a bonus, the whole API client fits in a small box
+on a blog post, with no external dependencies or codegen setup required!
+
+The request functions are a bit verbose now, but otherwise, we've achieved what we
+set out to do. This is the final form of the actual API client. It is not, however,
+the end of the article, because we have only just scratched the surface of how this
+thing can be used.
+
+The main thing to notice about this whole thing is that each request object is
+actually a function, and functions can be composed.
+
+Let's start by breaking this thing up a little further.
+
+```javascript
+function asyncPipe(...fns) {
+  return async (value) => {
+    for (const fn of fns) {
+      value = await fn(value);
+    }
+    return value;
+  };
+}
+
+// ... client has not changed
+
+function request(url, init) {
+  return (invoke) => invoke({ url, init });
+}
+
+// Request
+function updateUsernameRequest(id, username) {
+  return request(`/users/${id}`, {
+    body: JSON.stringify({ username }),
+  });
+}
+
+// Action
+function updateUsername(id, username) {
+  return asyncPipe(
+    updateUsernameRequest(id, username),
+    (response) => response.json(),
+    (response) => response.user,
+  );
+}
+```
+
+A bit of an aside: one trick I find to writing a good API layer is to actually split it
+into *multiple* layers, which is what can be seen here. By making a distinction between a
+*request* and an *action*, as marked above, we finally start decoupling the application
+and the API hiding behind it. When it comes time to put this into practice, requests
+should be kept in a separate place from actions. Consider requests as low-level API
+operations to be composed to create actions, while actions are functions that achieve
+the business goals of the application.
+
+In the example above, we've used the `asyncPipe` function (an async adaptation of the
+common `pipe` or `compose` function found in most functional programming libraries) to
+compose an action out of a request and some other functions.
+
+Of course, actions themselves are still just functions under the hood, so they can
+be composed this way too. Consider a situation where we need to make multiple API calls
+to do something more complicated, such as setting the user's profile picture. In such
+a hypothetical situation, this might require first requesting a URL to upload the
+image to, then uploading the image to that URL, and finally notifying the server that
+the image has been uploaded and the user's profile can be updated.
+
+```javascript
+function asyncChain(request, continuation) {
+  return async (context) => {
+    const response = await request(context);
+    const next = await continuation(response);
+    return next(context);
+  };
+}
+
+function prepareProfilePictureRequest(id) {
+  return request(`/users/${id}/prepareprofilepicture`, { method: "POST" });
+}
+
+function prepareProfilePicture(id) {
+  return asyncPipe(
+    prepareProfilePictureRequest(id),
+    (response) => response.json(),
+  );
+}
+
+function updateProfilePictureRequest(id, requestId) {
+  return request(`/users/${id}/updateprofilepicture`, {
+    method: "POST",
+    body: JSON.stringify({ requestId }),
+  });
+}
+
+function updateProfilePicture(id, picture) {
+  return asyncChain(
+    prepareProfilePicture(id),
+    async ({ uploadToUrl, requestId }) => {
+      await upload(uploadToUrl, picture);
+      return updateProfilePictureRequest(id, requestId),
+    },
+  );
+}
+
+await invoke(updateProfilePicture(id, picture));
+```
+
+To understand what's happening here, we start to get a little bit more technical...
+Taking advantage of the fact that functions are monads, and writing `asyncChain` to
+act on an async-function-monad, we are able to consider requests and actions as
+values which can be composed in any way that monads can be composed.
+
+Similarly, `asyncPipe` is the async-function-monad equivalent of the map operator,
+which is another way by which we compose requests.
+
+Borrowing the syntax from Haskell, we can take a moment to look at the types of these
+functions (forgetting that `asyncPipe` was implemented variadically) in hopes of
+making the similarities more clear.
+
+```haskell
+asyncChain :: Request a -> (a -> Promise (Request b)) -> Request b
+asyncPipe  :: Request a -> (a -> Promise b) -> Request b
+
+-- Recall some of Haskell's operators
+(>>=) :: Monad m => m a -> (a -> m b) -> m b
+(<&>) :: Functor f => f a -> (a -> b) -> f b
+```
+
+Substituting `Request` for `m` or `f` in the types of `>>=` (bind) and `<&>` (map),
+respectively, it's pretty clear that `asyncChain` and `asyncPipe` are basically the
+same, just with an inserted `Promise`.
+
+> I'm no expert on this subject, so maybe don't quote me on saying this is an
+> "async monad" or "async functor", but if not it's *awfully close* and works
+> out okay in practice. If someone feels like doing a more thorough analysis
+> on this, that might be interesting!
+
+Now, since these things are basically async-monads, we can bring in my favourite use
+of generator functions to build the async-generator-to-deterministic-async-monad-transformation,
+and end up with what is basically async-await syntax but for requests!
+
+```javascript
+// ... with everything else unchanged
+
+function doRequest(generator) {
+  function next(iter) {
+    return async (input) => {
+      const { value, done } = await iter.next(input);
+      if (done) return () => Promise.resolve(value);
+      return asyncChain(value, next(iter));
+    };
+  }
+
+  return async (context) => {
+    const iter = await generator();
+    const request = await next(iter)(undefined);
+    return request(context);
+  };
+}
+
+function updateProfilePicture(id, picture) {
+  return doRequest(async function* () {
+    const { uploadToUrl, requestId } = yield prepareProfilePicture(id);
+    await upload(uploadToUrl, requestId);
+    return updateProfilePictureRequest(id, requestId);
+  });
+}
+
+await invoke(updateProfilePicture(id, picture));
+```
+
+Believe it or not, the two definitions of `updateProfilePicture` are
+functionally the same. We now have a perfectly readable and convenient way to write
+our API calls into separate, reusable utility files with no `client` parameters to
+be cluttering function signatures.
+
+The tradeoff is that we complicate things somewhat by using wrapped generators, but 
+personally I have no problems with that. If you really don't like it though, you can
+simply opt-out of going so deep and stick to the function-returning-function version 
+we had earlier and still use the core API client, knowing that it's more powerful
+than it looks.
+
+While that's as far as I have taken this particular API client personally, I have no
+doubt that it can go further. Plus, as a bonus, even with all the helper functions
+to show off real strengths, it still all fits in a few boxes on a blog post! Next time
+you start a project, try slipping this pattern in there, and I doubt anyone would
+question it. At least not until you start doing all the fancy stuff.
+
+-----
+
+P.S.: I previously created [`openfetch`](https://github.com/foxfriends/openfetch)
+(available on [NPM](https://www.npmjs.com/package/openfetch)) which implements this 
+client and generates a request-level API client from an OpenAPI 3.0 specification. 
+If you happen to be using OpenAPI and are interested in trying this pattern out, 
+that is one way you can get started.

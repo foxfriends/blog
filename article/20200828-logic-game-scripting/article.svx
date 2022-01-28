@@ -3,7 +3,7 @@ title: 'Concept: Game Scripting with Logic Programming'
 date: 2020-08-28
 tags:
 - gamedev
-- prolog
+- logic-programming
 author: Cam
 outline:
 - language: prolog

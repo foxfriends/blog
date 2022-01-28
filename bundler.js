@@ -4,7 +4,7 @@ const vite = require('vite');
 const glob = require('glob');
 const compileArticles = require('./compile-articles');
 
-const entryFiles = async () => {
+async function entryFiles() {
   const articles = await promisify(glob)('./article/*/index.html');
   return {
     home: path.resolve(__dirname, './index.html'),
@@ -16,13 +16,15 @@ const entryFiles = async () => {
   };
 }
 
-const config = async () => ({
-  build: {
-    rollupOptions: {
-      input: await entryFiles(),
-    }
-  },
-});
+async function config() {
+  return {
+    build: {
+      rollupOptions: {
+        input: await entryFiles(),
+      }
+    },
+  }
+}
 
 async function build() {
   compileArticles();
