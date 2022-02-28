@@ -1,0 +1,89 @@
+---
+title: Readability is a feature
+subtitle: Confusion is a bug
+date: 2022-02-28
+tags:
+- architecture
+- clean-code
+author: Cam
+---
+
+To write code is to put yourself into the mind of the computer; to learn
+to speak a language invented for a machine. Looking at such a task it is
+easy to come to the conclusion that the human is the producer of code, while
+the computer is the consumer. With those roles laid out, we can conclude that
+a program works when the computer is able to run that code and its output
+reflects what the programmer intended.
+
+Of course, this is an incomplete analysis.
+
+It is missing the part where, once
+the program does what it was originally intended to do, the boss comes up
+with a *great new feature idea*. Now it is up to the programmers, forever in the
+process of forgetting what they did last week, to somehow translate that feature
+into a foreign language and then convince a dumb machine, stubbornly set in its
+ways, of a brand new truth frequently conflicting with what it once believed.
+
+Diving back into into the mind of the machine, a programmer who wrote the
+code and stopped when it "worked" now has to read through the cryptic
+scribblings of a tired and struggling past-self to figure out *What was
+I thinking? This makes no sense!*
+
+It is clear that the bugs are coming. An edge case once briefly understood,
+a copy-pasted bandaid from the Internet. *I'll cut this corner just this
+once, only to get the feature out the door on time*. Suddenly it's not just a few bugs
+but an entire infestation. While trying to swat one, you take your eyes off
+the other and it manages to set up a whole new colony.
+
+"How did it come to this?" the boss asks, "The original version had no bugs!"
+
+That's where they're wrong.
+
+That pretty box we had put the machine in simply hid all the dirtiness going on inside.
+In all the dust kicked up during construction, the bugs had built their nests and
+laid their eggs. In the time it took to build that new feature, with nobody cleaning
+up all the mess on which they feed, the bugs hatched and grew strong and escaped
+through the cracks in the pretty box to the world outside to wreak havoc on the users.
+
+The bugs were always there, they just hadn't hatched yet.
+
+-----
+
+In case it's not clear enough already, let's come at this more explicitly.
+
+A bug, most generally, is a situation in which the consumer of the code
+does not have the same understanding of the program as the producer had intended,
+leading to something unexpected happening from the user's perspective.
+
+In the familiar situation, the consumer of the code is the computer. With its
+perfect ability to follow instructions exactly as described, the fault cannot be
+that of the computer. The fault lies in the code itself, and the way it is written.
+
+Recall that __a programmer is as much a consumer of code as they are a producer__.
+Every moment spent writing code is a moment spent reading it, and there are more
+moments still in which code is being read but not written. By that logic, more than
+half of the job of a programmer is reading (consuming) code.
+
+Contrary to the computer, as a human consuming code, we do have a tendency to
+make mistakes while simulating its execution in our process of understanding.
+Sometimes this is a simple mistake and we can correct it fairly quickly.
+Unfortunately, it is still often enough that the misunderstanding remains
+undetected for some time and goes on to form the basis of incorrect assumptions
+made when reading the rest of the program. The producer (the original writer of
+the code)  and the consumer (us, right now) do not have the same understanding
+of the program. This is a bug.
+
+__Confusing code is a bug__.
+
+Sure, confusing code can be released to the users, and they can begin
+using it without any harm, but a feature cannot be considered "complete"
+until its code is readable without confusion. Otherwise, to extend that feature is
+to move slowly, carefully so as not not disturb the bugs in their nests.
+It only takes one stumble to set them loose. Everyone slips eventually.
+
+Certainly this is a difficult concept to get into the heads of anyone who doesn't see
+the code, but it is something that cannot be overlooked without inviting disaster. 
+Take it upon yourself to spend about as much time on the cleanup phase as it did to get
+the code "working" in the first place. It might feel unnecessary at first, but once
+you are 30 features deep and still producing quality features quickly, nobody will
+question it one bit.
