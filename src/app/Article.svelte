@@ -169,7 +169,7 @@
     padding: 0 10rem;
   }
 
-  @media (max-width: 60rem) {
+  @media (max-width: 51rem) {
     .article {
       --Content--outer-space: 2rem;
     }
@@ -259,6 +259,5 @@
     width: calc(100% + 4rem) !important;
     margin-left: -2rem;
     height: 1px;
-    background-image: linear-gradient(to right, black, rgba(0, 0, 0, 0.2));
   }
 </style>
