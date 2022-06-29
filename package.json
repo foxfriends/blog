@@ -26,7 +26,7 @@
     "mdsvex": "^0.9.8",
     "remark-containers": "^1.2.0",
     "remark-deflist": "^0.2.1",
-    "scattered-papers": "git+https://github.com/foxfriends/scattered-papers.git#106e2cf",
+    "scattered-papers": "git+https://github.com/foxfriends/scattered-papers.git#80e019d",
     "svelte": "^3.42.6",
     "vite": "^2.5.1"
   },
