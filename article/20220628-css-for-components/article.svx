@@ -1,0 +1,677 @@
+---
+title: CSS for components
+subtitle: "Hint: keep it contained"
+date: 2022-06-28
+tags:
+- architecture
+- webdev
+author: Cam
+---
+
+<script>
+  const extraPages = [
+    ["Write blog post", "Do the laundry", "Buy cat food"],
+    ["Take out trash", "Call the bank", "Unsubscribe from flyers"],
+    ["Fix leaky faucet", "Clean fridge"],
+  ];
+  const extraItems = [
+    ["Don't forget to clean the kitchen!", "We have guests coming over!!"],
+    ["Laundry still needs doing.", "The cats spilled food everywhere, clean that up!"],
+    ["We need more milk. If they have eggs, get 2 dozen."],
+  ];
+
+  let pages = [extraPages[0]];
+  let notes = [[]];
+
+  function addItem() {
+    const i = notes.length - 1;
+    if (notes[i].length < extraItems[i].length) {
+      notes[i] = extraItems[i].slice(0, notes[i].length + 1);
+    }
+  }
+
+  function newList() {
+    if (pages.length < extraPages.length) {
+      pages = extraPages.slice(0, pages.length + 1);
+      notes = [...notes, []];
+    }
+  }
+</script>
+
+It's 2022, and everyone still loves component-based frontend frameworks. So much so
+that React is used everywhere, chosen almost by default, and is often one of the
+first things taught to new developers. Subscribing to any of those claims would be
+a mistake if you ask me, but that's a topic for another day.
+
+Though I could probably have much to say about many frontend codebases these days,
+quite possibly the most commonly messed up piece, yet also most easily avoided
+mistake, is the CSS. It seems to me that people come into the modern day of
+component-based development expecting CSS to be the same as it was in monolithic
+HTML and CSS file days (or for those who weren't around for those days, weren't
+properly taught real componentization patterns in the rush to learn React).
+
+Take, for example, this little to-do list example, and let's try and find ways to
+build it without messing up the CSS.
+
+<div class="demo">
+  <div class="card-stack">
+    {#each pages as items, i}
+      <div class="card">
+        {#each notes[i] as note}
+          <div class="note">
+            {note}
+          </div>
+        {/each}
+        <div class="card-header">
+          To Do List
+        </div>
+        <div class="card-content">
+          <div class="todo-list">
+            {#each items as item}
+              <label class="todo-item">
+                <input type="checkbox" class="todo-check" />
+                <div class="todo-text">
+                  {item}
+                </div>
+              </label>
+            {/each}
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="button-group">
+            <button on:click={addItem} class="button">
+              Add item
+            </button>
+            <button on:click={newList} class="button">
+              New list
+            </button>
+          </div>
+        </div>
+      </div>
+    {/each}
+  </div>
+</div>
+
+<style>
+  .demo {
+    position: relative;
+    border-top: 1px solid rgba(0 0 0 / 0.12);
+    border-bottom: 1px solid rgba(0 0 0 / 0.12);
+    padding: 16px;
+    margin: 16px 0;
+    background: rgba(0 0 0 / 0.06);
+  }
+
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid black;
+    margin: 0 auto;
+    width: 400px;
+    max-width: calc(100% - 64px);
+    background: white;
+  }
+
+  .card-header {
+    padding: 16px;
+  }
+
+  .card-content {
+    padding: 0 16px;
+  }
+
+  .card-content.lined {
+    padding: 16px;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+  }
+
+  .card-footer {
+    padding: 16px;
+  }
+
+  .button-group {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-end;
+  }
+
+  .button {
+    font: inherit;
+    border: 1px solid black;
+    background: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+  }
+
+  .todo-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .todo-item {
+    display: flex;
+    gap: 8px;
+  }
+
+  .note {
+    position: absolute;
+    right: 16px;
+    top: 0px;
+    padding: 16px;
+    width: 100px;
+    height: 100px;
+    background: #FFFF88;
+    box-shadow: 2px 4px 4px rgba(0 0 0 / 0.25);
+  }
+
+ .card:nth-of-type(1) {
+    position: relative;
+    transform-origin: center;
+    z-index: 0;
+  }
+
+  .card:nth-of-type(2) {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, 16px) rotate(7deg);
+    transform-origin: center;
+    z-index: 1;
+  }
+
+  .card:nth-of-type(3) {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, 32px) rotate(-4deg);
+    transform-origin: center;
+    z-index: 2;
+  }
+
+  .note:nth-of-type(1) {
+    transform: translateY(16px) rotate(7deg);
+    transform-origin: center;
+    z-index: 1;
+  }
+
+  .note:nth-of-type(2) {
+    transform: translateY(32px) rotate(-4deg);
+    transform-origin: center;
+    z-index: 2;
+  }
+</style>
+
+Before you read on too far, think about what your components might look
+like, and how you would do the styling. Then look forward to some curveballs
+thrown in by your favourite designer:
+1.  What if "Add item" didn't add an item directly, but attached a sticky note on
+    top of the existing card?
+2.  What if clicking the "New list" button created a new card physically on
+    top of the existing one?
+
+Let's start with the buttons, and consider our first rule:
+
+### Don't push your siblings
+
+Honestly this is quite possibly my number 1 most time saving and simple piece
+of advice when designing and building UI components, and I don't know why they
+don't tell us about it sooner. __A component should not have invisible external
+whitespace__.
+
+That's not to say that a you shouldn't put invisible whitespace around your
+components, but it should *never* be the responsibility of the component to
+do its own external spacing. When you think about it... that just makes a lot
+of sense. The *external* spacing is *external* to the component. It's outside.
+Quite literally, not part of the component. And yet, that is often the first
+reflex.
+
+Admittedly this was a bit more of a difficult ask in the pre-flex days. It
+may be habits and examples still around from back then that are haunting us
+all still, for I see all too often things like this:
+
+```html
+<!-- Button -->
+<button class="button">
+  Click me
+</button>
+
+<style>
+  .button {
+    border: 1px solid black;
+    background: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+  }
+
+  .button + .button {
+    margin-left: 16px;
+  }
+</style>
+```
+
+```html
+<div class="card-footer">
+  <Button on:click={addItem}>Add item</Button>
+  <Button on:click={newList}>New list</Button>
+</div>
+```
+
+This works fine for the basic case, you have our nicely `16px` spaced buttons,
+but some day your designer will come along with some new design where there are
+a few buttons that are grouped differently than the others:
+
+<div class="demo">
+  <div class="card">
+    <div class="card-footer">
+      <div class="button-group">
+        <button class="button">
+          Copy Item
+        </button>
+        <button class="button" style="transform: translateX(-8px)">
+          Add item
+        </button>
+        <button class="button">
+          New list
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+Suddenly it's a challenge to get your buttons spaced correctly. You'll be
+applying weird negative margins here and adding `<div>`s there, and the
+total space between the elements ends up being the default `16px` plus the
+`8px` added by the parent, minus the `-4px` by the sibling to the right...
+
+What went wrong always comes down to the existence of external whitespace; the buttons
+were pushing their siblings around. As in life (or so they say), __parents know what's
+best for their children__. Leave it up to the parent elements to space their children
+out appropriately. This often takes the form of components such as `<ButtonGroup>`,
+that provides common spacing for buttons as an opt-in service, leaving one-off
+buttons and exception cases unaffected.
+
+```html
+<!-- Button -->
+<button class="button" on:click>
+  <slot />
+</button>
+
+<style>
+  .button {
+    border: 1px solid black;
+    background: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+  }
+</style>
+```
+
+```html
+<!-- ButtonGroup -->
+<div class="button-group">
+  <slot />
+</div>
+
+<style>
+  .button-group {
+    display: flex;
+    gap: 16px;
+  }
+</style>
+```
+
+```html
+<div class="card-footer">
+  <ButtonGroup>
+    <Button on:click={addItem}>Add item</Button>
+    <Button on:click={newList}>New list</Button>
+  </ButtonGroup>
+</div>
+```
+
+### Take advantage of children
+
+Moving on to the card itself, how do you go about supplying the title, the
+main content, and also some actions? I know I've seen this pattern before:
+
+```jsx
+function Card({ title, actions, children }) {
+  return (
+    <div className="card">
+      <div className="card-title">
+        {title}
+      </div>
+      <div className="card-content">
+        {children}
+      </div>
+      <div className="card-footer">
+        {actions.map(({ onClick, label }) => (
+          <Button key={label} on:click={click}>
+            {label}
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+```
+
+> Svelte, of course, solves this problem brilliantly with named slots, but
+> I very discreetly switched this example to React to dodge that easy answer.
+
+"I'm using children!" you say. Yeah, yeah, sure you are. But you're
+also passing element-like (`title`) and pass-through (`actions`) props,
+that both would have been better served as children. Look at this, isn't
+it just *jarring* to see HTML mangled in this way?
+
+```jsx
+<Card
+  title={<h1>To Do List</h1>}
+  actions={[
+    { onClick: addItem, label: "Add item" },
+    { onClick: newList, label: "New list" },
+  ]}
+>
+  {todoItems.map(/* ... */)}
+</Card>
+```
+
+Reading that, I have very little idea how the result is going to
+look without digging into the implementation. Plus, when the designers
+come along with requests to turn the footer blue just for this one card...
+now you have to go adding single-use props like `footerClassNames`, basically
+turning your component into a whole framework. Yuck.
+
+The answer to this problem is just to pass more children. "But we only get one
+`children` prop!" you say. I say that just means you're making your component
+do too much. Let's break this into *four*.
+
+```jsx
+function Card({ children }) {
+  return (
+    <div className="card">{children}</div>
+  );
+}
+
+function CardTitle({ children }) {
+  return (
+    <div className="card-title">{children}</div>
+  );
+}
+
+function CardContent({ children }) {
+  return (
+    <div className="card-content">{children}</div>
+  );
+}
+
+function CardFooter({ children }) {
+  return (
+    <div className="card-footer">{children}</div>
+  );
+}
+
+export {
+  Card as Root,
+  CardTitle as Title,
+  CardContent as Content,
+  CardFooter as Footer,
+};
+```
+
+Well, would you look at that, three more `children` props! And the resulting card:
+
+```jsx
+import * as Card from "./Card";
+
+<Card.Root>
+  <Card.Title>
+    <h1>To Do List</h1>
+  </Card.Title>
+  <Card.Content>
+    {items.map(/* ... */)}
+  </Card.Content>
+  <Card.Footer>
+    <ButtonGroup>
+      <Button onClick={addItem}>Add item</Button>
+      <Button onClick={newList}>New list</Button>
+    <ButtonGroup>
+  </Card.Footer>
+</Card.Root>
+```
+
+Admittedly, it is verbose, but in exchange for *clarity* and *explicitness*,
+verbosity is a good tradeoff. Plus you have the bonus that when design comes
+through with their blue footer idea, there is an obvious place to add a well
+named `className` prop, and it remains intuitive where those classes will
+be applied go.
+
+If the verbosity really bothers you, it's pretty easy to build the original
+`Card` component out of these ones. To wrap up common situations that
+way can be pretty useful at times... And better to implement common situations
+on a clean set of base components than your whole app on a spaghetti mess of
+props on a single component.
+
+Now, this was supposed to be an article on CSS, and this whole section hasn't
+mentioned it at all, so let's look at one more technique that I find pretty neat
+when using this pattern to make them act a bit more like Svelte's named slots.
+
+By using CSS grid, you can position the elements independently of the order in
+which they were passed as children. We can also turn the parent container into
+something that is not just a single stack, but a multi-dimensional layout.
+Unfortunately my example component does not provide such a situation, so let's
+call that an exercise to the reader. This pattern is in fact very much overkill
+for a simple card.
+
+```css
+.card {
+  display: grid;
+  grid-template:
+    "header"
+    "content"
+    "footer";
+}
+
+.card-title {
+  grid-area: title;
+}
+
+.card-content {
+  grid-area: content;
+}
+
+.card-footer {
+  grid-area: footer;
+}
+```
+
+Now if I were to do something crazy like this, the card would still show up
+correct, with the title on top and footer on bottom.
+
+```jsx
+<Card.Root>
+  <Card.Footer>Feet</Card.Footer>
+  <Card.Content>Body</Card.Content>
+  <Card.Title>Head</Card.Title>
+</Card.Root>
+```
+
+__Accessibility disclaimer__: While this does technically eliminate the DOM order
+dependency on layout, *taking advantage* of that fact will likely cause screen
+readers and the like to interpret elements in the wrong order. It is still *strongly*
+recommended to put your children in the actual right order, and use this pattern
+only for the code-organization sanity, and occasional multi-dimensional layout
+solution, it provides.
+
+### Don't surprise the children
+
+Now that we've figured out that children are the way, it's important to
+notice that we do have to be careful not to upset them. Children are
+particularly powerless to things prescribed to them from their parents,
+so a parent component should always take care to have as little effect
+on their children as possible.
+
+Given the original card design, it would not be surprising to look at it
+and think to write something such as `.card { padding: 16px }`. There was
+a clear and consistent padding around the entire card, so that would have
+been the easiest way to do it, right?
+
+But, of course, the designer will someday make this very small tweak, adding
+some lines between the content and the header and footer.
+
+<div class="demo">
+  <div class="card-stack">
+    <div class="card">
+      <div class="card-header">
+        To Do List
+      </div>
+      <div class="card-content lined">
+        <div class="todo-list">
+          {#each extraPages[0] as item}
+            <label class="todo-item">
+              <input type="checkbox" class="todo-check" />
+              <div class="todo-text">
+                {item}
+              </div>
+            </label>
+          {/each}
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="button-group">
+          <button class="button">
+            Add item
+          </button>
+          <button class="button">
+            New list
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+Had you done that single outer padding thing, you would immediately be in
+trouble. There would beno way to add these lines, as they do not respect the
+padding. Instead, the better choice would be to have had the `Card` apply no
+padding, and move that padding to each of `CardTitle`, `CardContent` and
+`CardFooter`.
+
+That should cause you to ask the question: should those children have the
+padding, or should they, too, leave it up to their own children? It's a good
+question to ask, but not one with a particularly good answer. You'll just have
+to use your best judgement here.
+
+The `ButtonGroup` in the `CardFooter` is similar situation too. Rather than
+putting any default spacing for footer actions directly into the `CardFooter`
+component, it is better practice to leave the `CardFooter` doing close to nothing
+and passing in the `ButtonGroup` as seen above. Of course, this will likely be a
+common situation, so a helper `CardActions` component built on top of those would
+be a fair component to build, no extra styling required!
+
+```jsx
+function CardActions({ children }) {
+  return (
+    <Card.Footer>
+      <ButtonGroup>
+        {children}
+      <ButtonGroup>
+    </Card.Footer>
+  );
+}
+```
+
+### Don't disturb the parents
+
+One of the trickiest pieces to keep under control, but also possibly one of
+the most important, in the long run; __a component must not have an effect on
+parent elements__ (or other parts of the page).
+
+Most specifically, the biggest offender here is `z-index`. Any moment that you
+find yourself using `z-index`, ask yourself *why*? Is it for a neat effect
+*within* a component, or is it to facilitate some layering *outside* of the
+component. If it was the latter, you're doing something wrong. You can also
+usually identify it being wrong if you are trying to think of the biggest
+number you can.
+
+I haven't got time to explain the stacking context, but refer you to [Josh][]
+instead. He does as good as job as I ever could on that subject. If you find
+yourself in the situation where you are using `z-index` for a very local layering
+effect, consider simply dropping `isolation: isolate` at the top of the relevant
+component to keep its children under control.
+
+[Josh]: https://www.joshwcomeau.com/css/stacking-contexts/
+
+I won't go into too much detail about how I implemented the layering
+for the sticky notes and stacked index cards from the first demo on this page.
+Honestly, that could probably have been implemented without `z-index` at all,
+and just used natural DOM order for that... But it's a fun way to practice
+the stacking context if you're looking for something to build.
+
+I will go into a little detail about the solution for the second situation,
+of external layering. The trick is to turn that back into a local layering
+problem, just elsewhere in the app, and use portals to teleport the elements
+into the right layers.
+
+The usual suspects here are modals, toasts, tooltips, and the like.
+
+```html
+<div class="app">
+  <main class="layer">
+    <slot />
+  </main>
+  <div class="layer overlay" id="modal-portal" />
+  <div class="layer overlay" id="dropdown-portal" />
+  <div class="layer overlay" id="tooltip-portal" />
+  <div class="layer overlay" id="toast-portal" />
+</div>
+
+<style>
+  .layer {
+    isolation: isolate;
+  }
+
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .app {
+    position: relative;
+  }
+</style>
+```
+
+Here we create a container for each layer, and give each of those layer
+containers `isolation: isolate` to ensure that they have their own stacking
+contexts (i.e. so that any `z-index` used within one layer cannot affect another).
+
+Then you actually don't need to use `z-index` at all! Natural DOM order will
+keep the layers in the right order. Just position the layers so they all overlap
+correctly, and it's already pretty much good to go (real life situations may differ).
+
+The actual usage of these portals depends on your framework of choice.
+[React](https://reactjs.org/docs/portals.html) has them basically built in.
+Svelte does not have them for free, but I know they can be implemented
+manually. I've done it, so you can too, and there are packages that claim to
+work as well, if that is more your style.
+
+Setting up the infrastructure for specific portalled components tends to
+take a decent amount of effort, but the time and headaches saved by not
+having to fight against `z-index` are worth it by far. Sometimes, the best
+CSS is no CSS at all.
+
+### Is that it?
+
+It always sounds simple to me when I think about it, but still it's hard to
+remember it all some times. Not much I can say but to just try to spot these
+things in the wild, and do what you can to avoid and refactor them away when
+you have the chance.
+
+If you want something to build, try rebuilding the to do list from above using
+these ideas... I think it's a pretty good one, but you won't find any real
+example or answer, I built it out of hacks myself.
