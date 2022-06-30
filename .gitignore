@@ -4,3 +4,4 @@ dist
 article/*/*
 !article/*/article.svx
 article/manifest.json
+.DS_Store
