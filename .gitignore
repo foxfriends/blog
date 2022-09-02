@@ -2,6 +2,7 @@ node_modules
 .cache
 dist
 article/*/*
+drafts
 !article/*/article.svx
 article/manifest.json
 .DS_Store
