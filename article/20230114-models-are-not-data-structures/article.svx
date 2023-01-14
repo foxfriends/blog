@@ -1,0 +1,324 @@
+---
+title: Models are not data structures
+subtitle: You knew this already
+date: 2023-01-14
+tags:
+- architecture
+- databases
+author: Cam
+---
+
+When building an app that manipulates data (e.g. a web server) we typically
+interact with that data in three ways:
+*   As raw data in memory or database
+*   Manipulating via specific behaviours through code
+*   Sending it to other applications via external APIs
+
+If your instinct tells you that "this is the job for a model", then your instinct
+is wrong. But I know you know better than that. The three seaprate tasks should be
+seen as a hint that three separate pieces are required:
+*   The **structure** is the base data representation
+*   The **model** is for managing behaviours in code
+*   The **serialization** is how we send it between applications
+
+If you've worked on any decently sized project, you have almost certainly
+been given an ORM, and your framework lets you define (what they call) "models"
+which provide access to the ORMs methods, upon which you build your app.
+Mistake.
+
+Asked what ORM stands for, is your answer "Object Relational Mapping"? Notably,
+the M does not stand for model, because an ORM does not (should not?) have a concept
+of "model". It's simply a __mapping__ of __objects__ to a __relational__ database.
+Providing convenient methods for sending data to the database, *an ORM is
+a serializer*. Meanwhile, the objects you've created are an implementation of a
+data structure.
+
+This is all fine as it is until your framework convinces that you this data structure
+is called a "model" and you should implement behaviours on it. Now we've merged
+all three layers into a single messy lump, and your app spirals out of control
+after that. This is the part we must avoid.
+
+### The Business Object
+
+Before getting too deep into the code side, it's worth identifying what a
+"business object" might refer to: this is the thing that your non-developer
+boss knows about.
+
+If you're making a Facebook-like social network, a post is a likely business
+object. To the boss, posts have text content and images, users react and comment
+on posts, and those comments in turn have text and images, and further comments
+and reactions.
+
+If you're making an ecommerce shop, you have products. Products have names
+and descriptions, each product may have a few variants, each variant may
+have a different price in different countries, and there are reviews on each
+variant as well. Each variant also has inventory which may exist in multiple
+locations, and needs to increase and decrease as people make and cancel orders.
+
+The business object is very high-level and, as you might have noticed already,
+*has little bearing on the structure of the code*. Code will need post, reaction,
+like, and share to each be distinct entities, as will product, variant, price,
+review, inventory levels, and orders.
+
+We aim to keep this bearing of business object on code structure as small as
+possible.
+
+### The Structure
+
+Probably the most core piece of this whole puzzle is the structure. A good
+data structure makes everything easy; easy to implement behaviours on
+the model and easy to serialize the data (often it can be done purely
+structurally).
+
+This is also the most often overlooked layer because it's boring and
+feels "low level", a scary place for those of us who are used to just
+building web apps. Rather than designing features from the data-level
+up, we go from model-level down.
+
+In some cases, the model first approach doesn't go too wrong. Setting up
+users and login for example is pretty straight forward:
+
+```python
+class User(Structure):
+    id: int
+    username: str
+    email: str
+    password_hash: str
+```
+
+Meanwhile, if we wanted to represent posts and comments, we might consider
+the needs of our model and design this structure:
+
+```python
+class Post(Structure):
+    author: User
+    content: str
+    image_url: str | None
+    reactions: list[Reaction]
+    comments: list[Comment]
+
+
+class Comment(Structure):
+    author: User
+    content: str
+    image_url: str | None
+    reactions: list[Reaction]
+    comments: list[Comment]
+
+
+class Reaction(Structure):
+    user: User
+    react_emoji: str
+```
+
+Sadly, this structure is lacking in a few ways. Firstly, there is
+no way to consider a post without also considering its comments, author, and
+reactions as well.
+
+Secondly, and more noticeably, the nested shape does not map well
+to a (relational) database. That should be the hint. In
+this case, we can attempt to do the usual obvious transformation,
+but quickly notice that things are not as they seem: comments can
+be on posts or other comments, so we have two potential foreign
+keys. Alternatively, we could support comments only to a specific
+depth, but of course that's not acceptable, so we go with something
+like this:
+
+```python
+class Post(Structure):
+    id: int
+    author_id: int
+    content: str
+    image_url: str | None
+
+
+class Comment(Structure):
+    post_id: int | None
+    comment_id: int | None
+    author_id: int
+    content: str
+    image_url: str | None
+
+
+class Reaction(Structure):
+    post_id: int | None
+    comment_id: int | None
+    user_id: int
+    react_emoji: str
+```
+
+Just one look at that should be giving you the heebie-jeebies: there's
+so much room for invalid data! What if I set both `post_id` and `comment_id`?
+Or neither? Sure, the app *right now* doesn't do that, but there's nothing
+stopping an uninformed admin from manually inserting such invalid data, or
+a little bug coming up that introduces hundreds of unattached comments.
+Sure we could put some constraints in at the database level to make this work,
+but those are hard to notice as a developer without access to the database, and
+are prone to being forgotten when, say, we start allowing reactions to have
+comments as well and a third foreign key appears.
+
+Instead, if we had come at this problem from the data-side first (think,
+database side first), we might have arrived at something like this:
+
+```python
+class Item(Structure):
+    id: int
+
+
+class Reply(Structure):
+    item_id: int
+    reply_item_id: int
+
+
+class Post(Structure):
+    item_id: int
+    author_id: int
+    content: str
+    image_url: str | None
+
+
+class Comment(Structure):
+    item_id: int
+    author_id: int
+    content: str
+    image_url: str | None
+
+
+class Reaction(Structure):
+    item_id: int
+    user_id: int
+    react_emoji: str
+```
+
+This is starting to look less and less like the natural shape that we might
+have come up with for this business object, but is actually a better structure
+for it. It solves all of the problems we might possibly have wanted to solve:
+*   We can look up posts, comments and even reactions independently from other parts
+*   We can comment on and react to anything
+*   It fits nicely into a relational database
+*   We can build that natural shape on top of this structure as a model
+
+It actually also allows a few things we maybe didn't intend, such as a post as
+a reply to another post. Maybe this doesn't make much sense in the Facebook style
+social network we were envisioning, but this is a feature that a more Twitter-like
+platform allows, so it doesn't hurt to be ready for the day that the boss decides
+that's a good idea.
+
+Databases are surprisingly powerful at what they do. Very rarely, if ever, have
+I seen the bottleneck in my application be "too much data in the database". They
+are very capable of storing that data efficiently, and also at searching through
+it quickly. Don't optimize your database for "easiest queries to think of" or
+"storing less data". It will always pay off to pick "simplest, most basic,
+normalized, reliable structure" and to write a good model around that data to
+simulate the easier queries at code level.
+
+### The Model
+
+With a solid structure, it's often not the most convenient thing to have to work
+with that structure directly all over the code. It is best to consider the structure
+an "implementation detail" of the model, and let the model be a friendly API to
+this data.
+
+Continuing with the social network example, a decent interface for our model is
+likely more similar to the original structure we had come up with:
+
+```python
+class PostModel(Model):
+    def __init__(post: Post): pass
+    def author(self) -> User: pass
+    def content(self) -> str: pass
+    def image_url(self) -> str | None: pass
+    def reactions(self) -> list[Reaction]: pass
+    def comments(self) -> list[Comment]: pass
+
+
+class CommentModel(Model):
+    def __init__(comment: Comment): pass
+    def author(self) -> User: pass
+    def content(self) -> str: pass
+    def image_url(self) -> str | None: pass
+    def reactions(self) -> list[Reaction]: pass
+    def comments(self) -> list[Comment]: pass
+
+
+class ReactionModel(Model):
+    def __init__(reaction: Reaction): pass
+    def user(self) -> User: pass
+    def react_emoji(self) -> str: pass
+```
+
+A few things to notice here:
+*   No model is defined for `Item` or `Reply`, those aren't actually all that important to interact with explicitly.
+*   No fields are defined, we only need methods in our API. Fields are implementation detail.
+*   The constructor takes the structure, implying that these models wrap structures in some way.
+
+Then we go on to add a few more methods to these models to implement all of the
+basic actions we might want to take on those models. Without a method for adding
+a post as a reply to another post, we are safe from accidentally filling that
+data into our database, despite the data model technically supporting it.
+
+```python
+class PostModel(Model):
+    # ...
+    def ref(id: int): PostModel
+    def add_comment(self, comment: Comment): pass
+    def add_reaction(self, reaction: Reaction): pass
+
+
+class CommentModel(Model):
+    # ...
+    def ref(id: int): CommentModel
+    def add_comment(self, comment: Comment): pass
+    def add_reaction(self, reaction: Reaction): pass
+
+
+class ReactionModel(Model):
+    # ...
+    def ref(id: int): ReactionModel
+```
+
+While `add_comment` and `add_reaction` are likely obvious,
+of particular interest might be the `ref` method. Though it
+takes just an ID, `ref` does not actually need to load any
+data from the database; only return a model that represents
+a "reference" to the post, comment, or reaction in question.
+Since all the interactions are implemented as methods, they
+can quietly load data only when required.
+
+In fact, even when created using the constructor, passed a
+whole entry, the methods are quietly loading data and touching
+the item and reply tables in the background:
+*   `post.comments()` will execute some query that looks up related items through the reply table, and then comments from their Item ID.
+*   `post.add_comment()` needs to insert the a record into the item table first, then the comment itself, and finally a reply as well.
+
+While these things may have been performed in a single simple query
+with a more direct model-to-structure mapping, three queries
+is really not all that bad. Remember that databases are *designed*
+for this stuff. At the end of the day, 3 inserts is still a
+constant number ($O(1)$) of inserts for this task, so realistically
+it makes very little noticeable difference.
+
+Plus, if you really think about it, these operations *can* still be a
+single query each:
+
+```sql
+-- Find all comments on post:
+SELECT comments.*
+  FROM replies
+  LEFT OUTER JOIN comments ON comments.item_id = replies.reply_item_id
+  WHERE replies.item_id = ?
+  WHERE comments.id IS NOT NULL
+
+-- Add a comment (on post or comment)
+WITH
+  i AS (INSERT INTO items (id) VALUES (DEFAULT) RETURNING *),
+  c AS (
+    INSERT INTO comments (id, item_id, author_id, content, image_url)
+      SELECT i.id, ?, ?, ?
+      FROM i
+  )
+INSERT INTO replies (item_id, reply_item_id)
+  SELECT 1, i.id
+  FROM i
+```
+
