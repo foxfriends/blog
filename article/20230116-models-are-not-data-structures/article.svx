@@ -292,10 +292,10 @@ class CommentModel(Model):
         self._comment = comment
 
     def _prepare(self):
-        if self._comment is None:
-            self._comment = Comment.load_from_db(self.id)
+        if self._comment is None and self._id is not None:
+            self._comment = Comment.load_from_db(self._id)
 
-    def instance(comment: Comment):
+    def instance(comment: Comment) -> CommentModel:
         return CommentModel(comment=comment)
 
     def ref(id: int) -> CommentModel:
