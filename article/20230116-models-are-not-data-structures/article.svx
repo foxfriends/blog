@@ -316,7 +316,7 @@ While these things may have been performed in a single simple query
 with a more direct model-to-structure mapping, three queries
 is really not all that bad. Remember that databases are *designed*
 for this stuff. At the end of the day, 3 inserts is still a
-constant number ($O(1)$) of inserts for this task, so realistically
+constant number (O(1)) of inserts for this task, so realistically
 it makes very little noticeable difference.
 
 Plus, if you really think about it, these operations *can* still be a
