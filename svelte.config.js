@@ -32,7 +32,8 @@ module.exports = {
   extensions: ['svelte', 'svx'],
   preprocess: mdsvex({
     extension: '.svx',
-    remarkPlugins: [require('remark-containers'), require('remark-deflist')],
+    remarkPlugins: [require('remark-math'), require('remark-containers'), require('remark-deflist')],
+    rehypePlugins: [require('rehype-katex')],
     layout: Path.resolve(__dirname, './src/app/Article.svelte'),
     // layoutRoot: __dirname,
     smartypants: {

@@ -23,11 +23,13 @@
     "ansi-to-html": "^0.7.1",
     "front-matter": "^4.0.2",
     "glob": "^7.1.7",
-    "mdsvex": "^0.9.8",
+    "mdsvex": "^0.10.6",
+    "rehype-katex": "^5.0.0",
     "remark-containers": "^1.2.0",
     "remark-deflist": "^0.2.1",
+    "remark-math": "^4.0.0",
     "scattered-papers": "git+https://github.com/foxfriends/scattered-papers.git#80e019d",
-    "svelte": "^3.42.6",
+    "svelte": "^3.55.1",
     "vite": "^2.5.1"
   },
   "dependencies": {
