@@ -1,10 +1,10 @@
 ---
 title: Models are not data structures
 subtitle: You knew this already
-date: 2023-01-14
+date: 2023-01-16
 tags:
 - architecture
-- databases
+- database
 author: Cam
 ---
 
@@ -224,25 +224,25 @@ likely more similar to the original structure we had come up with:
 
 ```python
 class PostModel(Model):
-    def __init__(post: Post): pass
+    def instance(post: Post): pass
     def author(self) -> User: pass
     def content(self) -> str: pass
     def image_url(self) -> str | None: pass
-    def reactions(self) -> list[Reaction]: pass
-    def comments(self) -> list[Comment]: pass
+    def reactions(self) -> list[ReactionModel]: pass
+    def comments(self) -> list[CommentModel]: pass
 
 
 class CommentModel(Model):
-    def __init__(comment: Comment): pass
-    def author(self) -> User: pass
+    def instance(comment: Comment): pass
+    def author(self) -> UserModel: pass
     def content(self) -> str: pass
     def image_url(self) -> str | None: pass
-    def reactions(self) -> list[Reaction]: pass
-    def comments(self) -> list[Comment]: pass
+    def reactions(self) -> list[ReactionModel]: pass
+    def comments(self) -> list[CommentModel]: pass
 
 
 class ReactionModel(Model):
-    def __init__(reaction: Reaction): pass
+    def instance(reaction: Reaction): pass
     def user(self) -> User: pass
     def react_emoji(self) -> str: pass
 ```
@@ -260,21 +260,21 @@ data into our database, despite the data model technically supporting it.
 ```python
 class PostModel(Model):
     # ...
-    def ref(id: int): PostModel
+    def ref(id: int) -> PostModel: pass
     def add_comment(self, comment: Comment): pass
     def add_reaction(self, reaction: Reaction): pass
 
 
 class CommentModel(Model):
     # ...
-    def ref(id: int): CommentModel
+    def ref(id: int) -> CommentModel: pass
     def add_comment(self, comment: Comment): pass
     def add_reaction(self, reaction: Reaction): pass
 
 
 class ReactionModel(Model):
     # ...
-    def ref(id: int): ReactionModel
+    def ref(id: int) -> ReactionModel: pass
 ```
 
 While `add_comment` and `add_reaction` are likely obvious,
@@ -284,6 +284,27 @@ data from the database; only return a model that represents
 a "reference" to the post, comment, or reaction in question.
 Since all the interactions are implemented as methods, they
 can quietly load data only when required.
+
+```python
+class CommentModel(Model):
+    def __init__(self, *, id=None, comment=None):
+        self._id = id
+        self._comment = comment
+
+    def _prepare(self):
+        if self._comment is None:
+            self._comment = Comment.load_from_db(self.id)
+
+    def instance(comment: Comment):
+        return CommentModel(comment=comment)
+
+    def ref(id: int) -> CommentModel:
+        return CommentModel(id=id)
+
+    def author(self) -> UserModel:
+        self._prepare()
+        return UserModel.ref(self._comment.author_id)
+```
 
 In fact, even when created using the constructor, passed a
 whole entry, the methods are quietly loading data and touching
@@ -322,3 +343,78 @@ INSERT INTO replies (item_id, reply_item_id)
   FROM i
 ```
 
+### The Serialization
+
+The serialization is an alternative representation for a piece of data
+which is designed to be able to exist on its own, outside of the context
+of a running program.
+
+Depending on how this data is being used, the design of the serialization
+may be different. For example, if the data is being sent across the network
+to another client application, we may want to optimize the data to reduce its
+size in bytes, to reduce bandwidth usage. Alternatively, if the data is being
+stored into version control, such as Git, we may want to write it in a text
+format that lends well to computing line-based diffs.
+
+The most common serialization is to simply convert to JSON structurally, and
+in all honesty, this actually makes the most practical sense in most cases.
+However, note that since the application code typically interacts with a *model*,
+it isn't working with an actual structural data, only an interface to some unknown
+underlying structure. In the example above, the model might actually just be an
+ID and not a whole object at any given time.
+
+In general, we don't want to couple our serialization format with the shape
+of the application model, nor with the underlying structure of our data. Both
+of those are implementation details of the server. Instead, taking the time
+to explicitly define a serialization format and writing out functions to convert
+the data into those formats typically leads to a more clear and stable API.
+
+Some people call this a Data Transfer Object (DTO). Not a beautiful name by any
+means, but it does get the job done.
+
+```python
+class PostDto(Serialization):
+    author: UserDto
+    content: str
+    image_url: str | None
+    reactions: list[ReactionDto]
+    comments: list[CommentDto]
+
+
+class CommentDto(Serialization):
+    author: UserDto
+    content: str
+    image_url: str | None
+    reactions: list[ReactionDto]
+    comments: list[CommentDto]
+
+
+class ReactionDto(Serialization):
+    user: UserDto
+    react_emoji: str
+```
+
+Worth noticing is that a serialization is used on both sides of any application,
+both for sending to, say, a client over HTTP, and also for sending to the database.
+The database's serialization just often happens to be exactly the same as the
+structure, as a typical web server application owns the schema of the database so
+can use its structure safely.
+
+Meanwhile, to a client side application such as a website, the serialization is used when
+receiving from or sending to the server. In that case, since the client application is not
+in control of the data format, a separate structure is likely recommended (even if that
+structure is basically the same as the serialization) so as not to couple the application
+with the API it is using. If that API ever changes, being able to change the serialization
+and then only adjusting the mapping layer of serialization to structure will be a lot easier
+than having to update the entire website at every that changed data was used.
+
+There are some less conventional uses of databases in which even the structure and the
+database tables may not correspond, such as when aggregation is performed at the database
+level in order to construct the structure. One example of this might be when using a database
+table as a ledger, and the entries are added together to produce the available inventory
+at a particular point in time. In those cases, it can be useful to define a serialization
+of a single ledger entry, a structure that represents the aggregated quantity at a particular
+time, and a model that allows updating that structure while writing entries to the database
+via the single entry serialization. In any case, that is not a pattern that lends itself
+well to the one-model-to-rule-them-all approach that your off the shelf framework is likely
+to lead to towards by default.
