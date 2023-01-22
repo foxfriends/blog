@@ -1,0 +1,112 @@
+---
+title: Defensive Coding
+subtitle: Assume you are stupid
+date: 2023-01-22
+tags:
+- clean-code
+author: Cam
+---
+
+When it's time to learn to drive, we are all taught the benefits of
+defensive driving. The only way to really maximize your safety on the
+road is to anticipate possible dangerous situations and drive in a way
+that you avoid finding yourself in those situations. That is, to do
+things like:
+* Drive at a controllable speed, similar to the other vehicles
+* Maintain distance from the vehicle in front
+* Adjusting your speed for the weather
+* Change lanes slowly and predictably
+
+Personally, I think of it as something like "assume all other drivers
+are stupid and act accordingly". Seeing as your own vehicle is the only
+one that can be controlled, it is on you to use that control to the best
+of your ability to remain safe in the crowds of other unpredictable cars.
+
+Really, seeing the principles of defensive driving laid out, it all
+sounds incredibly boring and very much like common sense. That's why
+sometimes I find it just as surprising to consider defensive coding
+as something that needs to be mentioned.
+
+And yet I feel like mentioning it, as something that we could all
+take a moment to consider and practice from time to time because,
+let's be honest, it's hard not to speed while ~~driving~~ coding.
+
+As with defensive driving, I summarize defensive coding as "assume
+all other developers are stupid and act accordingly." The main difference
+in the coding situation versus the driving one is that you are also
+one of the other stupid developers for which you must act accordingly.
+Most code you write, you will have to come back to at some point in
+your future, at which point you're basically a different person.
+
+The goal of defensive coding, rather than to avoid risk of injury or
+even death, is simply to avoid bugs and future headache. Slightly lower
+stakes, but still just as important. Bugs are probably (I have no sourecs)
+the most expensive part of operation a development team has to deal
+with, and often the most annoying thing a developer has to deal with
+personally as well. Avoiding them pays off for you, and for the others
+around you, which will come around to pay off for you again. Double win.
+
+So, without further ado, the principles of defensive coding.
+
+### Formality
+
+> A little bit of formality in your work goes a long way.
+
+By formality, I mean things like:
+*   Writing unit tests.
+
+    No need to go overboard, often times one or two tests covering specific
+    edge cases are enough.
+*   Writing documentation/comments.
+
+    Again, don't go overboard, all you need for documentation is to point
+    out particular hard to see invariants, edge cases, or unusual patterns
+    you have identified. Anything clearly seen by reading the code has no
+    place being documented, unless reading the code is not recommended (e.g.
+    external APIs, libraries).
+*   Choosing data types that can accurately represent the problem being solved.
+
+    For example choosing a precise numeric type rather than using `float`
+    for monetary data so as not to lose data and cause people to lose money.
+*   Writing interfaces that prevent misuse.
+
+    A two step process always leaves room for error. Wrap up lower level
+    operations into simple interfaces that cannot be used wrong.
+
+Formality does not mean being unnecessarily verbose or pedantic. Aim for
+a healthy amount of explicit and clear.
+
+### Boyscouting
+
+> You wouldn't want to live at a dirty campsite. Practice the boyscout rule,
+> but do it before you start.
+
+For those who haven't heard, the boyscout rule says to "always leave the code
+better than when you found it." Making the code better before you start coding
+is recommended because it both solidifies your own understanding of the code you
+are about to be modifying, while also making that code easier to add a new feature
+to.
+
+This is not to say to skip cleaning up after you're done. Your work will likely
+leave a mess, and it's important to clean that up too. Once the feature works,
+you're likely around 70% done, with the rest of your time being spet cleaning
+up.
+
+### One thing at a time
+
+> Break down problems and solve them in steps. Keep to one specific objective
+> at a time.
+
+It's hard to keep everything straight if you do it all in one big chunk.
+It's also hard to look back and understand what has changed if there's
+too much changing at once.
+
+Often times a solution that you broke down into many independent steps will
+actually be a better solution than the one that you were able to build all
+in one shot. That time it took you to break down the problem gives you a
+better understanding of how to solve it, and the independent steps likely led to
+a cleaner structure.
+
+Additionally, other developers (your future self) will be able to look back at the
+commits you made and recall and understand the decisions made, rather than that
+one commit reading `Implemented the feature`.
