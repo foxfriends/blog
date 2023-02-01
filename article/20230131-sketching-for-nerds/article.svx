@@ -1,0 +1,187 @@
+---
+title: Sketching for nerds
+subtitle: Good programmers borrow, great programmers steal
+date: 2023-01-31
+tags:
+- learning
+author: Cam
+---
+
+As programmers, we are taught like mathematicians and trained like engineers.
+Our day to day work is that of practically applying our trade to solve business
+problems. We take crash courses and join boot camps as if to prepare us for a
+militaristic workforce of squashing bugs and closing tickets. Meanwhile the
+actual experience is that of reading tutorials and watching instructional YouTube
+videos and copying answers from Stack Overflow.
+
+None of this is very beautiful, and that's where I think it all goes wrong.
+
+To me, the life of a programmer ends up pulling as many parallels to that of an
+artist as it does the traditional engineer's, only our math and engineering
+upbringing leads us away from the artist's techniques that can help us succeed.
+
+In particular, today we think about sketching. An artist does it as if by second
+nature or even compulsion: in sketch books, in journals, in the margins of
+important papers, you name a place and your artist friend has likely doodled
+something there.
+
+Taking inspiration from things they've seen in the day, or specific details that
+they hope to improve their understanding of, an artist will simply take up their
+tools and go about making it happen. Given a bit more time, an artist may find a
+reference image and simply recreate it, not because they particularly wanted to
+draw a bowl of fruit, per se, but because there is much to learn simply by
+doing---by taking something simple and making sure every detail is appreciated
+and understood.
+
+This process of sketching, freely from the mind or from a reference, is something
+we could use more of in our lives as programmers.
+
+When I was learning how to code, often what I used for learning were algorithmic
+challenges: given this input, produce that output. Like LeetCode but before it
+was cool. While a valuable exercise to get practice with algorithms, and it would
+technically fall into the "sketching" category, there is so much more to programming
+than this outcome-driven engineering stuff. I wish my developer upbringing had more
+practical and experimental sketching tasks---I have never needed knapsack
+algorithm on the job.
+
+Better than following any sort of lesson plan, a more artistically inspired
+sketching habit will do you great favours. Find inspiration for your sketches
+in code you see and problems you are faced with in the moment, letting that
+distraction carry you places you may not have reached otherwise.
+
+When faced with a boring mundane task (reformat some data, etc), try doing it
+in an unusual way. For example, instead of doing what you might have normally do
+with a for loop, try using functional combinators to compose a function to
+solve that problem instead. Changing it up a bit can give a break from thinking
+about the work and find joy in simple challenges instead (while still being able
+to justify it as being productive).
+
+If you're learning a second language, try taking some of the interesting constructs
+of that language and reimplementing them in one you are more comfortable with.
+You will gain a better understanding not just of the new concept, but also of
+many details of the language you already knew, as you will likely need to use
+some less conventional techniques to implement a novel language feature.
+
+When you find yourself puzzled by the options provided by a new framework, or
+simply curious about how it works, see if you can build a clone of it. No need
+to go and reproduce the whole highly optimized thing with its expansive API
+yourself, but make that toy version, much like what was likely the MVP of that
+library in question, at some point in its history. Peel back the layers and you'll
+find there is not all that much magic inside; usually it's just a simple idea in
+a clever package.
+
+------
+
+Like this idea, but don't know where to start? Try a few of my favourite
+Javascript sketches from the past.
+
+#### Go full functional
+
+To get some practice on functional programming, try installing a package like
+[Ramda](https://ramdajs.com/) and using it to construct all helper functions
+in your current project.
+
+One such function I often use allows me to interpolate functions into a template
+string to produce a function that calls the interpolated functions on its parameter
+to produce the final string. Works great with Ramda functions, and is pretty succinct
+to implement using Ramda functions as well.
+
+```javascript
+const fmt = /** fill in this blank **/;
+
+const ordinal = pipe(toString, /** another good blank **/);
+const formatAge = pipe(prop("age"), ordinal);
+const wish = fmt`Happy ${age} birthday ${prop("name")}!`;
+
+console.log(wish({ age: 37, name: "Jeff" }));
+// Happy 37th birthday Jeff!
+```
+
+#### KeyPaths
+
+KeyPaths are a feature of Swift which I haven't found an exact equivalent to in
+any other language. Lenses are similar, as are closures that access properties,
+but Swift includes special syntax for values of the KeyPath class in particular.
+
+A KeyPath allows you to write an accessor for a property of a value to be applied
+to that object later. In a trivial example of KeyPath usage:
+
+```swift
+struct Job {
+  let company: String
+  let position: String
+}
+
+struct Person {
+  let name: String
+  let job: Job
+}
+
+let pathToCompany = \Person.job.company
+let person = Person(
+  name: "Jeff",
+  job: Job(company: "Google", position: "Engineer")
+)
+print(person[keyPath: pathToCompany]) // Google
+```
+
+The sketch: reimplement something like KeyPath syntax in [Javascript](https://gist.github.com/foxfriends/2d7d59db62d3647221bf5d1ccb2ea8d7).
+
+```javascript
+const _ = /** fill in this blank **/;
+
+const pathToCompany = _.name.company;
+const person = {
+  name: "Jeff",
+  job: { company: "Google", position: "Engineer" },
+};
+console.log(pathToCompany(person));
+```
+
+#### Observables
+
+The fundamental idea of most UI frameworks these days is reactive functional
+programming. Given some data, render the UI; when that data changes, update
+the UI. Under the hood, this is implement in our typically imperative UI
+building languages using observables: objects that represent a signal over time.
+
+Rebuilding some simple observables helps shed a lot of light on how they work
+inside. In the most basic case, we can have an observable that represents a
+variable that can change.
+
+```javascript
+const store = makeStore(0);
+const unsubscribe = store.subscribe((value) => console.log(value));
+store.set(1); // logs 1
+store.set(2); // logs 2
+unsubscribe();
+store.set(3); // does not log 3
+```
+
+Observables get more interesting in that they can use another observable as
+their source, and transform the signal to produce a new observable:
+
+```javascript
+const store = makeStore(0);
+const doubledStore = deriveStore(store, (x) => x * 2);
+const unsubscribe = doubledStore.subscribe((value) => console.log(value));
+store.set(1); // logs 2
+store.set(2); // logs 4
+unsubscribe();
+store.set(3); // does not log 6
+```
+
+The sketch: Implement the `makeStore` and `deriveStore` functions. As a
+bonus, implement the `pipe` method on your observables and some operators
+to make composition easier. This is the same interface popularized by
+packages like [RxJS](https://rxjs.dev/).
+
+```javascript
+const store = makeStore(0);
+const doubledStore = store.pipe(map((x) => x * 2));
+const unsubscribe = doubledStore.subscribe((value) => console.log(value));
+store.set(1); // logs 2
+store.set(2); // logs 4
+unsubscribe();
+store.set(3); // does not log 6
+```
