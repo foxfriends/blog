@@ -390,7 +390,7 @@ function Checkout() {
 ```
 
 Presented like this it's already getting a bit hard to interpret; without reading the code
-pretty closely and simulating its execution in your mond, you don't know exactly how this
+pretty closely and simulating its execution in your mind, you don't know exactly how this
 component behaves. It would be pretty easy for me to swap the `billing_details` and
 `shipping_address` steps and you'd be hard-pressed to notice until you really looked
 closely. The order of the steps doesn't actually depend on the order of the `switch`
