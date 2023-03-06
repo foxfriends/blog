@@ -1,0 +1,1692 @@
+---
+title: The three dimensional program
+subtitle: "Time doesn't fit on a screen"
+date: 2023-03-05
+tags:
+- exploration
+- webdev
+author: Cam
+---
+
+<script>
+  let stackRotation = 0;
+  let callbacksRotation = 0;
+  let stack2Rotation = 0;
+  let asyncRotation = 0;
+  let observableRotation = 10;
+  let backwardsRotation = 0;
+  let continuationRotation = 0;
+  let rendersequenceRotation = 0;
+  let effectRotation = 0;
+  let effectBackRotation = 0;
+
+  let showComments = true;
+</script>
+
+Our computers lead us to believe that we work in two dimensions. Screens are flat, as
+are the things that are displayed on them and the controls with which we manipulate
+those things.
+
+Despite the screen being flat, it's pretty easy (and feels quite natural) to project a
+3D image onto that surface. Indeed this is what many games, movies and other images are
+doing, and it looks great. Sure we can't look around in that space anymore but from the
+single perspective we are presented it's not so bad.
+
+Meanwhile, if you're the type to have tried to play or build a 3D game, or have tried
+to construct or animate 3D models, you must have felt the awkwardness that is trying
+to manipulate a 3D object through that 2D projection. It just isn't fun (or at least, I
+don't think it is). There simply aren't enough ways to move your mouse on that 2D surface
+to perform all the operations that 3D manipulations require, so gestures and controls
+get overloaded until it's just so confusing. That's why I stick to coding.
+
+Code is two dimensional. It is written as horizontal lines of text, stacked vertically. It
+is run as if going left to right, top to bottom, occasonally jumping back and forth around
+the page as functions are called and returned from. We can manipulate it using our mouse
+and keyboard without any struggle or ambiguity as to what our actions mean. Everything is
+great.
+
+> If you claim the hardware runs in one dimension, there are a bunch of fun parallels you
+> can draw with how the 1D projection of the 2D code makes things a bit harder for the
+> processor to deal with, but that's not the subject of this article.
+
+The two dimensional representation of code leads us to believe (at least subconsiously)
+that our programs are two dimensional as well. Indeed many are, particularly scripts
+and tools. They start up, run to completion, and then end, typically producing some
+output: the two dimensions of the code are sufficient to represent the entirety of such
+a program in an intuitive way.
+
+Unfortunately, not all programs fit nicely in two dimensions, and the ones that don't
+are the ones we tend to spend a lot of time building. A program that starts and then
+runs *forever* (or at least, until a user closes it) is what might be considered a
+"three dimensional program". Three dimensional programs typically don't have any
+particular "output", but instead act as tools that the user will interact with to
+perform some task (albeit sometimes outputting things, but only as a side effect).
+Sound familiar? That's pretty much every application built or used by anyone.
+
+We should have lots of experience building these by now, and yet they remain one
+of the harder types of project to build and maintain. Where two dimensional programs
+often reach "completion" (written, released, and generally left alone), three
+dimensional programs never seem to be done. There's always another bug that needs
+fixing, another feature to be added... it just never ends.
+
+It's easy to claim that this endlessness is for practical reasons: most applications are
+large (and therefore have many bugs), and the need for new features often comes as a result
+of the business trying to reach more users and solve more problems. I claim, however, that
+this endlessness is primarily due to our lack of understanding of the third dimension.
+
+The third dimension to a program is *time*. Where two dimensional programs run top to bottom,
+three dimensional programs run primarily back to front: at each point in time different parts
+of the code are run (in the usual top to bottom way) layered above the previous state of
+the application---the resulting state after the code was ran at the previous point
+in time---to produce next state of the application.
+
+<div class="control" style="transform: rotateY({stackRotation}deg)">
+<div class="stack perspective">
+<div class="layer background">
+
+```javascript
+function App() {
+  const [count, setCount] = useState(0);
+  return <button onClick={() => setCount(count + 1)}>{count}</button>
+}
+```
+
+</div>
+{#each [...new Array(4).keys()] as i}
+  <div class="layer foreground" style="transform: translateZ({(4 - i) * 2}em)">
+
+  ```javascript
+  function App() {
+    const [count, setCount] = useState(0);
+    return <button onClick={() => setCount(count + 1)}>{count}</button>
+  }
+  ```
+
+  </div>
+{/each}
+</div>
+</div>
+
+<input type="range" min="0" max="60" bind:value={stackRotation} />
+
+It's this layering that does not lend itself well to our two dimensional representation of
+code, and our two dimensional mental model of the execution of that code. Not for lack of
+trying, however, as there have been a number of approaches by which we have attempted to
+add the time axis to our code, to varying degrees of success.
+
+Callbacks are the classical example, where a function is passed along and called when some
+task is completed, or some event occurs. The callback is a simple solution that has stood
+the test of time: posing almost no restrictions as to what can be done, or how the result
+should be used, the callback can be seen as the most fundamental abstraction over our third
+dimension. They are not, however, fun to use, especially in our two dimensional code, where
+having crossed the boundary of the callback there is no returning to where we once were.
+As we all know: time never goes backwards. In programming, that is realized as the inability
+to use `return`, which proves to be a major inconvenience as now every function requires
+passing a callback instead, which quickly gets annoying.
+
+<div class="control" style="transform: rotateY({callbacksRotation}deg)">
+<div class="callbacks perspective">
+<div class="layer background">
+
+```javascript
+const button = document.querySelector("button");
+let x = 0;
+button.addEventListener(
+
+
+
+)
+```
+
+</div>
+<div class="layer foreground">
+
+```javascript
+() => {
+  alert(`Button clicked ${++x} time(s)!`);
+}
+```
+
+</div>
+</div>
+</div>
+
+<input type="range" min="0" max="60" bind:value={callbacksRotation} />
+
+Promises (or futures) are a logical next step: an inversion of control where instead of
+passing a function to a task to have it called, the task returns a value that allows you
+to watch for its completion. Compared to callbacks, promises open up a bunch of
+composition options: you can now pass the promise to other functions (even multiple functions)
+or transform the value of the promise to produce a new promise that you can then pass to
+other functions that expect differently shaped inputs, or return to callers that expect
+particular outputs.
+
+Though the flexibility is endless, those objects are a bit of a pain to work with; the code
+still looks like callbacks in the end. Async functions are a tool that let us believe we
+are working in our usual two dimensional imperative form, where that the time axis is
+hidden in the awaits. We don't lose that much from this transformation either: the
+composability of the promise is still there.
+
+<div class="control" style="transform: rotateY({asyncRotation / 2}deg) rotateX(-{asyncRotation / 2}deg)">
+<div class="async perspective">
+<div class="layer background">
+
+```javascript
+async function getTodos() {
+                         fetch("/todos/");
+
+
+
+
+
+)
+```
+
+</div>
+<div class="layer midground await">
+
+```javascript
+  const response =
+                       response.json();
+
+
+
+```
+</div>
+<div class="layer foreground await">
+
+```javascript
+const todos =
+// do!
+```
+
+</div>
+</div>
+</div>
+
+<input type="range" min="0" max="60" bind:value={asyncRotation} />
+
+Unfortunately, the use of promises and async functions did cause us to lose one of the
+advantages of callbacks: they may be called multiple times. Events such as button clicks
+tend to occur repeatedly, but there is no way to turn that repeatable event into a promise,
+or use it in an async function, as a promise can only resolve once. In this sense, promises
+and async functions aren't truly three dimensional the way they manifest in our code:
+they accept the fact that they are only a two dimensional projection, and by accepting that
+fact they remain relatively easy to work with.
+
+In an attempt to reclaim the full third dimension, taking it one step further yields the
+observable (or stream): an object that represents a sequence events or a changes to a value
+that occur over time. Like the promise, the observable is an inversion of control, leaving
+it up to the caller to watch the observable for its events and handle those events as needed.
+Like with promises, this opens up all the same composition options: it is easy to combine
+different observables and transform their events into different shapes and results, or
+to pass an observable into another function to provide a generic trigger. This concept
+begins the entire paradigm of "functional reactive programming".
+
+In functional reactive programming, we create an observable in the regular 2D fashion,
+then we transform that observable by chaining it together with other computations *in
+the third dimension*. This creates a new observable in our original 2D space that we
+use to represent some work that happens over the 3D spacetime.
+
+<div class="control" style="transform: rotateX({-observableRotation}deg)">
+<div class="observable perspective">
+<div class="layer background">
+
+```javascript
+const buttonClicks = event("click", button);
+const alerts = buttonClicks.pipe(
+
+);
+alerts.subscribe();
+```
+
+</div>
+<div class="tangent">
+
+```javascript
+count(),
+forEach((n) => alert(`Button clicked ${n} time(s)!`)),
+```
+
+</div>
+</div>
+</div>
+
+<input type="range" min="0" max="60" bind:value={observableRotation} />
+
+Unfortunately, observables feel awkward and annoying to use and hard to reason about
+because they don't fit into our two dimensional ideal very well. Even more unfortunately,
+we don't have any language feature such as async functions to save us (at least, not in most
+languages conventionally used for app development). Instead, the common approach is to
+use a framework to abstract away the observables and expose a "reactive programming"
+interface to the same concept (note the loss of "functional").
+
+Such frameworks include the ever popular React (which has gone so far as to put its reactiveness
+right in the title) as well as most other web frameworks: Vue, Svelte... the list goes on.
+Not to be limited to the web, [SwiftUI](https://developer.apple.com/xcode/swiftui/) takes the
+same approach for iOS apps, as does [Relm](https://github.com/antoyo/relm) for desktop GUIs.
+
+```javascript
+function AdditionCalculator() {
+  const [left, setLeft] = useState(0);
+  const [right, setRight] = useState(0);
+  const result = left + right;
+
+  return (
+    <div>
+      <input
+        type="number"
+        value={left}
+        onChange={(e) => setLeft(+e.target.value)} />
+      +
+      <input
+        type="number"
+        value={right}
+        onChange={(e) => setRight(+e.target.value)} />
+      = {result}
+    </div>
+  )
+}
+```
+
+In this simple calculator example, the variable `result` is "reactive" to the values of
+`left` and `right`. Because this is written in React, *hooking* into that reactivity
+(see what I did there) is a manual process. We no longer have access to regular old
+assignment, and instead state must be updated by using the setter callback returned by
+`useState`.
+
+Svelte goes a bit further, making things truly look like a reactive program in this
+following equivalent example. We can just assign to `left` or `right` directly, and
+`result` updates automatically:
+
+```svelte
+<script>
+  let left = 0;
+  let right = 0;
+  $: result = left + right;
+</script>
+
+<div>
+  <input type="number" bind:value={left} />
+  +
+  <input type="number" bind:value={right} />
+  = {result}
+</div>
+```
+
+This is a functioning approach---the imperative look and feel makes these frameworks
+quick to pick up and use to build something---but, much as with any abstraction, we tend
+to lose sight of some of the nuances of the problem at hand, and without proper care, this
+can come back to bite us.
+
+Most often this leads to bugs which seem like "unexpected" behaviour to someone who does not
+fully realize that they are writing code within a reactive framework. They might still think
+it is typical imperative code (as it does look basically the same) and be surprised to find
+that some state is (or, is not) updated despite assigning it a new value. This part of the
+problem is most apparent in React where the manualness of hooks means it's easy to accidentally
+mess it up and cause those bugs. Svelte solves this a bit better by having the compiler do all the
+work for us so everything just goes as if by magic.
+
+The second part of the problem with this approach is that it leads to the loss of some of the full
+power and expressivity of the original concept of reactive programming. Where a truly reactive
+program is able to only re-compute the values that need changing, a React program must re-run
+the entire function, thus recomputing every intermediate value along the way. We're not *actually*
+writing reactive code, we're just running our code over and over again for every new state. Again,
+Svelte solves this problem a bit better by restructuring your code into an actual reactive
+program that rerenders only the parts needed, but at the cost of heavier compiler work and
+a few restrictions on syntax.
+
+As I finally get to the point, I will present one of the most frustrating yet frequently
+occurring situations in app development I have come across in pretty much every project
+I've ever worked on. I call it __the steps problem__. This problem is one case of loss of
+expressivity that exists in both React and Svelte (in fact no framework I've seen in
+widespread use has solved it to my satisfaction), as it is a bit of a "higher-order"
+reactivity problem that current systems are unable to account for.
+
+In particular, we'll be looking at the *reentrant* steps problem, or in friendlier
+terms, "steps with a back button". In React, it looks like this:
+
+```javascript
+function Checkout() {
+  const [step, setStep] = useState("confirm_cart");
+  const [address, setAddress] = useState(null);
+  const [billing, setBilling] = useState(null);
+
+  switch (step) {
+    case "confirm_cart":
+      return (
+        <ConfirmCart
+          cart={cart}
+          onSubmit={() => setStep("shipping_address")} />
+      );
+    case "shipping_address":
+      return (
+        <AddressForm
+          onBack={() => setStep("confirm_cart")}
+          onSubmit={(address) => {
+            setAddress(address);
+            setStep("billing_details");
+          }} />
+      );
+    case "billing_details":
+      return (
+        <BillingForm
+          onBack={() => setStep("shipping_address")}
+          onSubmit={(billing) => {
+            setBilling(billing);
+            setStep("confirmation_screen");
+          }} />
+      );
+    case "confirmation_screen":
+      return (
+        <ConfirmationScreen
+          cart={cart}
+          address={address}
+          billing={billing}
+          onBack={() => setStep("billing_details")}
+          onConfirm={() => submitPurchase(cart, address, billing)} />
+  }
+}
+```
+
+Presented like this it's already getting a bit hard to interpret; without reading the code
+pretty closely and simulating its execution in your mond, you don't know exactly how this
+component behaves. It would be pretty easy for me to swap the `billing_details` and
+`shipping_address` steps and you'd be hard-pressed to notice until you really looked
+closely. The order of the steps doesn't actually depend on the order of the `switch`
+statement. In fact, it doesn't depend on anything at all other than the imperatively
+updated state variable.
+
+In practice there's usually a lot more going on in such a situation too, where after each
+form is submitted the answers are validated and maybe some API calls are fired, and there's
+usually a few common layout components wrapping the whole flow so you can't even use an
+actual `switch` statement... you get the point.
+
+The root of the problem is that we have a component that changes shape over time. A *three
+dimensional component*, if you will. As always, in our two dimensional world we can only
+work with projections of three dimensional objects, so we have no choice but to spread
+that component out across the vertical axis, rather than its natural time axis.
+
+<div class="control" style="transform: rotateY({stack2Rotation}deg)">
+<div class="stack perspective">
+<div class="layer background">
+
+```javascript
+function Checkout({ cart, next }) {
+  return (
+    <ConfirmCart
+      cart={cart}
+      onSubmit={next} />
+  );
+}
+```
+
+</div>
+<div class="layer foreground" style="transform: translateZ(2em)">
+
+```javascript
+function Checkout({ back, next }) {
+  return (
+    <AddressForm
+      onBack={back}
+      onSubmit={next} />
+  );
+}
+```
+
+</div>
+<div class="layer foreground" style="transform: translateZ(4em)">
+
+```javascript
+function Checkout({ back, next }) {
+  return (
+    <BillingForm
+      onBack={back}
+      onSubmit={next} />
+  )
+}
+```
+
+</div>
+<div class="layer foreground" style="transform: translateZ(6em)">
+
+```javascript
+function Checkout({ cart, address, billing, back }) {
+  return (
+    <ConfirmationScreen cart={cart} address={address} billing={billing}
+      onBack={back}
+      onConfirm={() => submitPurchase(cart, address, billing)} />
+  );
+}
+```
+
+</div>
+</div>
+</div>
+
+<input type="range" min="0" max="60" bind:value={stack2Rotation} />
+
+That's... obviously much better? It's a lot shorter anyway, with less branches and less
+mutable state: all common features of what I consider to be "better" code. It's just
+completely unreadable and not physically possible because it's in 3D.
+
+What *could* be possible is using one function to code in the "space" axes and another to sequence
+things in the time axis, much like async functions do. In a highly theoretical form, you might
+wish to write something like this, naturally using an async function to encapsulate the time axis
+and awaiting the forms to be submitted (you can visualize the 3D for this like the other async
+example above):
+
+```javascript
+async function Checkout({ cart }) {
+  await <ConfirmCart cart={cart} />;
+  const address = await <AddressForm />;
+  const billing = await <BillingForm />;
+  await (
+    <ConfirmationScreen
+      cart={cart}
+      address={address}
+      billing={billing} />
+  );
+  return submitPurchase(cart, address, billing);
+}
+```
+
+In this form it is very clear exactly what data is used by which component and where
+it comes from. You can almost intuitively understand what it does just by looking at it. Heck
+it fits on a blog post without any issue, which is the part that's saying something.
+Of course, this might be because we completely ditched the back button.
+
+Putting the back button back in is where things get hairy. Our async function gets
+cancellation built in via throw, which feels like a great place to hook in the cancellation
+behaviour of going back, but in order to go backwards, we must combine that throwing with a
+loop to try again. As you can see, it's far from pretty, but I think it might work
+in this hypothetical awaitable-component framework:
+
+```javascript
+async function Checkout({ cart }) {
+  for (;;) {
+    await <ConfirmCart cart={cart} />;
+    for (;;) {
+      try {
+        const address = await <AddressForm />;
+        for (;;) {
+          try {
+            const billing = await <BillingForm />;
+            try {
+              await (
+                <ConfirmationScreen
+                  cart={cart}
+                  address={address}
+                  billing={billing} />
+              );
+              return submitPurchase(cart, address, billing);
+            } catch {
+              break;
+            }
+          } catch {
+            break;
+          }
+        }
+      } catch {
+        break;
+      }
+    }
+  }
+}
+```
+
+Does this mean that we've made time go backwards? Not exactly... though it might look like it.
+In the case that one of these `break` statements gets reached and we go back up a level,
+what happens is that the loop begins again, but on top of a few time-layers. This is the same
+approach that our original `switch` statement version takes, where going back doesn't reverse time, it just sets the state to look like it did on the previous screen. An abridged
+three dimensionalization grows quickly quite cursed:
+
+<div class="control" style="transform: rotateY({backwardsRotation}deg)">
+<div class="backwards perspective">
+<div class="layer background">
+
+```javascript
+async function Checkout({ cart }) {
+  for (;;) {
+    await <ConfirmCart cart={cart} />;
+
+
+
+
+
+
+
+
+  }
+}
+```
+
+</div>
+<div class="layer midground">
+
+```javascript
+    for (;;) {
+      try {
+        const address = await <AddressForm />;
+        // the rest here
+      } catch {
+        break;
+      }
+    }
+```
+
+</div>
+<div class="layer foreground">
+
+```javascript
+for (;;) {
+  await <ConfirmCart cart={cart} />;
+  for (;;) {
+    try {
+      const address = await <AddressForm />;
+      // the rest here
+    } catch {
+      break;
+    }
+  }
+}
+```
+
+</div>
+</div>
+</div>
+
+<input type="range" min="0" max="60" bind:value={backwardsRotation} />
+
+You've likely never seen code like that before (I sure haven't), and let's hope we
+never have to again.
+
+What we've done is re-introduce some restricted form of `goto` to Javascript.
+Everyone hates on `goto`, and often for good reason, but it has its merits. `goto`
+itself isn't inherently evil; the evil comes from how it's used. Truly, all the control
+flow that we know and love is a restricted, careful usage of `goto` that has clear
+and intentional semantics. Right now, we're inventing a new control flow pattern, and
+so we find ourselves using `goto`, and that's ok. This isn't going to become an article
+in favour of `goto` though, so I'll stop here.
+
+We still don't like the manual `goto` stuff (in it's hacky `break` based approximation
+especially) and would like something better. So what can we do?
+
+The first step will be to convert from this imperative `goto` form into a more functional
+continuation-based approach. A *continuation* is basically just a function that represents
+"the rest" of the code that needs to run, so rather than describing how far *back* to go,
+we just note where to *continue* to in each situation.
+
+```javascript
+async function Checkout({ cart }) {
+  async function confirmCart() {
+    await <ConfirmCart cart={cart} />;
+    return shippingAddress();
+  }
+
+  async function shippingAddress() {
+    try {
+      const address = await <AddressForm />;
+      return billingDetails(address);
+    } catch {
+      return confirmCart();
+    }
+  }
+
+  async function billingDetails(address) {
+    try {
+      const billing = await <BillingForm />;
+      return confirmationScreen(address, billing);
+    } catch {
+      return shippingAddress();
+    }
+  }
+
+  async function confirmationScreen(address, billing) {
+    try {
+      await (
+        <ConfirmationScreen
+          cart={cart}
+          address={address}
+          billing={billing} />
+      );
+      return submitPurchase(cart, address, billing);
+    } catch {
+      return billingDetails(address);
+    }
+  }
+
+  return confirmCart();
+}
+```
+
+Continuations, are basically just the functional `goto` and, as you can see, the naively
+transformed result is not much better looking. All we were able to do was flatten a
+few levels of horizontal nesting by making use of function parameters. The logic and control
+flow remains segmented and generally unclear given only the shape of this code, but at least
+the naming is a bit more clear (we get function names instead of mysterious `break`
+statements). The real gains, however, are in the third dimension:
+
+<div class="control" style="transform: rotateY({continuationRotation}deg)">
+<div class="continuation perspective">
+<div class="layer background">
+
+```javascript
+async function Checkout({ cart }) {
+  return confirmCart();
+}
+
+
+
+
+
+
+```
+
+</div>
+<div class="layer foreground" style="transform: translateZ(2em)">
+
+```javascript
+async function confirmCart() {
+  await <ConfirmCart cart={cart} />;
+  return shippingAddress();
+}
+```
+
+</div>
+<div class="layer foreground" style="transform: translateZ(4em)">
+
+```javascript
+async function shippingAddress() {
+  try {
+    const address = await <AddressForm />;
+    return billingDetails(address);
+  } catch {
+    return confirmCart();
+  }
+}
+```
+
+</div>
+<div class="layer foreground" style="transform: translateZ(6em)">
+
+```javascript
+async function confirmCart() {
+  await <ConfirmCart cart={cart} />;
+  return shippingAddress();
+}
+```
+
+</div>
+</div>
+</div>
+
+<input type="range" min="0" max="60" bind:value={continuationRotation} />
+
+Seeing this, it's quite a bit closer to the ideal perfect stack we had, even
+when our control flow includes some steps backwards like it does above. Each layer
+includes only the code relevant to that step. Meanwhile, in the loop and `break` version,
+each layer had to include all of the nested loops and it required the context of the
+parent to understand where the `break` statement would send us to, which was not ideal.
+
+The only thing we might do to make this better, and more like the original ideal stack,
+would be to pass in the next and previous steps via the `next` and `back` parameters, making
+the steps truly self contained and completely composable (composable is really our goal here).
+It would also be nice to not have to pass the `address` directly to the `billingDetails` step,
+since it isn't needed there other than to just be passed along to `confirmationScreen`.
+
+Conveniently, now that we're using continuations, all that's pretty easy; continuations
+are just weird functions so we can pass them in instead of calling them directly.
+I'm sure you can imagine how that looks yourself.
+
+Now all that's left is to come up with some orchestrator that is able to chain together
+these steps and pass along the continuations as required. Ideally, this is done in some
+way that two things are clear:
+* The order in which the steps occur
+* Which steps depend on the data from which other steps
+
+Additionally, since it's possible to go back to a previous step, change some data,
+and have that data reflected in the future states, what we're looking at is a reactive
+programming problem, only it's not just values that are depending on other values but
+entire pages of the application depending on the results of other pages. This is a job
+for observables!
+
+For now, we'll just consider how we might want this code to work, and not how it
+is implemented. Pretend our observables have an API similar to popular Javascript
+library [RxJS](https://rxjs.dev/) (we'll be borrowing a bunch of operators from them)
+but don't get too tied up in that similarity because this isn't actually that similar
+in terms of how the observables will function on the inside (which actually won't be
+explored here, but it works a particular way in my head and you'll have to trust me).
+
+```javascript
+const confirmCart = pipe(
+  withLatestFrom([cart]),
+  switchMap(([cart]) => <ConfirmCart cart={cart} />),
+);
+
+const shippingAddress = <ShippingForm />;
+
+const billingDetails = <BillingForm />;
+
+const confirmationScreen =
+  pipe(
+    withLatestFrom([cart, shippingAddress, billingDetails]),
+    switchMap(([cart, address, billing]) => (
+      <ConfirmationScreen
+        cart={cart}
+        address={address}
+        billing={billing} />
+    )),
+  );
+
+const checkout = renderSequence([
+  confirmCart,
+  shippingAddress,
+  billingDetails,
+  confirmationScreen,
+]);
+
+renderer()
+  .pipe(
+    checkout,
+    withLatestFrom([cart, shippingAddress, billingDetails]),
+    forEach(([cart, address, billing]) =>
+      submitPurchase(cart, address, billing)
+    ),
+  )
+  .subscribe()
+```
+
+This time rather than considering each component to be represented as a promise
+that can be awaited, each component is an observable that takes *two inputs* and
+produces *one output*. This is the part that is not quite the same as the way most
+existing observable libraries work (where observables typically take at most one
+input), but neither have most observable libraries been responsible for
+rendering an application before, so we're breaking ground here.
+
+Though it is a bit more abstract in readability, we start to be able to see
+the composability of this approach. The sequence of steps in the checkout flow
+is clearly written, and in a way that we know there's no chance of us messing
+up the state and going to the wrong step (because there is no state).
+
+Additionally, the dependencies between steps are clearly noted at the place where
+each step is defined. You can see this in the definition of `confirmationScreen`,
+which requires the latest values from each of `cart`, `shippingAddress`, and
+`billingDetails` in order to do its job.
+
+<div class="control" style="transform: rotateY({rendersequenceRotation / 2}deg) rotateX(-{rendersequenceRotation / 2}deg)">
+<div class="rendersequence perspective">
+<div class="layer background">
+
+```javascript
+renderer()
+  .pipe(
+    checkout,
+    withLatestFrom([cart, shippingAddress, billingDetails]),
+    forEach(([cart, address, billing]) =>
+      submitPurchase(cart, address, billing)
+    ),
+  )
+  .subscribe()
+```
+
+</div>
+<div class="tangent checkout">
+
+```javascript
+const checkout = renderSequence([
+  confirmCart,
+  shippingAddress,
+  billingDetails,
+  confirmationScreen,
+]);
+```
+
+</div>
+<div class="layer foreground thin" style="transform: translateZ(2em)">
+
+```javascript
+const confirmCart = pipe(
+  withLatestFrom([cart]),
+  switchMap(([cart]) => <ConfirmCart cart={cart} />),
+);
+```
+
+</div>
+<div class="layer foreground thin" style="transform: translateZ(3em)">
+
+```javascript
+const shippingAddress = <ShippingForm />;
+```
+
+</div>
+<div class="layer foreground thin" style="transform: translateZ(4em)">
+
+```javascript
+const billingDetails = <BillingForm />;
+```
+
+</div>
+<div class="layer foreground thin" style="transform: translateZ(5em)">
+
+```javascript
+const confirmationScreen =
+  pipe(
+    withLatestFrom([cart, shippingAddress, billingDetails]),
+    switchMap(([cart, address, billing]) => (
+      <ConfirmationScreen
+        cart={cart}
+        address={address}
+        billing={billing} />
+    )),
+  );
+```
+
+</div>
+</div>
+</div>
+
+<input type="range" min="0" max="60" bind:value={rendersequenceRotation} />
+
+The three dimensional representation of this code now stacks up quite wildly.
+Within the `renderer()` pipeline, the `checkout` step encapsulates how the
+other four steps relate over the tangential time dimension. Meanwhile,
+in that `checkout` pipeline, each of the four steps also represents some
+computation (rendering) over yet another branch of time, so they are written
+in another direction as well.
+
+However, if you look closely (I apologize, I know it's physically hard to see),
+you'll notice that the four steps stack up largely like they did in our ideal
+layering above. Sure, there's a bit more plumbing around it, which we could
+probably use some library to get rid of, but the stacking itself is fairly
+straightforward, and each stack is self contained in its own dependencies.
+
+Admittedly in a checkout flow, it's not all that likely to want to switch
+the order of the steps around, but the advantage of the composability created
+by this current approach is that it's as easy as just composing them in a different
+order. If you really did want to check the billing details before the shipping
+address, you can just swap the order in the array and the whole thing still
+works.
+
+Arguably more importantly than the ability to reorder these things is just
+the ability to see them in order, clearly, and truly get that separation
+of concerns---each step only cares about how it gets its own job done, not
+about which step comes next or where it gets its data from. Something about
+this solution gives me that feeling of "completion"; there's nothing left
+that could go wrong, all the behaviour is encapsulated into bite sized chunks
+and composed into a larger system declaratively; no side effects, no mutation.
+
+The main thing we're lacking now is a convenient syntax to back this system up.
+In my experience, while observables in their bare form are very powerful (as we
+just saw), having to manually manage them and their lifecycles (a particular
+detail of the system that we have overlooked in this article) is a very error-prone
+task.
+
+Unfortunately, Javascript as it stands doesn't truly support the features we need
+for such a syntax; the closest we can get using real-life Javascript concepts
+are basically just the things we've seen already. The missing piece is algebraic
+effects, for which we'll have to improvise a bit on some syntax.
+
+Take your time with this next one, and don't necessarily expect it to all make
+sense your first time through. In fact, maybe go read some [other][] [people][]'s
+articles on algebraic effects if it's not sinking in right away, as they take more
+time to explain them. I'm mostly interested in showing off the usefulness of effects
+in this particular situation (and my personal take on how we might choose to
+implement them).
+
+[other]: https://overreacted.io/algebraic-effects-for-the-rest-of-us/
+[people]: https://www.eff-lang.org/handlers-tutorial.pdf
+
+<div style="display: {showComments ? 'block' : 'none'}">
+
+```javascript
+// Define some effects; effects here are being represented like functions
+// without bodies. The bodies will be supplied later, contextually.
+effect render(component);
+effect next(value);
+effect back();
+
+function sequence(sequencer) {
+  // This is going to be a stack of continuations. The top item represents
+  // the beginning of the current step at any point in time, while the second
+  // from the top represents the beginning of the previous step. Regular
+  // functions are continuations too, and the start of the first step is the
+  // function we were given.
+  const stack = [sequencer];
+  // The contextual implementation of effects is provided via some
+  // statement. I'm using the defunct `with` keyword for now (mostly so
+  // it gets syntax highlighting).
+  with (sequencer()) {
+    // The `do` keyword is being used to mark each effect handler. The handler
+    // receives two continuations, as well as the arguments to the effect, as
+    // parameters.
+    do(resume, cancel) next(value) {
+      // As earlier, a continuation is just a function. Calling it causes
+      // execution to continue somewhere else. `resume` will continue from
+      // where the effect currently being handled was triggered.
+      const result = resume(value);
+      // The `resume `continuation is a "bounded" continuation. When execution
+      // reaches the end of the continuation's bound it pops back out here,
+      // as if `resume` "returned" the final result of the computation. The
+      // boundary in this case is the current `with` statement.
+
+      // Continuations can be saved for later and will continue to point to the
+      // same place. It doesn't matter that we've already called this `resume`
+      // once, continuations can be called as many times as you want, like
+      // recursion.
+      stack.push(resume);
+
+      // We must eventually use the `cancel` continuation, which is how we
+      // actually "return" from the `with` keyword (seeing as "resume" has
+      // captured that point already).
+      cancel(result);
+    }
+    do(resume, cancel) back() {
+      // We can retrieve the previous continuation from the stack and use it.
+      // The previous is the second one from the top, so we discard the top
+      // one first.
+      stack.pop();
+      const previous = stack[stack.length - 1];
+      // Once that continuation ends, we'll just `cancel` the current one
+      // with its result.
+      cancel(previous());
+      // Notably, the `resume` continuation of the `back` handler was not used
+      // at all, that's ok.
+    }
+  }
+}
+
+function checkout(cart) {
+  return sequence(() => {
+    // `render` is defined as an effect, so calling it causes the effect's
+    // handler (found in an enclosing scope) to be run. Kind of like `yield`,
+    // the execution of this function pauses, remembering where it left off,
+    // to be resumed later.
+    render(
+      <ConfirmCart
+        cart={cart}
+        onSubmit={next} />
+        // When this component submits it will trigger the
+        // `next` effect (like a callback)
+    );
+    const address = render(
+      <ShippingForm
+        onBack={back}
+        onSubmit={next} />
+        // Since this is not the first step (next has already been called by
+        // this point), we can also use the `back` effect to go back.
+    );
+    const billing = render(
+      <BillingForm
+        onBack={back}
+        onSubmit={next} />
+    );
+    render(
+      <ConfirmationScreen
+        cart={cart}
+        address={address}
+        billing={billing}
+        onConfirm={next}
+        onBack={back} />
+    );
+    return submitPurchase(cart, address, billing);
+  });
+};
+
+// The `render` effect would likely be handled by some framework.
+// We'll let that framework implement this `run` function,
+// since it requires more effort than we care about right now.
+run(checkout(cart));
+```
+
+</div>
+<div style="display: {showComments ? 'none' : 'block'}">
+
+```javascript
+effect render(component);
+effect next(value);
+effect back();
+
+function sequence(sequencer) {
+  const stack = [sequencer];
+  with (sequencer()) {
+    do(resume, cancel) next(value) {
+      const result = resume(value);
+      stack.push(resume);
+      cancel(result);
+    }
+    do(resume, cancel) back() {
+      stack.pop();
+      const previous = stack[stack.length - 1];
+      cancel(previous());
+    }
+  }
+}
+
+function checkout(cart) {
+  return sequence(() => {
+    render(
+      <ConfirmCart
+        cart={cart}
+        onSubmit={next} />
+    );
+    const address = render(
+      <ShippingForm
+        onBack={back}
+        onSubmit={next} />
+    );
+    const billing = render(
+      <BillingForm
+        onBack={back}
+        onSubmit={next} />
+    );
+    render(
+      <ConfirmationScreen
+        cart={cart}
+        address={address}
+        billing={billing}
+        onConfirm={next}
+        onBack={back} />
+    );
+    return submitPurchase(cart, address, billing);
+  });
+};
+
+run(checkout(cart));
+```
+
+</div>
+
+<label>
+  <input type="checkbox" bind:checked={showComments} />
+  Show comments
+</label>
+
+Hopefully you actually read through that code sample (if none else, read that one) as
+the comments do define some words used for the rest of the article. Assuming you have
+now made it through there, and it all makes at least a little sense, I suggest you
+switch off the comments now and take a moment to appreciate how accurately the code's
+structure can represent our intention. The `checkout` function clearly
+progresses downwards in order, meanwhile each component is free to represent
+itself in whatever way makes the most sense, such that we only need two dimensions at
+a time to represent each function.
+
+Assuming we had full on effects in our language, I'm pretty sure the above
+really would solve the stepping problem (including the back button) in a
+way that we have all the same benefits as the observable approach and the
+readability of the `await` approach.
+
+As it happens, we also get a very ideal three-dimensional representation.
+Each time we trigger some effect, it's as if the (bounded) continuation
+immediately following that effect and up until the execution reaches the
+surrounding `with` statement is "broken off" and stored into `resume`.
+
+When called, that continuation is simply layered back on over top of our
+current execution, almost no different from a regular function call,
+creating a clear call stack as we're all used to. Running through `checkout`
+without going back at all creates a stack like this (you could shift
+everything upwards so it's flush at the top like before, but I find
+it a bit clearer shifted vertically):
+
+<div class="control" style="transform: rotateY({effectRotation / 2}deg) rotateX({-effectRotation / 2}deg)">
+<div class="effect perspective">
+<div class="layer background">
+
+```javascript
+function checkout() {
+  return sequence(() => {
+    render(
+      <ConfirmCart
+        cart={cart}
+        onSubmit={next} />
+    );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  });
+);
+```
+
+</div>
+<div class="layer foreground shipping">
+
+```javascript
+render(
+  <ShippingForm
+    onBack={back}
+    onSubmit={next} />
+);
+```
+
+</div>
+<div class="layer foreground billing">
+
+```javascript
+const address =
+
+
+
+
+                render(
+  <BillingForm
+    onBack={back}
+    onSubmit={next} />
+);
+```
+
+</div>
+<div class="layer foreground confirm">
+
+```javascript
+const billing =
+
+
+
+
+render(
+  <ConfirmationScreen
+    cart={cart}
+    address={address}
+    billing={billing}
+    onConfirm={next}
+    onBack={back} />
+);
+```
+
+</div>
+<div class="layer foreground submit">
+
+```javascript
+return submitPurchase(cart, address, billing);
+```
+
+</div>
+</div>
+</div>
+
+<input type="range" min="-30" max="60" bind:value={effectRotation} />
+
+Given the implementation of the handler for `back`, recall that it
+is actually calling a previously used `resume` continuation for a second
+time. This means we just take one of those previous layers and put it on
+top *again*. Looking closely at the three-dimensional diagram above, you'll
+note that each layer only continues up to the next `render`. Unlike in the
+loop-and-break hack attempt this "going back up" technique, all the inner
+layers do not come along too.
+
+<div class="control" style="transform: rotateY({effectBackRotation / 2}deg) rotateX({-effectBackRotation / 2}deg)">
+<div class="effectback perspective">
+<div class="layer background">
+
+```javascript
+function checkout() {
+  return sequence(() => {
+    render(
+      <ConfirmCart
+        cart={cart}
+        onSubmit={next} />
+    );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  });
+);
+```
+
+</div>
+<div class="layer foreground shipping">
+
+```javascript
+render(
+  <ShippingForm
+    onBack={back}
+    onSubmit={next} />
+);
+```
+
+</div>
+<div class="layer foreground billing">
+
+```javascript
+const address =
+
+
+
+
+                render(
+  <BillingForm
+    onBack={back}
+    onSubmit={next} />
+);
+```
+
+</div>
+<div class="layer foreground shipping2">
+
+```javascript
+render(
+  <ShippingForm
+    onBack={back}
+    onSubmit={next} />
+);
+```
+
+</div>
+<div class="layer foreground billing2">
+
+```javascript
+const address =
+
+
+
+
+                render(
+  <BillingForm
+    onBack={back}
+    onSubmit={next} />
+);
+```
+
+</div>
+<div class="layer foreground confirm">
+
+```javascript
+const billing =
+
+
+
+
+render(
+  <ConfirmationScreen
+    cart={cart}
+    address={address}
+    billing={billing}
+    onConfirm={next}
+    onBack={back} />
+);
+```
+
+</div>
+<div class="layer foreground submit">
+
+```javascript
+return submitPurchase(cart, address, billing);
+```
+
+</div>
+</div>
+</div>
+
+<input type="range" min="-30" max="60" bind:value={effectBackRotation} />
+
+The reason that we are able to just drop the second half of the execution
+after calling `back` is that the handler for the `back` effect doesn't call its
+own `resume` continuation. Instead, it calls the previous `resume`, as was stored
+in the stack. Then, once the previous continuation finally reaches its boundary
+at the end of the `checkout` flow, we follow up by immediately using `cancel`,
+thus "forgetting" to properly return from the call to `back`.
+
+Actually, in the case of the `next` effect, `cancel` is immediately called after
+reaching the boundary of the continuation there as well. It's just that the
+pattern of calling `resume` once and then `cancel` once is kind of the "default"
+case, so you likely saw nothing out of the ordinary; any standard function could
+be reinterpreted as an effect that does exactly that. We just needed effects in
+this situation because we needed to capture that continuation to implement `back`.
+
+This is by no means an example of everything that is possible with effects.
+It's the reaching of the end of the continuation that gives us the one super power
+we've been waiting this whole time for: the ability to go back in time. In this
+case, we didn't use the ability to go back in time for much, we just used the
+ability to switch to an alternate timeline by calling a `resume` continuation
+that escaped its original scope.
+
+While I'm sure it would be fun to explore all the superpowers of effects and
+continuations, this article is already long enough, and you're hopefully sufficiently
+intrigued now to go and explore it on your own. Plus I am honestly just tired of
+constructing these three dimensional code samples, they aren't quite as easy to
+write as the standard two dimensional ones.
+
+Instead, take a moment to recall all the approaches seen here. Other than the
+effect based one, the others are actually fully implementable in Javascript
+today.
+
+The promise-looking one I built a while back ([for Svelte][svelte-io]), and
+is actually a spin-off of the same concept that backs my [functional API client][api]
+which I have been using in React for some time now (to great success, in my
+opinion, other than the pains that come from the fact that TypeScript does not
+provide a sufficient type system to typecheck it). It turns out that since
+generators can implement a subset of the monad (specifically, the deterministic
+subset, required for `async`/`await`), and monads are equivalent in expressive
+power to algebraic effects, therefore generators are able to implement the
+deterministic subset of effects as well, sufficient for the "forwards-only"
+pattern.
+
+Meanwhile, the observable-looking one I took the time to proof-of-concept
+(sans React) in this [repository][warp] (currently titled Warp for no
+particular reason) where "observables" are implemented as async generators,
+and the application re-renders only the elements whose inputs have changed.
+Far from an ergonomic library at the time of writing, but I might explore
+it a bit more to see how close it can get.
+
+[svelte-io]: https://github.com/foxfriends/svelte-io
+[api]: /article/20220125-functional-api-client/
+[warp]: https://github.com/foxfriends/warp
+
+While I can't necessarily endorse using the code seen here directly, do
+try to find other ways this three dimensional mental model can help in
+constructing applications. Particularly in UI applications (not just
+limited to web-apps) I have found it relevant, but maybe there are
+other types as well (I've heard good things about continuations used in
+[web-servers][], to represent similar re-entrant flow-like problems in
+server-driven applications).
+
+[web-servers]: https://pages.lip6.fr/Christian.Queinnec/PDF/www.pdf
+
+Finally, for those looking for more ways to experiment with effects and continuations,
+you may also be interested in my current project [Trilogy][]: a programming
+language that combines as many interesting features I could think of, from
+all variety of languages, including algebraic effects and continuations as
+described in this post. Far from functioning at this time, maybe if we all wait
+long enough (and hope hard enough) it will actually end up working someday.
+
+[Trilogy]: https://github.com/foxfriends/trilogy
+
+<style>
+  .control {
+    transform-style: preserve-3d;
+  }
+
+  .perspective {
+    position: relative;
+    transform: rotateY(25deg) rotateX(-15deg) rotateZ(-5deg);
+    transform-style: preserve-3d;
+    margin: 32px auto;
+    width: min-content;
+    font-family: var(--font-mono);
+  }
+
+  .stack.perspective {
+    margin-bottom: 4em;
+  }
+
+  .layer, .tangent {
+    transform-style: preserve-3d;
+  }
+
+  .layer::before, .tangent::before {
+    content: '';
+    position: absolute;
+    right: 100%;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    background-color: var(--side-color);
+    transform: rotateY(-90deg);
+    transform-origin: right;
+    border: 1px solid var(--border-color);
+  }
+
+  .layer::before {
+    width: 2em;
+  }
+
+  .tangent::before,
+  .layer.thin::before {
+    width: 1em;
+  }
+
+  .layer::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    left: 0;
+    bottom: 100%;
+    width: 100%;
+    height: 2em;
+    background-color: var(--side-color);
+    transform: rotateX(90deg);
+    transform-origin: bottom;
+    border: 1px solid var(--border-color);
+  }
+
+  .layer.thin::after {
+    height: 1em;
+  }
+
+  .tangent::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: 100%;
+    width: 100%;
+    height: 1em;
+    background-color: var(--side-color);
+    transform: rotateX(-90deg);
+    transform-origin: top;
+    border: 1px solid var(--border-color);
+  }
+
+  .layer pre, .tangent pre {
+    margin: 0;
+  }
+
+  .foreground pre, .midground pre, .tangent pre {
+    padding: 0;
+    background: transparent;
+  }
+
+  .background {
+    background-color: rgba(0 0 0 / 0.8);
+    --side-color: rgba(0 0 0 / 0.6);
+    --border-color: rgba(255 255 255 / 0.2);
+  }
+
+  .foreground, .midground, .tangent {
+    background-color: rgba(0 0 0 / 0.5);
+    --side-color: rgba(0 0 0 / 0.3);
+    --border-color: rgba(255 255 255 / 0.2);
+  }
+
+  .midground .foreground, .midground + .foreground {
+    background-color: rgba(0 0 0 / 0.3);
+    --side-color: rgba(0 0 0 / 0.2);
+    --border-color: rgba(255 255 255 / 0.2);
+  }
+
+  .foreground pre code::after,
+  .midground pre code::after,
+  .tangent pre code::after {
+    display: none;
+  }
+
+  .stack .foreground {
+    transform: translateX(3em) translateZ(2em);
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 1em;
+    background-color: rgba(0 0 0 / 0.2);
+    --side-color: rgba(0 0 0 / 0.1);
+    --border-color: rgba(255 255 255 / 0.2);
+  }
+
+  .rendersequence .foreground {
+    background-color: rgba(0 0 0 / 0.4);
+    --side-color: rgba(0 0 0 / 0.2);
+    --border-color: rgba(255 255 255 / 0.2);
+  }
+
+  .rendersequence .background pre {
+    padding-top: 8em;
+  }
+
+  .callbacks .foreground {
+    transform: translateX(3em) translateZ(2em);
+    position: absolute;
+    top: 4em;
+  }
+
+  .async .midground {
+    transform: translateZ(2em);
+    position: absolute;
+    top: 3em;
+    left: 3ch;
+  }
+
+  .async .foreground {
+    transform: translateZ(4em);
+    position: absolute;
+    top: 5em;
+    left: 5ch;
+  }
+
+  .async .await::after {
+    content: "await";
+    color: var(--color__code--magenta);
+    font-family: var(--font-mono);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .async .midground.await::after {
+    text-indent: 14ch;
+  }
+
+  .async .foreground.await::after {
+    text-indent: 12ch;
+  }
+
+  .observable .tangent {
+    position: absolute;
+    top: 3em;
+    transform-origin: top;
+    transform: rotateX(90deg);
+    left: 3ch;
+  }
+
+  .backwards .midground {
+    transform: translateZ(2em);
+    position: absolute;
+    top: 4em;
+    left: 3ch;
+  }
+
+  .backwards .foreground {
+    transform: translateZ(4em);
+    left: 3ch;
+    position: absolute;
+    top: 1em;
+  }
+
+  .continuation .foreground {
+    position: absolute;
+    left: 3ch;
+    top: 1em;
+  }
+
+  .rendersequence .tangent.checkout {
+    position: absolute;
+    top: 9em;
+    transform-origin: top;
+    transform: rotateX(90deg);
+    left: 3ch;
+  }
+
+  .rendersequence .foreground {
+    position: absolute;
+    bottom: calc(100% - 9em);
+    left: 5ch;
+  }
+
+  .effect .shipping,
+  .effectback .shipping,
+  .effectback .shipping2 {
+    transform: translateZ(2em);
+    position: absolute;
+    top: 8em;
+    left: 3ch;
+    text-indent: 14ch;
+  }
+
+  .effect .billing,
+  .effectback .billing,
+  .effectback .billing2 {
+    transform: translateZ(4em);
+    position: absolute;
+    left: 3ch;
+    top: 8em;
+  }
+
+  .effect .confirm,
+  .effectback .confirm {
+    transform: translateZ(6em);
+    position: absolute;
+    left: 3ch;
+    top: 13em;
+  }
+
+  .effect .submit,
+  .effectback .submit{
+    transform: translateZ(8em);
+    position: absolute;
+    left: 3ch;
+    top: 27em;
+  }
+
+  .effectback .shipping2 {
+    transform: translateZ(6em);
+  }
+
+  .effectback .billing2 {
+    transform: translateZ(8em);
+  }
+
+  .effectback .confirm {
+    transform: translateZ(10em);
+  }
+
+  .effectback .submit {
+    transform: translateZ(12em);
+  }
+
+  label {
+    background-color: rgba(0 0 0 / 0.02);
+    border: 1px solid rgba(0 0 0 / 0.12);
+    padding: 0.25rem;
+    display: block;
+  }
+</style>
