@@ -59,7 +59,7 @@ Unfortunately, not all programs fit nicely in two dimensions, and the ones that 
 are the ones we tend to spend a lot of time building. A program that starts and then
 runs *forever* (or at least, until a user closes it) is what might be considered a
 "three dimensional program". Three dimensional programs typically don't have any
-particular "output", but instead act as tools that the user will interact with to
+particular "final output", but instead act as tools that the user will interact with to
 perform some task (albeit sometimes outputting things, but only as a side effect).
 Sound familiar? That's pretty much every application built or used by anyone.
 
@@ -72,7 +72,8 @@ fixing, another feature to be added... it just never ends.
 It's easy to claim that this endlessness is for practical reasons: most applications are
 large (and therefore have many bugs), and the need for new features often comes as a result
 of the business trying to reach more users and solve more problems. I claim, however, that
-this endlessness is primarily due to our lack of understanding of the third dimension.
+this endlessness is primarily due to our failure to properly manage the third dimension
+in our code.
 
 The third dimension to a program is *time*. Where two dimensional programs run top to bottom,
 three dimensional programs run primarily back to front: at each point in time different parts
@@ -389,6 +390,16 @@ function Checkout() {
 }
 ```
 
+To put it in words, what we are trying to create is a program that transitions through
+multiple states (or steps), with each step potentially requiring data from some previous
+steps. The progress through the steps is tied to user input: only when the user "submits"
+the info being collected on each step does it progress to the next one. Users of course
+make mistakes so steps may do all sorts of things (perform validation, provide suggestions,
+etc.) but also must provide a means to go back to the previous step in case the user wants
+to change their input. Finally, the end result is that we have a whole bunch of information
+from the user so that we can do something with it, typically composed of all of the steps
+data together (so typically is quite large).
+
 Presented like this it's already getting a bit hard to interpret; without reading the code
 pretty closely and simulating its execution in your mind, you don't know exactly how this
 component behaves. It would be pretty easy for me to swap the `billing_details` and
@@ -538,8 +549,9 @@ async function Checkout({ cart }) {
 Does this mean that we've made time go backwards? Not exactly... though it might look like it.
 In the case that one of these `break` statements gets reached and we go back up a level,
 what happens is that the loop begins again, but on top of a few time-layers. This is the same
-approach that our original `switch` statement version takes, where going back doesn't reverse time, it just sets the state to look like it did on the previous screen. An abridged
-three dimensionalization grows quickly quite cursed:
+approach that our original `switch` statement version takes, where going back doesn't reverse
+time, it just sets the state to look like it did on the previous screen. An abridged three
+dimensionalization grows quickly quite cursed:
 
 <div class="control" style="transform: rotateY({backwardsRotation}deg)">
 <div class="backwards perspective">
