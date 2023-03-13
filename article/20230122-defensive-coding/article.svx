@@ -89,7 +89,7 @@ to.
 
 This is not to say to skip cleaning up after you're done. Your work will likely
 leave a mess, and it's important to clean that up too. Once the feature works,
-you're likely around 70% done, with the rest of your time being spet cleaning
+you're likely around 70% done, with the rest of your time being spent cleaning
 up.
 
 ### One thing at a time
