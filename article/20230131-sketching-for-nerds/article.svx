@@ -130,7 +130,7 @@ The sketch: reimplement something like KeyPath syntax in [Javascript](https://gi
 ```javascript
 const _ = /** fill in this blank **/;
 
-const pathToCompany = _.name.company;
+const pathToCompany = _.job.company;
 const person = {
   name: "Jeff",
   job: { company: "Google", position: "Engineer" },
