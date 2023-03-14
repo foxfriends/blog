@@ -35,12 +35,12 @@ As with defensive driving, I summarize defensive coding as "assume
 all other developers are stupid and act accordingly." The main difference
 in the coding situation versus the driving one is that you are also
 one of the other stupid developers for which you must act accordingly.
-Most code you write, you will have to come back to at some point in
+Most code you write you will have to come back to at some point in
 your future, at which point you're basically a different person.
 
 The goal of defensive coding, rather than to avoid risk of injury or
 even death, is simply to avoid bugs and future headache. Slightly lower
-stakes, but still just as important. Bugs are probably (I have no sourecs)
+stakes, but still just as important. Bugs are probably (I have no sources)
 the most expensive part of operation a development team has to deal
 with, and often the most annoying thing a developer has to deal with
 personally as well. Avoiding them pays off for you, and for the others
