@@ -1,0 +1,38 @@
+---
+title: Going Fast
+subtitle: "There are no shortcuts"
+date: 2023-07-11
+tags:
+- learning
+author: Cam
+---
+
+Going fast often feels like a priority. It shouldn't be. As individual people we
+should be looking to learn and build and explore, not "go fast". I suspect the
+desire for speed mostly comes as a result of pressure from above: write more code
+and finish more features, impress the boss and get promoted (or, just not get fired).
+
+In daily working, I really don't believe going fast should be anyone's goal. When
+there is no rush, as should be the case for most of the time you spend coding, the
+goal is to be learning, growing, and improving. Use this time to learn for later,
+and to explore new areas of interest. The speed will come naturally, as the stuff
+you learn starts becoming knowledge instead of information.
+
+Unfortunately, sometimes you do end up in situations where you just need it done **now**.
+In my life, producing at top speed has been a priority at work for the last little while.
+A situation caused by tight deadlines and a general shortstaffedness for the amount of
+stuff we are trying to release all at once. Not an important thing to discuss though,
+and not something I intend to go into here. The point is simply that sometimes
+prioritizing fast does become important, and other parts of the practice need to be
+streamlined to make that space.
+
+What I do intend to go into is my take on how to go fast in a healthy manner. It's all
+too easy to aim for speed and end up finding a fast way to create bugs. The tendency is
+to drop good practice and go for "whatever works" in an effort to get something out the
+door in the least time possible. Sure, that's "fast" for right now, but tomorrow you're
+going to have to fix that bug, and the next day you'll have to fix that bug fix, and in
+the end you'll have wasted more time than you would have spent just doing it right in
+the first place.
+
+The real trick to speed, in my experience, is to actually have more discipline than
+is regular, sticking **very strongly** to a particular set of good practices.
