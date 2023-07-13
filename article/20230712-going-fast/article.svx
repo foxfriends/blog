@@ -1,0 +1,238 @@
+---
+title: Going Fast
+subtitle: There are no shortcuts
+date: 2023-07-12
+tags:
+- learning
+author: Cam
+---
+
+Going fast often feels like a priority. It shouldn't be. As individual people we
+should be looking to learn and build and explore, not "go fast". I suspect the
+desire for speed mostly comes as a result of pressure from above: write more code,
+finish more features, impress the boss, *don't get fired*. If I was that boss though,
+I wouldn't be impressed; I'd think you are probably not going to be any more valuable
+in five years than you are today, and consider cutting my losses now.
+
+In daily working, going fast is not the goal. The real goal is always to be learning,
+growing, and improving. Before every task, take the time to think about what you're about
+to do and plan it out. When you're done, take the time to look back and review and really
+understand what you just built:
+* Did you stick to the plan? What had to change and why? Make note, and learn from your experiences.
+* Are there any pieces you are not satisfied with? Now is the best time to rewrite it, while you still know what it's supposed to do.
+* Are there any interesting patterns that emerged here that might be useful in future? Remember those to make future planning easier.
+* Are there any problems that you still don't know how to solve? You're going to see them again, push on them for next time.
+
+If you keep doing that, the speed will come naturally. In my experience, it often takes
+about the same amount of time as just rushing through anyway; the time spent planning
+makes the implementation so much faster, while the time spent reviewing catches so many
+bugs before they cause any issue, giving you the chance to fix them while the code
+is still fresh in your mind. You aren't typing frantically the whole time, but
+writing code isn't the whole of coding.
+
+I give you all that only as a warning. A reminder of what your ideal should be. A
+last bit of hope before we acknowledge the fact that, unfortunately, you do
+occasionally end up in situations where you just need everything done **now**.
+I don't mean like a day or two of rush before the release, I mean a chronic, persistent,
+and prolonged requirement of high output.
+
+Producing at top speed became, and continues to be, a priority at my company for the
+last little while. A situation caused by tight deadlines and a general short-staffedness
+for the amount of stuff we are trying to release all at once. This is a situation that
+I would not consider "daily working." The priorities really have changed.
+
+Luckily for me, I've found some time to think about the last few weeks' efforts,
+and about what worked and what didn't in this prolonged period of prioritizing speed.
+Surprisingly (or maybe unsurprisingly, depending on your past experiences on this
+topic), it mostly boils down to being extra diligent, rather than cutting corners or
+finding shortcuts.
+
+### Manage assumptions
+
+Probably the number one contributing factor to speed is being able to assume things
+accurately. All code is full of rules and expectations so it makes sense that when
+you know those rules, and know what you can expect, you can move much quicker. When
+you understand the entirety of your system you can confidently make the big
+and important changes while knowing that you won't break anything (at least, not
+in a serious way) because you know you didn't violate any of the big rules.
+
+Conversely, every time you assume something and that assumption is incorrect, you end up
+spending a lot of time debugging, and usually *not* in the code you were just working on.
+The rule was broken somewhere else, without being detected, and so in order to fix it you
+have to drop your context, climb out of the deep focus you were in, and sift through
+unrelated cruft to find some arcane incantation that does not satisfy the unwritten rules.
+
+The specific set of rules that you come up with for your projects will be subjective.
+They'll probably also come up naturally and quietly without anyone ever mentioning them;
+sometimes you don't even realize that you've been making an assumption because it just
+feels so natural. Only when you make a different assumption and it all starts to fall
+apart do you notice, but by then it's too late.
+
+To that end, the most important thing here is to *pay attention* to every assumption
+you make. Get into the habit of watching for assumptions and invariants, and in particular
+watching for the times you break those assumptions. Make this habit while working
+at regular pace so that it's not something you have to think about when rushing; you
+won't have time to think about anything that isn't already second nature.
+
+On a regular day, paying attention to assumptions consists of:
+* Identifying any deviations from the normal and marking them as such with inline comments.
+* Codifying invariants into your code with assertions to ensure expectations are met.
+* Documenting any major assumptions that are not codified (project structure, modularization policies, etc.).
+* Writing unit tests for functions that you would like to assume continue to work as they are written.
+
+All of those things take time, but when you have that time it's time well spent. When you
+really do need to work fast, you may have to let up on the documentation and enforcement,
+but you can't let up on the paying attention. It simply requires more discipline, from you
+and from your team, to maintain these assumptions manually in the short term, until you
+get the time to solidify them later.
+
+The task of writing comments and assertions doesn't really change when you're moving
+fast, but documentation and testing each look pretty different from normal, as we'll
+see next.
+
+### Communication
+
+When time is short, communication becomes more important than documentation. Nothing beats the
+speed and clarity of explaining something to someone face to face. The option of bidirectional
+communication makes understanding just that much easier. None of the involved parties will
+have time to read or write documentation, so they won't. It's easier to just ask and answer.
+
+As the primary developer, the one who has coded a new assumption into the program, you must make
+sure that it is communicated clearly to everyone who might also need to make that assumption.
+Transient documentation is actually better in this case.
+
+Any long written document will require constant updates and inevitably drift away from being
+accurate. More often than not, when working on a feature all to yourself, making and changing
+assumptions daily, you'll have to rewrite the document before anyone has even read it.
+Additionally, once someone has read the long document, they aren't going to re-read it for
+changes every day; they're just going to (incorrectly) remember what they read last time.
+
+You're better off just mentioning it in some one off manner, such as a comment on a PR or
+a Slack message, or verbally during standup. Some place clearly anchored to a point in time.
+You can clarify and explain on demand the fullest and latest version of your thoughts when
+the need arises, rather than having others rely on some information that may no longer be accurate.
+
+As a secondary developer, who is writing code to fit into part of something written by someone else,
+it's your responsibility to make sure you understand the assumptions previously made so as not
+to cause trouble later on. Pay attention when someone mentions an assumption that was made
+or changed; you don't have to understand it at that moment, but you do need to be aware that
+there is something dangerous hidden nearby, and go hunt down the details when you need them.
+There is no shame in asking for clarification. As the person the questions are often asked to,
+I find no inconvenience in explaining what needs to be explained; much rather that than have to
+debug something that should have been unrelated later.
+
+### Unit tests
+
+The purpose of unit tests is to document and enforce assumptions: of how the code is supposed to work,
+of what types of data are meant to be passed in, and of what types of values will be returned.
+Regularly, they are also often used to ensure that entire features work as intended, but when
+working fast, you simply don't have time to write tests for everything. They say unit tests
+speed up development time, but that's only true if you use them well. You need to be testing
+functions, not features.
+
+Treat unit tests as a tool that you can use to get your work done quickly and correctly, rather
+than a task that must be completed. When it makes sense to, it is worth writing tests for individual
+pieces of code rather than testing them all manually, even when on a tight schedule. On the other
+hand, don't spend time after implementing and manually testing a whole feature on writing tests
+to lock it in place. You don't have time for integration tests, especially not when you're
+probably going to delete that feature tomorrow anyway.
+
+The result is that you'll have relatively few and very small unit tests; unit tests in the
+truest form. Most of them will never catch anything because they're testing the parts of
+the code that aren't changing. Instead, since you should understand the assumptions
+and the system as a whole so well, you should be pretty sure that if enough of the parts are
+working then so is the whole thing.
+
+### Delete fast
+
+When building fast, you're almost certainly making mistakes fast too. This is to be expected:
+why are you rushing if you know what the end goal is already? Usually the reason you're going
+fast is to experiment and explore the different options as quickly as possible in search of
+a product that sticks.
+
+There's no time to hold on to code that has reached the end of its usefulness. This is true
+regularly, but especially true at high speeds, as high speeds are high volumes. All this useless
+code takes up space both physically, in the directory listing, and in your head. There's
+only so much context that you can maintain at any one time, so why waste that space on stuff
+you don't need? Not only does it cause clutter, decaying code tends to more frequently cause
+build errors as its components are modified in incompatible ways, and you don't feel like
+maintaining it because it's not providing much value.
+
+Regularly take a few minutes to look through your project and see how much is not being used.
+When it reaches a point where the amount of time spent deleting is less than the amount of
+time wasted maintaining dead code, then it's well worth the effort. If you're holding it
+around because you think you might need it later, you're wrong, and if I'm wrong you can
+always pull it out of the commit history.
+
+While it all sounds fun and easy, the actual trick to maximizing speed (and sanity) in this
+regard is to acknowledge up front that any code you write is immediately candidate for deletion.
+Optimize the way your code is written for how "deletable" it is. When the code is in a
+state that deleting the feature is simply to delete a few files or folders and then
+clean up all the dangling references, you're in good shape. If you have to actually read
+code to find the parts that can go (low cohesion), or comment out chunks of stuff that will
+need to be reimplemented (high coupling), then not so much. Neither of those should be new
+concepts, but they are important habits to build, especially now. So much so that they get
+their own section as well.
+
+### Extreme decoupling, decent cohesion
+
+Putting a little extra effort to have well organized code tends to provide significant
+benefits in the long run. The first being making it easy to delete later, but the
+second being the actual quality of life (and therefore velocity) that you get for making
+that effort.
+
+It's true that setting up code in a way that it remains properly decoupled takes a little
+longer than normal---the time to first run is increased---but as any code exists
+for longer and longer, the amount of time you spent writing it compared to the amount
+of time you spend interacting with it is very small, and continues to decrease. During
+an extended period of high speed work that proportion decreases extra quickly, therefore
+making it an even better investment than usual.
+
+In terms of how to achieve properly decoupled code, the most important thing is to
+clearly define the interfaces, and avoid overreaching as much as possible. In our current
+work project, I've used private properties of classes even more frequently than I would have
+normally to ensure that nothing can ever reach past a boundary it isn't meant to. On a
+larger scale, we've actually split the project up not just into modules or packages, but
+three completely separate *services*. Sure it takes a little longer to set up than normal
+to get some things done, but that little bit of effort definitely pays off every time.
+
+Admittedly our case is a bit extreme, and was driven by some more practical considerations
+(language proficiency differences within the team for the most part; I can't stand
+Python but the other guys refuse to touch anything else). Going so far as to build in
+different services/repositories/languages won't work in every situation, but at the very
+least go for extremely strict module boundaries; a good tradeoff between effort to
+set up and the quality of life it will bring.
+
+On the other hand, if you're going to sacrifice any aspect, I'd say it's cohesion.
+When trying out a new little thing, it usually isn't worth all the boilerplate of
+setting up a new file, a new class, a new interface, just for one little function
+that didn't quite fit with the rest. In general I find that it's a lot easier to
+break code out into its own modules or classes later, when the low cohesion is starting
+to cause problems, rather than trying to break things up too soon and instead dealing
+with extra coupling as modules have to overreach in ways you didn't predict.
+Don't let cohesion get too low, but it only has to be tolerable, not perfect.
+
+### Your toolbelt
+
+The last thing that contributes largely to speed is having a good set of tools
+at your disposal. There is so much more to being a developer than writing code. Knowing
+how to slap together a quick shell script to speed up some recurring task, or how
+to set up the infrastructure to get your new thing deployed, or even just being faster
+at navigating your text editor; all of these are valuable skills that you don't need
+until suddenly you do, and if you're currently trying to prioritize speed then it's
+already too late.
+
+If doing these non-code tasks doesn't take up brain power and disrupt your flow,
+it's so much easier to maintain focus while working. Just like when you can assume
+things about your code, when your development environment and the tools that are
+part of it become second nature, everything just feels so much easier.
+
+I'll admit, this is a boring tip and it's a boring task to learn these things---a lot
+of reading and studying documentation---but I just cannot discount the value
+in knowing something before you need it. At the very least, even just knowing it
+exists and how to find the documentation for it later can save you so from wasting
+time reimplementing things that are built into the tools you are already using.
+
+Like I said at the start, it all just comes from learning properly and understanding
+what you're doing. Truly there is no shortcut to speed. Move with purpose always,
+and you will be faster before you know it.
