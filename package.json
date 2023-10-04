@@ -28,7 +28,7 @@
     "remark-containers": "^1.2.0",
     "remark-deflist": "^0.2.1",
     "remark-math": "^4.0.0",
-    "scattered-papers": "git+https://github.com/foxfriends/scattered-papers.git#1075f27",
+    "scattered-papers": "git+https://github.com/foxfriends/scattered-papers.git#fdb063e",
     "svelte": "^3.55.1",
     "vite": "^2.5.1"
   },
