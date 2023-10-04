@@ -7,10 +7,10 @@ tags:
 author: Cam
 ---
 
-As some may know, the [Advent of Code]() is a coding challenge that takes place in December
+As some may know, the [Advent of Code][] is a coding challenge that takes place in December
 of each year where a new problem is released on each day leading up to Christmas. For the
 last few years I have attempted (at least part) of the challenge, to varying degrees of
-success. [Last year]() I actually completed it with the self imposed restriction of using
+success. [Last year][] I actually completed it with the self imposed restriction of using
 a different programming language each day.
 
 [Advent of Code]: https://adventofcode.com/
@@ -21,14 +21,14 @@ a programming language of my own. This new goal posed two challenges:
 1. to actually succeed at AoC a second year in a row; and, more importantly
 2. to design and build a proper functioning programming language within the year.
 
-While at the time I did technically have [Lumber]() lying around, which does satisfy
+While at the time I did technically have [Lumber][] lying around, which does satisfy
 my language requirement, and could have been used in theory, it just wasn't going to be
 a viable option: Lumber is not good. It's clunky, lacking in many features, and incredibly
 painfully uselessly slow.
 
 [Lumber]: https://github.com/foxfriends/lumber
 
-Instead, shortly after Christmas, I began work on [Trilogy](): a project which I went into with
+Instead, shortly after Christmas, I began work on [Trilogy][]: a project which I went into with
 more motivation than I'd had in quite some time. I now attempt to retroactively document what were
 my thoughts and process as I went about building it.
 
@@ -58,6 +58,7 @@ I actually spent a whole month on research and specification. The entirety of Ja
 (nearly) any code, only pages and pages of documentation. Quite possibly this month spent thinking and
 documenting single-handedly carried the project to completion. I cannot recommend more highly
 taking the time to plan *and document* the products you intend to build, for 3 reasons:
+
 1.  Taking the time to write it down makes it feel so much more achievable. With a clear vision of the
     final product, the feeling of "what if after all this effort, it just doesn't work" is all but
     eliminated. The result is already real in your mind, you just have to make it physical.
@@ -84,3 +85,22 @@ taking the time to plan *and document* the products you intend to build, for 3 r
     when I came back questioning certain choices in the language design, it was so easy to read
     the relevant portion of the specification to realize that January's me was one step ahead all
     along.
+
+As for the result, the actual Trilogy Language Specification PDF clocks in at just over 100 pages long,
+and I find it to be very satisfying to experience (see for yourself: find the latest copy in the build
+artifacts of the most recent [workflow run][]). I documented it as thoroughly as I could, to the point
+where it's probably kind of pedantic considering that I'm likely to be the only person to ever read
+and implement something according to this spec. In the PDF you will find:
+*   The entire grammar (vaguely PEG) greatly fragmented over many pages.
+*   Inference rules of every statement and expression, albeit kind of vague at times because I can't tell what's a type or value or just context. At the time I thought this was standard practice to include in language specification, but I was having trouble finding many (if any) other languages that did it.
+*   As much description of everything as I could manage, which hopefully fills in the gaps where the inference rules are vague or the syntax can't cover all the nuances.
+
+Why go to so much effort? I wanted to be sure that I got it *right*. Even after all that though,
+I know it still isn't. To this day it remains a live document containing the target future state
+of Trilogy, full of claims that I made about how the language should work that my implementation
+does not live up to. Maybe someday they will match, and I will be able to fill in the remaining
+gaps and publish it under a specific version number.
+
+[workflow run]: https://github.com/foxfriends/trilogy/actions/workflows/spec.yaml
+
+### Part 2: Syntax and Semantics
