@@ -34,7 +34,7 @@ my thoughts and process as I went about building it.
 
 [Trilogy]: https://github.com/foxfriends/trilogy
 
-### Part 1: Research and specification
+### Part 1: The design phase
 
 Never in my life have I found myself reading so many scientific publications. Even less so finding
 them interesting and helpful. When I first conceived of Trilogy, I knew two things:
@@ -103,4 +103,41 @@ gaps and publish it under a specific version number.
 
 [workflow run]: https://github.com/foxfriends/trilogy/actions/workflows/spec.yaml
 
-### Part 2: Syntax and Semantics
+#### Syntax
+
+The syntax of Trilogy came out... unique, I think. A natural side effect of being a triple paradigm
+language under my own direction. As someone who likes to use a lot of programming languages because
+they're each good at what they do best, I decided not to make Trilogy work under a single syntax,
+but rather to have three separate syntaxes to really bring out the best of each pattern.
+
+In the mood for the literary metaphor of human-language writing styles, the three sublanguages of
+Trilogy are:
+* **Prose**: The imperative language, featuring Rust-like syntax and statement based control flow.
+* **Poetry**: The functional language, featuring Haskell-like everything-is-an-expression syntax.
+* **Law**: The logic language, featuring Prolog-like predicates and SQL-like joining clauses.
+
+While definitions of items in these languages are segregated at the top level, the lines naturally
+blur within the bodies of those definitions, as different statements require switching between languages
+depending on context and what's convenient.
+
+It turns out that, deep down, all code is just code and really there's not that much difference.
+Particularly between functional and imperative code, you can easily use C-like or Haskell-like or
+Lisp-like syntax for either one. Logic is admittedly a bit more distinctive, but I find that it
+does make itself known in "regular" languages (in dumbed down form) via comprehensions, so is
+also not that far off.
+
+#### Semantics
+
+The semantics are where I found myself the least certain, and maybe conflating some of the concerns
+of whether Trilogy would be compiled or interpreted along with static versus runtime behaviours of
+the language, as well as static versus dynamic typing. The particular targets:
+*   An interpreted language, run on a bytecode VM, but it would be nice to be able to compile it to bytecode binary files.
+*   Dynamically but strongly typed; the VM will know about relatively complex data types so that source programs just work.
+*   Statically analyzed and linked, so there will be no runtime reference errors. Modules will all be resolved at compile time.
+
+TODO: talk about tradeoffs
+* static linking prevents hot module replacement/runtime compilation
+* static linking requires compile time code execution
+* dynamically but strongly typed still leads to lots of type errors (? is that a tradeoff)
+* vm knowing complex data types makes it hard to build opaque values in the runtime
+* interpreted and compiled are actually... very similar in process, so why do we make a distinction?
