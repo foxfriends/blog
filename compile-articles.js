@@ -1,9 +1,8 @@
-import path from 'path';
-import fs from 'fs';
-import cp from 'child_process';
-import fm from 'front-matter';
+import { readdirSync, existsSync, readFileSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import fm from "front-matter";
 
-const html = article => `<!DOCTYPE HTML>
+const html = (article) => `<!DOCTYPE HTML>
 <html>
   <head>
     <title>Cam Eldridge | ${article.title}</title>
@@ -19,12 +18,12 @@ const html = article => `<!DOCTYPE HTML>
 </html>
 `;
 
-const js = id => `import Article from './article.svx';
+const js = (id) => `import Article from './article.svx';
 const app = new Article({ target: document.body });
 `;
 
 function equal(a, b) {
-  if (a === b) { return true; }
+  if (a === b) return true;
   if (a instanceof Date || b instanceof Date) {
     if (a instanceof Date && b instanceof Date) {
       return a.valueOf() === b.valueOf();
@@ -34,9 +33,9 @@ function equal(a, b) {
   if (Array.isArray(a) && Array.isArray(b)) {
     return a.length === b.length && a.every((ai, i) => equal(ai, b[i]));
   }
-  if (typeof a === 'object' && typeof b === 'object') {
-    if (a === null && b !== null) { return false; }
-    if (b === null && a !== null) { return false; }
+  if (typeof a === "object" && typeof b === "object") {
+    if (a === null && b !== null) return false;
+    if (b === null && a !== null) return false;
     const akeys = Object.keys(a).sort();
     const bkeys = Object.keys(b).sort();
     return equal(akeys, bkeys) && akeys.every((i) => equal(a[i], b[i]));
@@ -45,38 +44,48 @@ function equal(a, b) {
 }
 
 function dater(key, value) {
-  if (key === 'date') { return new Date(value); }
+  if (key === "date") return new Date(value);
   return value;
 }
 
 export function compileArticles(force = false) {
   const articles = [];
-  const dir = fs.readdirSync('./article/');
+  const dir = readdirSync("./article/");
   let previousManifest = [];
-  if (fs.existsSync('./article/manifest.json')) {
-    previousManifest = JSON.parse(fs.readFileSync('./article/manifest.json'), dater);
+  if (existsSync("./article/manifest.json")) {
+    previousManifest = JSON.parse(
+      readFileSync("./article/manifest.json"),
+      dater
+    );
   }
 
   for (const id of dir) {
-    if (id === 'manifest.json') continue;
-    const article = fs.readFileSync(`./article/${id}/article.svx`).toString();
+    if (id === "manifest.json") continue;
+    const article = readFileSync(`./article/${id}/article.svx`).toString();
     const { attributes } = fm(article);
     attributes.id = id;
-    if (!equal(attributes, previousManifest.find((entry) => entry.id === id))) {
+    if (
+      !equal(
+        attributes,
+        previousManifest.find((entry) => entry.id === id)
+      )
+    ) {
       console.log(`Replacing article ${id}`);
-      fs.writeFileSync(`./article/${id}/index.html`, html(attributes));
-      fs.writeFileSync(`./article/${id}/index.js`, js(id));
+      writeFileSync(`./article/${id}/index.html`, html(attributes));
+      writeFileSync(`./article/${id}/index.js`, js(id));
     }
     if (attributes.outline) {
       for (const { language, output } of attributes.outline) {
-        const input = fs.readFileSync(`./article/${id}/article.svx`);
-        const { stdout: tangle } = cp.spawnSync('outline', ['-l', language], { input });
+        const input = readFileSync(`./article/${id}/article.svx`);
+        const { stdout: tangle } = spawnSync("outline", ["-l", language], {
+          input,
+        });
         const filename = output || `article.${language}`;
-        const previous = fs.existsSync(`./article/${id}/${output}`)
-          ? fs.readFileSync(`./article/${id}/${output}`)
-          : Buffer.from('');
+        const previous = existsSync(`./article/${id}/${output}`)
+          ? readFileSync(`./article/${id}/${output}`)
+          : Buffer.from("");
         if (Buffer.compare(previous, tangle) !== 0) {
-          fs.writeFileSync(`./article/${id}/${output}`, tangle);
+          writeFileSync(`./article/${id}/${output}`, tangle);
         }
       }
     }
@@ -85,7 +94,7 @@ export function compileArticles(force = false) {
 
   articles.sort((a, b) => new Date(b.date) - new Date(a.date));
   if (!equal(previousManifest, articles)) {
-    console.log('Replacing manifest');
-    fs.writeFileSync('./article/manifest.json', JSON.stringify(articles));
+    console.log("Replacing manifest");
+    writeFileSync("./article/manifest.json", JSON.stringify(articles));
   }
-};
+}
