@@ -1,18 +1,23 @@
-const { promisify } = require('util');
-const path = require('path');
-const vite = require('vite');
-const glob = require('glob');
-const compileArticles = require('./compile-articles');
+import { promisify } from "node:util";
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import * as vite from "vite";
+import glob from "glob";
+import { compileArticles } from "./compile-articles.js";
+
+const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 async function entryFiles() {
-  const articles = await promisify(glob)('./article/*/index.html');
+  const articles = await promisify(glob)("./article/*/index.html");
   return {
-    home: path.resolve(__dirname, './index.html'),
-    404: path.resolve(__dirname, './404.html'),
-    ...Object.fromEntries(articles.map((file) => {
-      const [, name] = file.match(/\.\/article\/([^\/]+)\/index\.html/);
-      return [name, path.resolve(__dirname, file)];
-    })),
+    home: resolve(__dirname, "./index.html"),
+    404: resolve(__dirname, "./404.html"),
+    ...Object.fromEntries(
+      articles.map((file) => {
+        const [, name] = file.match(/\.\/article\/([^\/]+)\/index\.html/);
+        return [name, resolve(__dirname, file)];
+      })
+    ),
   };
 }
 
@@ -21,9 +26,9 @@ async function config() {
     build: {
       rollupOptions: {
         input: await entryFiles(),
-      }
+      },
     },
-  }
+  };
 }
 
 async function build() {
@@ -38,6 +43,10 @@ async function dev() {
 }
 
 switch (process.argv[2]) {
-  case 'build': build(); break;
-  default: dev(); break;
+  case "build":
+    build();
+    break;
+  default:
+    dev();
+    break;
 }

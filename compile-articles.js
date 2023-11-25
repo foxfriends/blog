@@ -1,7 +1,7 @@
-const path = require('path');
-const fs = require('fs');
-const cp = require('child_process');
-const fm = require('front-matter');
+import path from 'path';
+import fs from 'fs';
+import cp from 'child_process';
+import fm from 'front-matter';
 
 const html = article => `<!DOCTYPE HTML>
 <html>
@@ -49,7 +49,7 @@ function dater(key, value) {
   return value;
 }
 
-module.exports = function compileArticles(force = false) {
+export function compileArticles(force = false) {
   const articles = [];
   const dir = fs.readdirSync('./article/');
   let previousManifest = [];

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "src/index.html",
+  "type": "module",
   "scripts": {
     "dev": "node bundler.js dev",
     "build": "NODE_ENV=production node bundler build",
@@ -19,18 +20,18 @@
   },
   "homepage": "https://github.com/foxfriends/blog#readme",
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^1.0.0-next.24",
+    "@sveltejs/vite-plugin-svelte": "^3.0.1",
     "ansi-to-html": "^0.7.1",
     "front-matter": "^4.0.2",
     "glob": "^7.1.7",
-    "mdsvex": "^0.10.6",
+    "mdsvex": "^0.11.0",
     "rehype-katex": "^5.0.0",
     "remark-containers": "^1.2.0",
     "remark-deflist": "^0.2.1",
     "remark-math": "^4.0.0",
-    "scattered-papers": "git+https://github.com/foxfriends/scattered-papers.git#fdb063e",
-    "svelte": "^3.55.1",
-    "vite": "^2.5.1"
+    "scattered-papers": "git+https://github.com/foxfriends/scattered-papers.git#e3c2e6f",
+    "svelte": "^4.2.7",
+    "vite": "^5.0.2"
   },
   "dependencies": {
     "tau-prolog": "^0.2.81"
