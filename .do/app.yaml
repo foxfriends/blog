@@ -1,7 +1,0 @@
-static_sites:
-- github:
-    repo: foxfriends/blog
-    branch: main
-    deploy_on_push: true
-  dockerfile_path: Dockerfile
-  output_dir: dist
