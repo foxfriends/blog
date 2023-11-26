@@ -1,0 +1,9 @@
+.git
+.github
+.gitignore
+.gitmodules
+cleanup
+dist
+Dockerfile
+drafts
+node_modules
