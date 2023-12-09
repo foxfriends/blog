@@ -17,20 +17,13 @@ a different programming language each day.
 [Last year]: https://github.com/foxfriends/advent-of-code/tree/2022
 
 Following that success, I made a goal for the next year (this year): to complete AoC in
-a programming language of my own. This new goal posed two challenges:
+a programming language I build myself. This new goal posed two challenges:
 1. to actually succeed at AoC a second year in a row; and, more importantly
 2. to design and build a proper functioning programming language within the year.
 
-While at the time I did technically have [Lumber][] lying around, which does satisfy
-my language requirement, and could have been used in theory, it just wasn't going to be
-a viable option: Lumber is not good. It's clunky, lacking in many features, and incredibly
-painfully uselessly slow.
-
-[Lumber]: https://github.com/foxfriends/lumber
-
-Instead, shortly after Christmas, I began work on [Trilogy][]: a project which I went into with
-more motivation than I'd had in quite some time. I now attempt to retroactively document what were
-my thoughts and process as I went about building it.
+To achieve this goal, shortly after Christmas I began work on [Trilogy][]: a project which I went
+into with more motivation than I've had in a while. I now attempt to retroactively document what
+were my thoughts and process as I went about building it in a rambling and uninteresting way.
 
 [Trilogy]: https://github.com/foxfriends/trilogy
 
@@ -38,15 +31,16 @@ my thoughts and process as I went about building it.
 
 Never in my life have I found myself reading so many scientific publications. Even less so finding
 them interesting or useful. When I first conceived of Trilogy, I knew two things:
-1. I wanted a language that had all the characteristics of imperative, functional, and logic programming.
+1. I wanted a language that had the characteristics of imperative, functional, and logic programming.
 2. I wanted effects.
 
-What I did not know was how to implement any of that, but fortunately I found all the answers in a
+What I did not know was how to implement any of that, or really even how to correctly reason about
+effects, seeing as I had yet to fully experience them, but fortunately I found all the answers in a
 handful of very interesting papers on control flow and models of computation. Some of the particularly
 interesting things I learned about, in no particular order:
 *   First class `return` ([the __J__-operator][J]) is pretty cool, and [equivalent (basically?)][J2] to `call/cc`. I put first class `return` (and `break` and `continue` too, for good measure) into Trilogy upon this discovery.
-*   [Effects, monads, and delimited continuations][effmondel] are equivalent in their ability to express control flow. Given this equivalence, I have all the expressivity that I like from Haskell, without the monad pain.
-*   The [Interaction Combinators][ic] are a new way of thinking about computation, and are [proving to be quite efficient][hvm]. Given time (and understanding) I would someday like Trilogy to run on such a VM, instead of my weird cactus-stack VM.
+*   [Effects, monads, and delimited continuations][effmondel] are equivalent in their ability to express control flow. Given this equivalence, with effects I have all the expressivity that I like from Haskell, without the monad pain, and I could implement it using delimited continuations in the compiler.
+*   The [Interaction Combinators][ic] are a new way of thinking about computation, and are [proving to be quite efficient][hvm]. Given time (and understanding) I would someday like Trilogy to run on such a VM, instead of my weird cactus-stack VM, but that will have to wait.
 
 [effmondel]: https://homepages.inf.ed.ac.uk/slindley/papers/effmondel-jfp.pdf
 [J]: http://www.math.bas.bg/bantchev/place/iswim/j.pdf
@@ -54,7 +48,7 @@ interesting things I learned about, in no particular order:
 [ic]: https://pdf.sciencedirectassets.com/272575/1-s2.0-S0890540100X00600/1-s2.0-S0890540197926432/main.pdf
 [hvm]: https://github.com/HigherOrderCO/HVM
 
-I ended up spending a whole month on research and specification. The entirety of January, without writing
+I ended up spending a whole month on research and specification; the entirety of January without writing
 (nearly) any code, only pages and pages of documentation. Quite possibly this month spent thinking and
 documenting single-handedly carried the project to completion. Considering this, I highly recommend
 taking the time to plan *and document* any products you intend to build, or projects you wish to start,
@@ -73,13 +67,13 @@ for 3 reasons:
     There's also no need to pause development when momentum is good just to figure out how a new
     feature should work, the answer is already there and the next step is always clear.
 
-    I experience the opposite at my day job; no products were ever specified ahead of time and I often
-    spend weeks straight coding only to delete 60% of that work a day after the demo. On a solo side
+    I experience the opposite at my day job; products are rarely specified ahead of time and I often
+    spend weeks straight coding only to delete 60% of that work a day after a demo. On a solo side
     project, where things move much slower and there's a 1 year deadline, there isn't really any
     tolerance for throwaway code. Without a paycheque, once you throw away you lose motivation.
-3.  You will have this document to refer to when you inevitably take a break for a few weeks and
-    return to a project you barely remember without any of the thoughts that would otherwise have
-    been kept only in the back of your mind.
+3.  You will have this document to refer to when you inevitably take a break for a few weeks.
+    Otherwise, you're returning to a project that you barely remember, without any of the thoughts
+    that were kept only in the back of your mind.
 
     There were so many times during this year that I had to put Trilogy down as life came up, and
     when I came back questioning certain choices in the language design, it was so easy to read
@@ -124,13 +118,12 @@ depending on context and what's convenient.
 It turns out that, deep down, all code is just code and really there's not that much difference.
 Particularly between functional and imperative code, you can easily use C-like or Haskell-like or
 Lisp-like syntax for either one. Logic is admittedly a bit more distinctive, but I find that it
-does make itself known in "regular" languages (in dumbed down form) via comprehensions, so is
-also not that far off.
+does often make itself known in "regular" languages (in dumbed down form) via comprehensions.
 
 #### Semantics
 
 The semantics of the language came next, backing the design of which I had a few original goals:
-1.  Trilogy will be __dynamically typed__. Though I do adore static types, it just wouldn't make
+1.  Trilogy will be __dynamically typed__. Though I do enjoy static types, it just wouldn't make
     sense for Trilogy.
 
     As of now, languages with effects and static types are looking much too verbose and annoying.
@@ -141,10 +134,10 @@ The semantics of the language came next, backing the design of which I had a few
     production grade systems, it's probably just going to be a tool for me to embed in my own small
     apps. Dynamic types are going to be fine.
 
-    Also, not having to implement a static type system will save a lot of time that I don't have.
+    Also, not having to implement a static type system would save a lot of time that I dint't have.
 2.  Trilogy will be __strongly typed__. Just because it's dynamic doesn't mean I have to give up
-    type safety. When the context asks for a boolean (think `if` statements), it only accepts
-    a boolean.
+    type safety. When the situation demands for a boolean (e.g. `if` statements), only a boolean
+    will work.
 
     Far too often this kind of stuff trips people up in other scripting languages
     (looking at Javascript here). Not to say that it isn't often convenient (I love using `+`
@@ -167,9 +160,8 @@ The semantics of the language came next, backing the design of which I had a few
     work is that I typoed a variable name and nobody told me until 3 minutes after starting
     the program. Even less so when that ships to production and the variable names have
     been mangled and now I've got messages like `ReferenceError: e is not defined`. I also
-    don't particularly appreciate the temptation of stuff like `obj["get" + propName]`
-    because it tends to lead to a lot of metaprogramming by people who should not be
-    licensed to do so.
+    don't appreciate the availability of `obj["get" + propName]()`, which tends to lead
+    to a lot of metaprogramming by people who should not be licensed to do so.
 
     The original goal was actually to have modules linked statically as well, and therefore
     references to imported symbols would also be statically resolved, but this goal was abandoned
@@ -187,47 +179,43 @@ The semantics of the language came next, backing the design of which I had a few
     closures, but that just *has* to hurt performance and memory usage.
 
     Unfortunately, this gives up the option for functions to be defined with 0 parameters, so
-    at this time, Trilogy has no form of top level constant. A bit unusual, but nothing
-    insurmoutable, you can still make procedures with 0 parameters, and you can call procedures
-    from Poetry just fine, so it'll do.
+    at this time. A bit unusual, but nothing insurmoutable, you can still make procedures
+    with 0 parameters, and you can call procedures from Poetry just fine, so it'll do.
 
     I still might go back to it some day, particularly if I ever get around to understanding
     the interaction combinators and replacing the Trilogy VM with one of those, as the IC appears
     to suit laziness quite well.
 
 I won't go into the nitty gritty details here, you can find all those in the spec, but
-maybe these choices will show through if you even bother looking. I'd like to think that
+maybe these ideas will show through if you even bother looking. I'd like to think that
 these goals guided my choices, but there's probably so much inconsistency in practice.
 
 #### Features
 
 In terms of language features, Trilogy got pretty much every feature I've ever found in a language
 that I thought "Huh, neat!" and then it got even more. This results in a handful of pretty
-unconventional features being somewhat prevalent in Trilogy. I find it to be a lot of fun.
-Some of the more interesting features are:
+unconventional features being somewhat prevalent in Trilogy. I find it to be a lot of fun,
+your mileage may vary. Some highlights:
 *   First class keywords: going past just first class `return`, Trilogy also has first class `break`, `continue`, `resume`, and `cancel`. Each of these keywords can be captured and bound to their current (lexical) scope, then passed to other functions or even returned allowing for some pretty novel control flow.
 *   Effects: as previously mentioned, effects were one of the original motivating features of Trilogy.
 *   Function-modules: much like the functors of ML, Trilogy's modules may take parameters. Given that Trilogy notably *doesn't* have type definitions (it is dynamically typed and *not* object oriented after all), parameterized modules provide a means to build something similar to types or generics.
 *   Non-determinism: a staple of logic programming, non-determinism makes its way into not just Law but also Poetry and Prose too. In Trilogy, even the humble `let` keyword is a source of non-determinism, potentially branching the execution of the program into two parallel universes, either of which may succeed or fail.
 *   Generative comprehensions: in most languages with list comprehensions, comprehensions are just that: they consume a list. In Trilogy, comprehensions can be used to generate lists, as any expression of Law can be used as an iterator. The same goes for `for` loops, which are a bit super-powered when used with Law.
-*   Arbitrary precision complex numbers: very certainly overkill, but I find that numbers in programming are often far too hard to deal with. Normal languages choose to treat numbers and binary data basically the same, and it ends up that integers are exposed in a computer-y way, rather than a human-y way. I'm sick of it. We can sacrifice a little performance for ease of use. There will be no floating point precision issues in Trilogy.
+*   Arbitrary precision complex numbers: very certainly overkill, but I find that numbers in programming are often far too hard to deal with. Many languages choose to treat numbers and binary data basically the same, and it ends up that integers are exposed in a computer-y way, rather than a human-y way. I'm sick of it. We can sacrifice a little performance for ease of use. There will be no floating point precision issues in Trilogy.
 
 While I would love to go into more detail about each of these features, as well as any of
 the others not mentioned, I will not. If you want more information now, you may again refer to
 the spec, or wait for the reference documentation to come out, or some future blog posts about
-my observations on the details and implementations of these features. Truly, as of right now,
-I barely know how they play out in practice, we'll just have to wait and see as more Trilogy
-code gets written.
+my observations on the details and implementations of these features.
 
 ### Scanning and Parsing
 
 With all those choices out of the way, I spent half of February implementing scanning and
 parsing. This part I was familiar with, so I got through it relatively quickly, though
 admittedly I'm not very good at. I've built parsers before, and actually quite enjoy
-building parsers and playing with grammars, but previously I have mostly used parser
-generators, and my ASTs generally prove to be somewhat brittle and annoying. For
-Trilogy, I wanted to go hand-rolled, and I wanted to be not so brittle and annoying,
-but... it's still a bit annoying.
+parsing and grammars, but previously I have used parser generators, and my ASTs generally
+prove to be somewhat brittle and annoying. For Trilogy, I wanted to go hand-rolled, and I
+wanted to be not so brittle and annoying, but... it's still a bit inconsistent.
 
 I started with the scanner and tokens, none of which is particularly interesting. The same
 old same old that a scanner always is, just a little extra tricky to handle the complex
@@ -235,34 +223,39 @@ numbers and rationals. This actually only took a day or two, and left me quite p
 Building a scanner is like a nice little teaser that suggests "building a programming
 language isn't that hard, maybe I can actually do it?"
 
-The parser itself was more fun. I went with just recursive descent, despite all my past
+The parser itself was more work. I went with recursive descent, despite all my past
 experience building recursive descent parsers ending up failing me with stack overflows.
 I still suspect the stack overflows are coming for me this time, but... whatever. Who
 writes that pathological code anyway, right? This time I hope to be safe enough, as
 for expressions and the like (the most deeply recursive portions of the language)
-I went with Pratt parsers, which hopefully will cuts enough stack frames off that
+I went with Pratt parsing, which hopefully will cuts enough stack frames off that
 everything will be ok.
 
 In terms of AST representation, I looked to Rust's syntax tree for inspiration, and
-then did pretty much everything just a bit worse. It does the job, though barely, but
-is also built in a way that I think I can go back and safely enhance parts of it without
-having to redo any large chunks, and the rest of the layers of the compiler won't take
-much of a hit. Personally I appreciate the simplicity of it, how directly the AST mimics
-the structure of the language with relatively little indirection, but I suspect a little
-bit of indirection may have made things a bit more practical.
+then did pretty much everything just a bit worse. It does the job, barely, but is built
+in a way that I think I can go back and safely enhance parts of it without having to redo
+any large chunks elsewhere, and the rest of the layers of the compiler won't take
+much of a hit.
 
 Some particular lessons learned:
 * Don't throw away *any* tokens, as each one may be useful for some error message somewhere, for implementing tools like a formatter or language server, or for reconstructing fragments and spans in later passes.
 * Some parts could have been abstracted into little utility types: comma separated lists in particular come up a lot, and have a lot of steps to work out correctly. Granted there are also a lot of precedence rules to deal with, so it's not always that simple... but probably would have saved me some headaches debugging yet another comma inconsistency.
 
-So in the end, my parser works, but I'm not that happy with it. It's long and clunky and
-verbose and confusing and probably has a handful of bugs left because I only got through
-the unit tests alphabetically up to L before getting bored of that. It doesn't lend itself
-particularly well to anything beyond barely being able to be analyzed for the next phase.
-There was a brief attempt at writing a formatter, which got scrapped because things were
-just so awkward. I did manage to derive some S-expression printer for the AST (which is
-the basis of the unit tests), but even that's pretty awful and hopefully can be replaced
-later on.
+#### Virtual Machine
+
+While my long term/dream state goal is to try out an IC virtual machine, for practicality
+and just experimenting with the language itself, the initial target was a stack-based
+bytecode VM, which I would build myself.
+
+Since Trilogy has no type definitions, all the basic types are implemented at the VM level,
+including sets and records which usually seem to be implemented in the standard library.
+This means there are specific instructions for manipulating such data types. For some reason
+I decided to overload those instructions so that the same instruction would work on multiple
+data types. If any combination of operand types is invalid, it just crashes everything and
+that's ok.
+
+Since this VM needs to support continuations, the stack is a cactus stack, using my own
+sketchy implementation.
 
 #### Implementation Details
 
