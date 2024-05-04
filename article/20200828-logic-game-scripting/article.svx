@@ -248,7 +248,7 @@ The one I am most interested in is [Scryer Prolog][], which implements Prolog in
 Unfortunately it is not made available as a library (only as a standalone executable),
 which makes it a bit hard to embed. I am most interested in this one because I have
 already started implementing this hypothetical scriptable turn-based strategy game,
-in Rust, [here](https://github.com/foxfriends/paper-wars). As always, I am nowhere
+in Rust, [here](https://github.com/foxfriends/paper-wars-archive). As always, I am nowhere
 near the part where I need to actually implement the scripting feature and embed the
 language, but I do hope someday to have the opportunity to try this idea out.
 
