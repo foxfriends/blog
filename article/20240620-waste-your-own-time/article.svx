@@ -1,0 +1,128 @@
+---
+title: Waste your own time
+subtitle: "Don't waste mine"
+date: 2024-06-20
+tags:
+- teamwork
+author: Cam
+---
+
+When working on a team, or with a partner, or really doing anything in any
+situation where your actions now will affect someone else's actions later,
+this one feeling has kept on coming back to me. "Waste your own time" and,
+by extension, "don't waste mine."
+
+> Admittedly this post is software-developer flavoured, but I swear it applies
+> to regular people too.
+
+It sounds a bit strong at first, but hear me out: when you're working on a
+team of, say, ten people, if you spend one hour doing some task, you've spent
+one hour. In terms of time spent yourself, that's just it, one hour, not a
+huge deal.
+
+The problem is that if the result of your actions now causes the other 9
+people to spend just six minutes each to accommodate, you've wasted around
+one hour of other peoples' time. And that's just ten people: the larger the
+size of the team, the more of an impact even a small amount of additional
+time added to the day will cost overall.
+
+To make it even worse, often these few minutes are added to a routine. "Hey
+everyone, due to new changes, each morning don't forget to do *this thing*!"
+Completely unacceptable, now that extra hour is wasted daily. After just 10
+days, you yourself will have wasted that hour again too.
+
+And that's just the actual physical time. Consider also the time during
+which each person is thinking "ugh, I have to do *this thing* today, let me
+just procrastinate a little bit longer," wasting two extra minutes on nothing.
+We're up to eight now.
+
+Then there's the time each person spends context switching out of what they
+were doing into doing *this thing*, followed by the time spent to context
+switch back into the original thing. Let's call that two more minutes, totalling
+ten minutes of time spent, per person, per day.
+
+Basically, it really doesn't take much to waste everyone else's time, and
+quite a lot of it.
+
+In my experience, most situations where my actions are about to affect other
+people end with two options:
+1. Spend another hour reducing the impact what I've done on other people's time
+2. Call it a day and move on (saving that one hour of my own time right now)
+
+It's very tempting to choose option 2. In fact, most people do. I am guilty of
+it too. To oneself, an hour feels like a lot of time to spend, a lot more
+effort, on top of an hour _already_ spent. Honestly, it feels like a _waste_!
+Why should I do more extra work, when the original task is complete?
+
+Well, given the measurements above, the gains don't have to be much to quickly
+pay off. If I could spend one hour and reduce the new routine task from six to
+four minutes, then that hour would be paid off in ten people's time over just
+three days. It's like getting an automatic hot water dispenser instead of
+boiling a kettle for every cup of tea. You still have to steep it, but at least
+you don't have to wait for the water to boil too.
+
+Even if I can't reduce the time, but I can reduce complexity of the task from having
+to go through six minutes of motions into "press a button and wait", not only
+does that open up the time to multitasking, but it removes the context switching
+and dread time, so it actually does save four minutes per day per person. This
+is an automatic coffee machine (or coffee shop employee) making your coffee,
+instead of you doing it. It still takes time, but you have that time free to
+check your emails.
+
+So that's just it: waste your own time (the time you have right now), and you'll
+be saving so much more time later. Put in a few hours mowing lawns for $10 each
+to gather the funds to buy that hot water dispenser. Just write the script to
+automate that daily data migration. It's going to pay off. And trust me, you'll
+be thanking yourself after even just the first day.
+
+------
+
+All that is very hypothetical of course, ideal situations where the tradeoff
+is clear, but there are so many times in my days when this type of thing comes
+up, from both sides (time waster, or time wastee).
+
+Pointing no fingers (I know you guys sometimes read this), but any time someone
+leaves a bug that causes the app to crash in some edge case that could easily
+have been caught with some testing, and I have to fix that bug because I encounter
+that edge case in the middle of my work, and now I cannot continue working until
+I fix it because I need to use that feature... there goes ten minutes of debugging it,
+ten minutes fixing it, two minutes testing, two minutes shifting git branches around,
+another two pushing a PR, four more pinging and waiting for reviews, however long
+waiting for CI, merging it, pulling it, getting it back into the branch of the
+feature I was building, and then... where was I? What was I even building?
+
+Alternatively I could identify the bug for ten minutes then spend two more minutes
+talking to the bug maker about the bug, and move on, but then this second person has
+to spend five minutes context switching off their work, five minutes re-debugging the
+bug I already debugged, ten minutes implementing, two minutes testing, I have to still
+spend two minutes reviewing and, then wait for CI, wait for them to merge it, then
+merge it back into my branch, and they have to context switch back to their original task.
+It just takes even longer, spread across more people, and sometimes they don't feel the
+urgency and leave me blocked until tomorrow.
+
+I know, I'm not innocent either, but there are some versions of this more egregious than
+others. I'm sure you've all felt it from both sides too. In either case, don't waste my
+time, waste your own twenty minutes up front by testing it and solving for the edge cases.
+
+Mistakes aside, there are times when you add a new feature, and this feature requires
+some data to be migrated. Usually you've already done that update and migration manually
+to your own environment; "the work is done" you say, and go spend five minutes writing up
+a Slack message detailing the steps that everyone else must now take to bring their own
+systems up to date too.
+
+Though it sounds like you're doing a nice thing (at least they don't have to figure
+it out, it'll only take five minutes!) you could have done an even nicer thing: waste
+a little more time writing and testing an automated version of those steps integrated
+with the existing workflow. Now, with no instructions and no process disruption, everyone
+has their systems up to date already. You've wasted some of your own time, but you've
+saved ten people each five minutes, totalling fifty minutes of savings (at least!).
+
+Not to mention when half of the team doesn't get the memo and asks you about it angrily
+tomorrow ("Why doesn't anything work?!"), requiring you to spend five minutes each
+directing them towards the original instructions and explaining to them how to do it
+and why... again. Bonus points when you do it to yourself.
+
+It's the same at home, when you save ten seconds by leaving your dishes in the sink
+instead of putting them into the dishwasher properly. Now you and your siblings have
+spent a whole minute of your mom's time relocating all those dishes, and another minute
+of everyone's time when she comes to complain about it to you later.
