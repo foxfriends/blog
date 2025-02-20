@@ -5,8 +5,9 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 
 RUN cargo install outline --features bin
 
-RUN cargo install syncat@3.6.0
+RUN cargo install syncat@3.7.1
 RUN syncat install bash
+RUN syncat install c
 RUN syncat install css
 RUN syncat install haskell
 RUN syncat install html
