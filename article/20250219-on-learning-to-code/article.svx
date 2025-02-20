@@ -1,0 +1,278 @@
+---
+title: On learning to code
+subtitle: Some observations
+date: 2025-02-19
+tags:
+- learning
+author: Cam
+---
+
+Coding is seen as just one skill---a single topic to be learned---but it is, most definitely,
+not so. At the broadest level, there are numerous scopes of knowledge which must be combined
+in order to build a piece of software, including but not limited to examples such as:
+1.  The logical and mathematical ideas behind programming (e.g. algorithms, data structures, control flow)
+2.  The fundamentals of how the systems our program interacts with work (e.g. binary numbers, file systems, networking)
+3.  The methods by which we unify the above as a functioning program (e.g. programming languages, libraries, frameworks)
+4.  The tools which we use to write and interact with programs (e.g. text editors, compilers, debuggers)
+5.  How to organize and structure programs to be maintainable and sustainable (e.g. design patterns, modularization)
+
+Each of those layers is in turn a built up of a collection of more components, which are also
+learned somewhat independently. It's no wonder people find it hard to just "learn to code."
+We want immediate results (programs we can run!) but can only get such results after a certain
+level is reached in some or all of the above aspects.
+
+### Even "Hello World" is hard
+
+Consider the typical Hello World, written here in C:
+
+```c
+#include <stdio.h>
+
+void main() {
+  printf("Hello world\n");
+}
+```
+
+In order to just run this, you'll need:
+1.  To install a text editor and the C compiler
+    *   Which editor and compiler to install depends on your operating system
+    *   You could choose to use an IDE or an editor, compiler, and terminal separately
+2.  To know how to use your new editor to create this text file
+3.  To know how to use the compiler to compile that file
+4.  To know how to run the resulting executable
+
+After all that, which often takes a whole day, you still don't what most of the code
+is doing, what a compiler is and why you needed it, what all the buttons do in your new
+editor/IDE, why you couldn't just use Microsoft Word for this... the list goes on.
+
+This is slightly complicated by the choice to use C, let's try again with an
+"easier" language:
+
+```python
+print("Hello World")
+```
+
+In order to run this one, you'll need:
+1.  To install a text editor and the Python interpreter
+    *   The Python version changes by the seasons, and might not match the tutorial you're following
+    *   Are there IDEs for Python? You probably want VS Code in this case, and the terminal directly
+2.  To know how to use your new editor to create this text file
+3.  To know how to use the Python interpreter to run your program
+
+And this again still might take a whole day, you still don't know why there's an interpreter
+involved, you still don't know how your editor works, and you still don't know why you couldn't
+have just used Microsoft Word. There is at least a lot less code that you don't know the meaning
+of, but there are still a lot of questions you couldn't answer:
+*   What does `print` mean, and why is it called that?
+*   How do we know where to print to?
+*   What is printing for anyway, how do I build a __real__ program?
+*   What are the quotes and brackets [*sic*: parentheses] for?
+
+### Existing approaches
+
+From what I've seen and experienced, there are a handful of ways that people go
+about learning or teaching others how to code, which I generalize into these three
+categories.
+
+#### Bottom up, school style
+
+In schools, they tend to teach logical fundamentals and low level computer concepts
+first, leaving anything practical (how to make a UI, how to make a web server, how to
+install and use a text editor or terminal) for self directed or on-the-job learning.
+
+Some schools even go so far as to use a "teaching language" or "teaching environment"
+such as [Processing][] or [DrRacket][] or [Scratch][]. By entirely removing all unnecessary
+distractions, it is easier to explore the bare fundamentals, at the expense of having
+little to no practical knowledge to show for it at the end.
+
+[Processing]: https://processing.org/
+[DrRacket]: https://docs.racket-lang.org/drracket/htdp-langs.html
+[Scratch]: https://scratch.mit.edu/
+
+While this is somewhat the "standard," that's only because it can be standardized
+this way: schools want our knowledge to be testable and objective. When it comes to
+practical applications of coding, it's hard to pass or fail students on whether their
+UI passes or fails when there is no way to measure it as objectively "correct" or
+"incorrect."
+
+People are so often able to get jobs in this field without having a university degree,
+just as often as people with a university being unable to get a job due to lack of
+practical experience. From what I can tell, the school is just there to set you up
+with a co-op placement and then your time at those placements, and in your own work
+on the side, is what really determines your future success and continued employability.
+
+#### Top down, bootcamp style
+
+To get people "productive" as fast as possible, bootcamps will start by teaching
+practical tools right away, without going into depth on... pretty much anything. You'll
+know React before you know what Javascript is, and be making servers and network
+requests before understanding HTTP methods.
+
+Though this is the quickest way to get "results" (programs you can run!), all you'll
+have is results with nothing to back them up. I feel it is unlikely someone fresh
+out of bootcamp would be able to build their own project of choice without assistance,
+or at least without much struggle.
+
+I know a handful of people who have gone through this path and ended up with jobs,
+and even performed decently well at those jobs. What is lacking in technical ability
+is often made up for by the drive to just make something. Keep in mind I only know
+the ones that actually managed to find work; there are undoubtedly countless bootcamp
+graduates who went in with no drive, only hoping to earn quick money, and remain unemployed.
+As with the school path, it's the self motivation to keep exploring that really
+leads you to any form of success.
+
+#### Middle out, self-directed style
+
+With nobody telling you what to do, you have to
+build up the intuition about how things work on your own. Following countless rabbit holes
+through a combination of online tutorials, documentation and reference manuals, and snippets from
+Stack Overflow or similar, your knowledge grows naturally from some arbitrary point
+outwards.
+
+Though this method encourages you to experience a more balanced assortment of subjects,
+it tends to take a lot longer, and leave the most holes, given that you do not necessarily
+know where to look next. A structured course will lead you through topics in order
+ensuring you do not miss any important details along the way, but the random tutorials
+online only cover so little before you have to find another one, which may overlap or
+may skip some steps, resulting in slower progress.
+
+Though it seems like a lot of the people who go the self-directed route turn out quite
+successful, again this is more a product of their inherent drive to learn and to build.
+People I've known who tried going this route without a strong personal goal driving them
+forward ended up no better off than the people who went through school or bootcamp without
+a real goal in mind either.
+
+> At this time, there is an emerging fourth approach which I might call "Surface only, AI style,"
+> in which you learn nothing but produce a lot by chatting with an LLM. I acknowledge that this
+> method exists, but choose to disregard it as it is a topic which remains too nuanced
+> and yet undiscovered to be worth burdening this article with.
+
+### Which to choose
+
+"So... each method has its merits and its drawbacks and, in the end, the only thing that matters
+when learning to code is whether you want it badly enough?" Honestly, kind of, yeah, but is this
+not the case with any other skill? The only difference is that some activities have a lower barrier
+to entry; a shorter distance to first result. The time between picking up a pencil and your first
+(ugly) drawing is much shorter than the time between booting up your first computer and having
+a working Hello World. The path from pencil to drawing, and then second drawing, is also very tangible,
+whereas the path from computer to Hello World to whatever comes next is as complicated as described
+earlier and almost entirely abstract.
+
+I'm lucky enough to have taken all three of these paths: I got my start at a summer camp where we learned
+some "practical basics", then through self-directed learning I took it much further, and then took
+programming in high school, had summer jobs and co-ops to learn from people more experienced than
+me, and a whole university degree to finish it off. My conclusion is that no one of those aspects
+would necessarily have been enough on its own. Only because I experienced all the options, coupled
+with projects in mind and a desire to build them, did I become the developer I am today (hopefully,
+one of a sufficient level of success). Keep in mind that also took some 10 years.
+
+It is my opinion that there is no right choice out of these options. Overall, I am dissatisfied with the
+state of "learning to code." There is no method to it that will work for everyone. Certainly there
+are methods which can be used and which will produce passable to reasonably skilled developers, but
+I would expect that, for every rockstar unicorn standout developer, there is also a unique path
+they took and a personal motivation that drove them to it.
+
+No matter what though, I do believe the most effective method will always be a combination of
+both externally directed and self directed learning, where each covers for the weaknesses of the
+other.
+
+#### The end of the lesson
+
+No matter how good your classes, lessons or tutorial may be, it will eventually end: no course
+can cover everything. In particular, it is highly unlikely that any course will cover every
+part of the exact piece of software you are trying to build. The reason you're trying to build
+it at all is because it doesn't exist but you want it.
+
+Given this, from the end of each course, you are forced to branch out on your own. Fortunately,
+the lesson will have given you plenty of base knowledge from which to branch. The vocabulary
+and broad concepts from which to begin refining your knowledge, hopefully also the tools,
+resources, and documentation from which to pull.
+
+#### The knowledge plateau
+
+On the other hand, if starting with self-directed learning,  those resources are things
+that you wouldn't have. Now the hardest part is knowing what to learn next, and you might
+quickly run into a plateau in what you can achieve on your own. With learning any skill,
+it has long been observed that we will occasionally reach such a plateau. Despite continuing
+to practice said skill, we do not seem to be making an progress.
+
+The issue with coding, as previously observed, is that it is not just one skill, but a collection
+of many related ones, all of which must be learned simultaneously. This means that there are more
+places in which a plateau might occur, thereby getting in the way of improvement that much more
+frequently.
+
+For example, I have often seen (and experienced myself) a reluctance to read the documentation
+on `<insert library here>`, resulting in hours spent struggling against said library to get
+that "missing feature" to work. Rather than identifying and breaking through the plateau (your knowledge
+of the library in question) you instead decide "I must not be trying hard enough!"
+
+No matter how hard you try, your program ends up somehow buggier and more complex than what everyone
+else appears to have produced. "Why am I not improving at this?" you complain, "I'm using this skill,
+shouldn't I be getting better at it?"
+
+In reality, you probably *are* improving some skill, just not the one you need right now, and not
+very quickly because mostly you're just reinventing the wheel, and then trying to figure out why
+your hexagonal wheeled car isn't going as fast as everyone else's cars, of which you have never
+seen the wheels, and actually your car is missing an engine but you didn't even know that was an
+option because nobody told you.
+
+Or even more concretely, the common pitfall of doing floating point arithmetic and getting the
+"wrong" answer. Something that might have been avoided if you had some full-coverage external
+direction to inform you of it first.
+
+> Not to be unfair to other activities; most are a collection of related skills. Coding just happens
+> to be one I know about, and one that I have observed to have a high number of related and abstract
+> sub-topics. I simply cannot comment on anything else.
+
+### A way forward
+
+Is there one true way forward? We may never know. That doesn't stop us from thinking about it
+though, which has led me to a few possible approaches to consider. I will leave them here as
+food for thought until I find time to start more seriously considering producing tutorials of
+my own.
+
+#### Public consultation?
+
+To some extent this is offered by universities (office hours, tutorials), but typically this is
+only when related to the course matter directly. Similarly, this is somewhat available when at work,
+given that there are co-workers nearby to discuss with, or to participate in some peer programming,
+but again this is mostly going to have to be about what tasks you've been assigned to on the job.
+
+What we're missing is the option for the independent beginner learner, or someone stuck on a personal
+project, to find that one-on-one interaction for targeted assistance.
+
+Some lucky folks have friends who they can ask, but I would assume the majority of those friends
+aren't that good at explaining (or maybe, not even that good at coding at all). You could ask
+Stack Overflow, but in my experience posting (or trying to post) questions on there, either the
+problem is so niche that the one guy who knows the answer won't see the question, or the problem
+is not that you have a question, but that you don't know what to ask.
+
+To this end, the obvious solution would be putting the human connection back in, and
+meeting up with someone knowledgeable in person. Like accessible public office hours,
+or a casual gathering space for such independents to meet and discuss with each other.
+
+Who could possibly be expected to run such a thing is a mystery, and what type of
+developers are willing to go out like that I wouldn't know, but I do know that there
+are people out there to learn from but don't have an outlet to share by, and
+such an environment might bring it about. There certainly are such groups for other
+subjects (book clubs, pottery classes, etc.) that people attend for fun, so where are
+the casual coding clubs?
+
+#### Software skill tree?
+
+For an automated alternative, consider the sprawling approach of self-directed learning but visualized
+as a skill tree, like in a game. More realistically, this would probably be a skill-web,
+given how interconnected real skills are. At any point, you would know where in this web you
+were, where you have been, and what steps you can logically take next.
+
+Rather than having to guess what to look up, you just check your web, pick a point
+you want to move towards, and start moving. Along the way, you'll be exposed to topics you
+might otherwise have missed entirely and aren't directly related to the task at hand, but
+at least now you've heard of them. Or maybe you see one that sounds interesting enough
+to warrant a detour.
+
+While this sounds pretty good to me, the challenge is in building this web in a useful
+manner. There is no one person who could build the whole thing, yet too many contributions
+and connections would make this no more useful than Google, where there is no way to build
+a path at all because it's all just there. It's a project I would be interested in exploring
+more in future, but for now would take too much time.
