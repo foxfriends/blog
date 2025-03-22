@@ -30,7 +30,7 @@
     "remark-deflist": "^1.0.0",
     "remark-math": "^6.0.0",
     "scattered-papers": "git+https://github.com/foxfriends/scattered-papers.git#e3c2e6f",
-    "svelte": "^4.2.7",
+    "svelte": "^4.2.19",
     "vite": "^5.0.2"
   },
   "dependencies": {
