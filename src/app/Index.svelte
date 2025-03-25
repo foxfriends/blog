@@ -48,8 +48,6 @@
     )
     .sort((a, b) => b.relevance - a.relevance);
 
-  $: console.log(filteredArticles);
-
   async function applySearch(value) {
     appliedSearch = value;
     if (!appliedSearch) {
