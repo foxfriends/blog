@@ -32,7 +32,7 @@ async function config() {
 }
 
 async function build() {
-  compileArticles();
+  await compileArticles();
   await vite.build(await config());
 }
 
@@ -44,9 +44,9 @@ async function dev() {
 
 switch (process.argv[2]) {
   case "build":
-    build();
+    await build();
     break;
   default:
-    dev();
+    await dev();
     break;
 }

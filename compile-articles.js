@@ -1,6 +1,12 @@
-import { readdirSync, existsSync, readFileSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
+import { readdir, readFile, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
+
 import fm from "front-matter";
+
+const { pipeline, env } = await import("@huggingface/transformers");
+env.allowLocalModels = false;
+env.cacheDir = ".cache";
 
 const html = (article) => `<!DOCTYPE HTML>
 <html>
@@ -48,53 +54,65 @@ function dater(key, value) {
   return value;
 }
 
-export function compileArticles(force = false) {
+export async function compileArticles(force = false) {
+  const embed = await pipeline("feature-extraction", "intfloat/e5-small-v2", {
+    dtype: "fp32",
+    subfolder: "",
+  });
+
   const articles = [];
-  const dir = readdirSync("./article/");
+  const dir = await readdir("./article/");
   let previousManifest = [];
   if (existsSync("./article/manifest.json")) {
     previousManifest = JSON.parse(
-      readFileSync("./article/manifest.json"),
-      dater
+      await readFile("./article/manifest.json", "utf8"),
+      dater,
     );
   }
 
   for (const id of dir) {
     if (id === "manifest.json") continue;
-    const article = readFileSync(`./article/${id}/article.svx`).toString();
-    const { attributes } = fm(article);
+    const article = await readFile(`./article/${id}/article.svx`, "utf8");
+    const { attributes, body } = fm(article);
     attributes.id = id;
-    if (
-      !equal(
-        attributes,
-        previousManifest.find((entry) => entry.id === id)
-      )
-    ) {
+    const existing = previousManifest.find((entry) => entry.id === id);
+
+    let embedding = existing?.embedding;
+    if (existing) delete existing.embedding;
+
+    if (!existing || !embedding || !equal(attributes, existing)) {
       console.log(`Replacing article ${id}`);
-      writeFileSync(`./article/${id}/index.html`, html(attributes));
-      writeFileSync(`./article/${id}/index.js`, js(id));
+      [, , embedding] = await Promise.all([
+        writeFile(`./article/${id}/index.html`, html(attributes)),
+        writeFile(`./article/${id}/index.js`, js(id)),
+        embed(`query: ${body}`, {
+          pooling: "mean",
+          normalize: true,
+        }),
+      ]);
+      embedding = embedding.tolist()[0];
     }
     if (attributes.outline) {
       for (const { language, output } of attributes.outline) {
-        const input = readFileSync(`./article/${id}/article.svx`);
+        const input = await readFile(`./article/${id}/article.svx`, "utf8");
         const { stdout: tangle } = spawnSync("outline", ["-l", language], {
           input,
         });
         const filename = output || `article.${language}`;
         const previous = existsSync(`./article/${id}/${output}`)
-          ? readFileSync(`./article/${id}/${output}`)
+          ? await readFile(`./article/${id}/${output}`)
           : Buffer.from("");
         if (Buffer.compare(previous, tangle) !== 0) {
-          writeFileSync(`./article/${id}/${output}`, tangle);
+          await writeFile(`./article/${id}/${output}`, tangle);
         }
       }
     }
-    articles.push(attributes);
+    articles.push({ ...attributes, embedding });
   }
 
   articles.sort((a, b) => new Date(b.date) - new Date(a.date));
   if (!equal(previousManifest, articles)) {
     console.log("Replacing manifest");
-    writeFileSync("./article/manifest.json", JSON.stringify(articles));
+    await writeFile("./article/manifest.json", JSON.stringify(articles));
   }
 }
