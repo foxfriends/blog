@@ -72,6 +72,7 @@ export async function compileArticles(force = false) {
 
   for (const id of dir) {
     if (id === "manifest.json") continue;
+    if (id === ".DS_Store") continue; // bruh
     const article = await readFile(`./article/${id}/article.svx`, "utf8");
     const { attributes, body } = fm(article);
     attributes.id = id;
