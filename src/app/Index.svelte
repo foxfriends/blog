@@ -172,7 +172,8 @@
   }
 
   .tools {
-    width: 50rem;
+    max-width: 50rem;
+    width: 100%;
     gap: 1rem;
   }
 
