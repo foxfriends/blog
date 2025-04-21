@@ -1,5 +1,6 @@
 ---
-title: 'Concept: Game Scripting with Logic Programming'
+title: 'Game scripting with logic programming'
+subtitle: Prolog predicates as game state space
 date: 2020-08-28
 tags:
 - gamedev

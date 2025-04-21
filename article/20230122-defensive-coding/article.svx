@@ -1,5 +1,5 @@
 ---
-title: Defensive Coding
+title: Defensive coding
 subtitle: Assume you are stupid
 date: 2023-01-22
 tags:

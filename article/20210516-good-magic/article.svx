@@ -1,5 +1,5 @@
 ---
-title: Good Magic
+title: Good magic
 subtitle: A good magician always reveals his tricks
 date: 2021-05-16
 tags:
