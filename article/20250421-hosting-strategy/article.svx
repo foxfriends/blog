@@ -1,0 +1,526 @@
+---
+title: Hosting strategy
+subtitle: We have App Platform at home
+date: 2025-04-21
+tags:
+- project
+- personal
+author: Cam
+---
+
+I haven't ever really gotten into the weeds of any particular thing I've done on this blog
+before. Whenever I consider writing this sort of article, and as I have seen so many times
+on such things shared online by others, it just seems... so mundane. "This is what I built
+and how", yeah no kidding, how else do you do it. Yet recently I have finished something,
+maybe of marginal interest, very much self contained, and I wish to try. This will be more
+a collection of thoughts, observations, reasoning, and useful links and tools than a step
+by step tutorial on the usage of any particular component used. Read the docs for that.
+
+### The backstory
+
+Until recently, I had a DigitalOcean Droplet with all my little toy projects hosted on it.
+Some board games, some little tools I made for various purposes, and (formerly) my website
+itself and this blog. Nothing of particular significance to anyone but me and my people.
+
+The server was both the build machine and the hosting machine. Deploys were triggered by a
+[webhook][] called from GitHub actions, which would run a shell script to pull the
+code, build it, and then restart the app monitored using [PM2][]. The webhook was itself
+just one of the apps, was capable of redeploying itself, and also served the build logs;
+my own janky Cloudbuild. This whole thing was behind [Nginx][], just one little host for many
+little sites.
+
+This server cost $12/month, which was not a *bad* price, but this is double what it originally
+cost only because it had to do the (Rust) builds and kept running out of RAM. I ended up doubling
+the size just so that it could build itself, despite my 0 scaling requirements (1 user per month: me).
+I actually had two of these servers, because [ConArtist][], also with minimal users, was on its
+own Droplet, where it would be safe from my blundering about.
+
+[PM2]: https://pm2.keymetrics.io/
+[webhook]: https://github.com/foxfriends/deploy-server
+[ConArtist]: https://github.com/foxfriends/conartist
+[Catan]: https://github.com/foxfriends/catan
+[Nginx]: https://nginx.org/en/
+
+All this actually lasted quite long. Some 5 to 7 years I had these servers going, up until last week.
+Pretty good for something I hacked together as a (relative) child, with no experience in web hosting. A few things worth noting, good and bad, for someone else in the position I was in back then:
+-   I used PM2 partially because I had no idea how else to keep these servers running long term,
+    but also because it does quite a good job of supervising in general. Logs were collected nicely,
+    the apps were rebooted on crash, on redeploys, and (supposedly) on server reboots. Overall, no
+    major complaints here, this thing did its job, except I probably had that server reboot thing set
+    up wrong because it did on a few occasions just stop running everything and I had to go start them
+    up manually.
+-   Putting up auto-deploy was somewhat of an afterthought, but it definitely paid off. Particularly
+    for the more frequently deployed components, having to go in there manually to update them was
+    both a pain and very error prone because I would forget the steps required, and have to figure
+    it out for each project each time. The main issue with the auto-deploy was that, because it was
+    doing the builds and running the servers all loose-on-host (i.e. not containerized), there was no
+    real recovery for a failed build: once the code is pulled it's already too late. This wouldn't be
+    such a big deal if these projects were individually well built and stable, but [Catan][] was
+    built in 2015, when I was just barely starting out. These things are old and rickety, and I
+    just kept hitting merge whenever Dependabot suggested something (likely the ultimate cause of
+    death for this setup overall).
+-   Also an issue with running everything directly on the host was that as I was using different
+    versions of Node and such over the years, and not taking notes as to which version, I had no
+    idea whether anything was compatible whenever I suddenly did an upgrade. Young me
+    did not see this as an issue (how "breaking" can changes really be?), old me now understands.
+    Can't trust code written by someone else, past self included.
+
+Anyway, last week I noticed that none of the apps were working, went into manually get it back
+up, and found it was impossible: nothing worked correctly anymore. I do not know exactly what
+the problem was; something had changed between the Node version, PM2, my apps, or maybe something
+else, but nothing would start. It was finally time to redo it, now with all the tools I've learned
+about over the last 7 years. Here's how it goes.
+
+### The upgrade
+
+My server now is still on DigitalOcean, and still in a Droplet, but now it costs only $6/month.
+Maybe there are cheaper options out there, but at some point it's cheap enough and I am willing
+to pay for the great and easy experience that I have had using DigitalOcean, compared to the
+pain of the bigger hosting services. I do not have any need for that complexity. The DigitalOcean app
+platform is also quite nice, and I have moved this blog and some other stuff over, but the
+price for 6 apps and 2 databases is higher than one Droplet, so I only use it for the
+"first 3 static sites free" deal. We have app platform at home.
+
+This new server runs all apps in Docker containers. It hosts all my toy projects as well as
+ConArtist because I am pretty confident in the stability now, and also don't want to be spending
+money on a second server for no good reason (in this economy?!). The deploys and other server management
+stuff is done using [Ansible][] and Terraform, and can be run within GitHub actions directly, without needing
+to host any webhook.
+
+Overall, I am immensely pleased with this new setup. It has a few kinks to work out yet, and is
+likely no replacement for the real platforms out there if I ever start to have scale, but it
+certainly does the job. For other hobby-size projects I have no problem recommending
+this approach, so here are the details.
+
+### It starts with containers
+
+This will come as no surprise to anyone who knows already that containers are the answer. I
+had actually tried it once before: one of the apps I had running on the old server was all
+done through Docker Compose; it worked a little bit but not a lot, I don't think this is what
+Compose is for.
+
+There were actually more benefits to finally turning all my apps into Docker images than I expected:
+1. The builds are reproducible: this is the obvious and always mentioned benefit of containers. I got this build working locally, and now I can automate that elsewhere and upload the results.
+2. The builds are documented: it's just such a nice thing to have the build steps written down in a clear format, tested and proven. This is not the same as writing the script in the README. The Dockerfile is required to be up to date because it is actually used, unlike the README.
+3. The builds are isolated: when things are going wrong, they don't leave a mess on my system. Or worse: a mess on my server.
+4. The builds are done ahead of time: this one actually saves me $6/month because I don't need my server to be able to compile Rust projects anymore. I can make GitHub's servers do it for me, and then just download the result.
+5. The builds are versioned: now if Dependabot breaks an app, I can just roll back that app to a previous image until I find time to fix it, rather than having to drop everything and go into repair mode (like I did last week!)
+
+So I run the builds in GitHub actions, using basically the [workflow] they listed in
+the documentation, or my own [variant][] using [Docker Bake][], to publish them to the
+Github Container Registry. This is all free because my repositories are public, lucky me.
+
+[workflow]: https://github.com/foxfriends/mahjong/blob/d1aa26c2ad0db9f37c002497cf1b584275fbf1f2/.github/workflows/release.yml#L19-L50
+[variant]: https://github.com/foxfriends/cookiealyst/blob/7542838366a24fc82ca1b47f3882270fffeb5284/.github/workflows/release.yml#L21-L60
+[Docker Bake]: https://docs.docker.com/build/bake/
+
+### App platform at home
+
+Once there are images, the next step is to get them hosted. This is where some app
+platform usually steps in: taking your images and hosting them, as if by magic.
+
+From my experience this isn't the whole story. Having persistent data, they will suggest
+you pay for a managed database. To save files, you had best pay for some additional
+storage and use the storage service's web API instead of just using the file
+system. After purchasing those things, you still need to connect it all, set up the
+internal networking and mount the volumes so everything is reachable. You then also
+need to get a domain name and do all the DNS, and external networking, and figure
+out the SSL certificates before it's really usable. And you still need to set up some
+deploy process somewhere.
+
+Far as I can tell, this is basically the same offering as Docker. Sure there are some
+scalability benefits that come with a managed version of this, but I don't have users.
+The app platform, though easy, is overkill for a project of this size and significantly
+more expensive.
+
+### Infrastructure as code
+
+Maybe the one thing that has allowed me to personally understand provisioning cloud
+infrastructure is infrastructure-as-code. Specifically, in my case, [Terraform][].
+Beyond the obvious gains from reproducible setup and declarative deploys, the actual largest
+benefit to me has been having all the options documented in one place. The Terraform
+provider documentation (of a good provider) acts as a handy table of contents for all
+the customization options of the service being provisioned, in a consistent and simple
+interface: no more clicking through many menus and reading pages of docs just to find
+that one little setting.
+
+[Terraform]: https://developer.hashicorp.com/terraform
+
+To me, Google Cloud Platform was almost unintelligible until I was able to see some working
+deployments as code. A Terraform example is able to include all the parts of the system in
+full detail and show their connections in a way that 10 outdated screenshots of Google Cloud Console
+cannot. In the same way, I learned more about Docker in a day of using
+[Docker through Terraform][] than I have after years of absentmindedly using Docker
+Compose. Terraforming Docker, rather than using Compose, results in something quite
+similar but much more flexible and more suitable for a production environment given
+that we are provisioning images and containers directly with the Docker Engine, rather
+than relying on any high level end user abstraction.
+
+[Docker through Terraform]: https://registry.terraform.io/providers/kreuzwerker/docker/latest/docs
+
+Another of the common issues with setting up infrastructure is that the infrastructure
+requirements are a function of the application, but are traditionally supplied externally.
+Without a codified representation of that infrastructure, it is hard to consistently
+document and validate those requirements. With infrastructure-as-code, we are able to
+include all the intended infrastructure and configuration of a service directly in
+the repositories with the application code, making it easy to deploy them elsewhere at a later
+time (when you no longer remember exactly what anything is for).
+
+In my case, I have created a Terraform module for each project, which are stored in the
+repositories for those projects. These modules are placed at `/terraform/modules/docker`,
+as they are modules that enable the deployment of these apps directly onto a host that
+is running Docker. In future, if I start needing to host any apps on other platforms,
+it will be easy to add a new module that is specialized for that new platform without losing
+support for any of the previously existing ones.
+
+Taking a simpler app as a first example, [Mahjong][] only requires a folder in which to store
+saved games, which I am able to encode directly into the Terraform module.
+The path at which the state folder is mounted is both set and consumed in this same file, resulting in there being
+no "external dependency" which the deployer has to worry about.
+
+```hcl
+# Look up the image to detect new `main` versions automatically.
+data "docker_registry_image" "mahjong" {
+  name = "ghcr.io/foxfriends/mahjong:main"
+}
+
+resource "docker_image" "mahjong" {
+  name          = "ghcr.io/foxfriends/mahjong:main"
+  pull_triggers = [data.docker_registry_image.mahjong.sha256_digest]
+}
+
+# Create this arbitrary storage volume for game savefiles.
+resource "docker_volume" "state" {
+  name = "${var.name}-state"
+}
+
+resource "docker_container" "mahjong" {
+  image = docker_image.mahjong.image_id
+  name  = var.name
+
+  # Ensure this app restarts on crash or when the server gets restarted
+  restart = "unless-stopped"
+
+  ports {
+    # Port is configured and exposed from the same file,
+    # reducing places where it can drift
+    internal = 3000
+  }
+
+  volumes {
+    # State container is also mounted and configured from
+    # the same file, avoiding further user error
+    container_path = "/state"
+    volume_name    = docker_volume.state.name
+    read_only      = false
+  }
+
+  network_mode = "bridge"
+
+  # We can do best practice things like enforce that the healthcheck
+  # is actually checked, a step likely to be overlooked if deployed by
+  # someone else.
+  healthcheck {
+    test         = ["CMD", "curl", "-f", "localhost:3000/health"]
+    interval     = "5s"
+    retries      = 2
+    start_period = "1s"
+    timeout      = "500ms"
+  }
+
+  env = [
+    "mahjong_state=/state",
+    "mahjong_port=3000",
+  ]
+}
+```
+
+Now, the deployer can just [request][deploy mahjong] this module from the GitHub URL
+to have a fully configured and functioning Mahjong server.
+
+```hcl
+module "mahjong" {
+  source = "github.com/foxfriends/mahjong//terraform/modules/docker"
+  name   = "mahjong"
+}
+```
+
+As a more complicated example, the [Cookiealyst][] website requires a database, some jobs
+to be run during the deploy process, and a few external files to be mounted at runtime.
+
+With this whole solution being built on Docker, multiple containers can be specified in the
+Terraform module for the app allowing even external dependencies such as Postgres to become
+effectively internalized, as far as deployments are concerned. The database, and the migration
+and data loading jobs are each just additional containers configured within the Terraform
+module for the app. The networking between the containers and the database is also self contained,
+resulting in the only "external" step for the [end user][deploy cookiealyst] being to specify
+the paths to the files to be mounted in the containers.
+
+```hcl
+module "cookiealyst" {
+  source     = "github.com/foxfriends/cookiealyst//terraform/modules/docker"
+  name       = "cookiealyst"
+  data_dir   = abspath("${path.module}/cookiealyst/load")
+  images_dir = abspath("${path.module}/cookiealyst/images")
+}
+```
+
+This approach also allowed me to take the data and images out of the repo (that's not where
+they belong: it was weirdly tying the app my our particular usage of it, rather than letting
+the code remain pure). Instead, I am now able to move all that data to my deployment repository,
+and so if someone else wants to have their own winter themed cookie ranking app, they can now
+simply reconfigure mine, without code change.
+
+[Mahjong]: https://github.com/foxfriends/mahjong/blob/ee5ddc1dc00d2f48dfa2cbd929e7d3f47b131cfe/terraform/modules/docker/main.tf
+[deploy mahjong]: https://github.com/foxfriends/cameldridge.com/blob/c6788140ae6990af82941d40a6e8374fd630bf3e/mahjong.tf#L2
+[Cookiealyst]: https://github.com/foxfriends/cookiealyst/tree/04b516df03eaeda1612fbabb8071369364082536/terraform/modules/docker
+[deploy cookiealyst]: https://github.com/foxfriends/cameldridge.com/blob/c6788140ae6990af82941d40a6e8374fd630bf3e/cookiealyst.tf
+
+### Tying it together
+
+With isolated modules set up for each of these apps, capable of fully handling their internal
+requirements, separation of concerns has been achieved. Since I am running all of these apps
+on one host for now, I built [one more Terraform module][cameldridge.com] which makes use of the individual
+modules for the apps, linking them together where necessary.
+
+In my case, none of the apps need to be connected to each other, but they do connect to an
+[Nginx container][] which allows them all to be served from one host, despite being on different
+domains. I think, technically, I should have set up a new network between the Nginx container
+and the app containers, but I did not. Instead, currently I just expose a [port][] from each of
+the app containers and run Nginx on the host network, saving some trouble at the expense of
+polluting my host network. This is not really an issue because I wasn't using that host network
+for anything anyway.
+
+```hcl
+resource "docker_container" "nginx" {
+  image   = docker_image.nginx.image_id
+  name    = "cameldridge.com"
+  restart = "unless-stopped"
+
+  # Nginx runs on host network to access all the ports exposed by the apps.
+  network_mode = "host"
+
+  # The configuration is mounted into the container (more on this next)
+  volumes {
+    container_path = "/etc/nginx/templates"
+    host_path      = abspath("${path.module}/nginx/templates")
+    read_only      = true
+  }
+
+  # SSL certificates are also generated and mounted to
+  # the container (coming up right after)
+  volumes {
+    container_path = "/ssl/"
+    host_path      = abspath("${path.module}/nginx/ssl")
+    read_only      = true
+  }
+
+  env = [
+    # Outputs from the other modules are provided as environment variables
+    # to the Nginx container.
+    "COOKIEALYST_PORT=${module.cookiealyst.port}",
+    "INVENTORY_PORT=${module.inventory.port}",
+    "CONARTIST_PORT=${module.conartist.port}",
+    "MAHJONG_PORT=${module.mahjong.port}",
+    "MACHI_KORO_PORT=${module.machi-koro.port}",
+    "TOKAIDO_PORT=${module.tokaido.port}",
+    "CATAN_PORT=${module.catan.port}",
+    # HACK: for nginx templating via envsubst, we "escape" the $ as ${DOLLAR}
+    "DOLLAR=$",
+  ]
+}
+```
+
+[cameldridge.com]: https://github.com/foxfriends/cameldridge.com/tree/c6788140ae6990af82941d40a6e8374fd630bf3e
+[Nginx container]: https://github.com/foxfriends/cameldridge.com/blob/c6788140ae6990af82941d40a6e8374fd630bf3e/nginx.tf#L25-L31
+[port]: https://github.com/foxfriends/mahjong/blob/ee5ddc1dc00d2f48dfa2cbd929e7d3f47b131cfe/terraform/modules/docker/outputs.tf
+
+The Nginx Docker container conveniently supports a templating feature, so I can pass those ports
+as environment variables and inject them into the config using the [template][]. The rest of the
+configuration I got using [Mozilla's SSL config generator][ssl-config], so while I admittedly don't
+know all the details of what it does, it does seem to work.
+
+```nginx
+server {
+    server_name mahjong.cameldridge.com;
+    http2 on;
+
+    location / {
+        # The environment variables provided to the container can now be used
+        # in the templated config file.
+        proxy_pass http://localhost:${MAHJONG_PORT};
+        proxy_http_version 1.1;
+        # Including this workaround for `envsubst` not supporting escaping
+        # the dollar sign!
+        proxy_set_header Upgrade ${DOLLAR}http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host ${DOLLAR}host;
+        proxy_cache_bypass ${DOLLAR}http_upgrade;
+    }
+
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    # The SSL certificate directory is mounted accordingly:
+    ssl_certificate /ssl/cameldridge.com/fullchain.pem;
+    ssl_certificate_key /ssl/cameldridge.com/privkey.pem;
+    ssl_trusted_certificate /ssl/cameldridge.com/chain.pem;
+    add_header Strict-Transport-Security "max-age=63072000" always;
+}
+```
+
+[template]: https://github.com/foxfriends/cameldridge.com/blob/c6788140ae6990af82941d40a6e8374fd630bf3e/nginx/templates/cookiealyst.conf.template#L6
+[ssl-config]: https://ssl-config.mozilla.org/#server=nginx&version=1.27.3&config=intermediate&openssl=3.4.0&guideline=5.7
+
+The last piece of configuration is acquiring and configuring the SSL certificates. Fortunately, it
+is possible to do this through Terraform too, using the [ACME provider][]. [Setting this up][acmetf]
+was trivial and worked well. For each domain I need a certificate for, I requested a wildcard
+certificate and save the certificates as files, which are then mounted into the Nginx container.
+Again, this is a step that always seemed intimidating until it was written down in a single
+Terraform file and made obvious.
+
+Not to mention that this ACME provider also automatically handles the "challenge" step of
+getting an SSL certificate from an ACME server. Since my DNS is handled by DigitalOcean, and
+this provider supports that, all I needed to do was allow access to DigitalOcean's DNS
+configuration API and it's all done during the deploy. Previously I used [certbot][] for this,
+an excellent tool in its own way, but it did more magic than I liked, generating and managing
+configuration for my servers.
+
+```hcl
+resource "acme_registration" "cameldridge" {
+  email_address = var.acme_email_address
+}
+
+resource "acme_certificate" "cameldridge" {
+  account_key_pem           = acme_registration.cameldridge.account_key_pem
+  # Set up a wildcard certificate, makes life easy.
+  common_name               = "*.cameldridge.com"
+  subject_alternative_names = ["cameldridge.com"]
+
+  # The handling of the challenge is handled automatically, a suitable
+  # amount of magic.
+  dns_challenge {
+    provider = "digitalocean"
+    config = {
+      DO_AUTH_TOKEN = var.digitalocean_token
+    }
+  }
+}
+
+# Output the 3 files that Nginx wants, from there they will be
+# mounted to the Nginx container.
+resource "local_file" "cameldridge_fullchain" {
+  content  = "${acme_certificate.cameldridge.certificate_pem}${acme_certificate.cameldridge.issuer_pem}"
+  filename = abspath("${path.module}/nginx/ssl/cameldridge.com/fullchain.pem")
+}
+
+resource "local_file" "cameldridge_chain" {
+  content  = acme_certificate.cameldridge.issuer_pem
+  filename = abspath("${path.module}/nginx/ssl/cameldridge.com/chain.pem")
+}
+
+resource "local_sensitive_file" "cameldridge_privkey" {
+  content  = acme_certificate.cameldridge.private_key_pem
+  filename = abspath("${path.module}/nginx/ssl/cameldridge.com/privkey.pem")
+}
+```
+
+[ACME provider]: https://registry.terraform.io/providers/vancluever/acme/latest/docs
+[acmetf]: https://github.com/foxfriends/cameldridge.com/blob/c6788140ae6990af82941d40a6e8374fd630bf3e/acme.tf
+[certbot]: https://certbot.eff.org/
+
+### Run it
+
+Now that everything is properly configured, the last step is to actually get it deployed.
+Arguably the hardest part to do correctly, this requires considerations on how to handle
+and share secrets between all systems which may need to run a deploy. In my case, this is:
+-   GitHub actions (to automate deployments on merge)
+-   My own computer (to quickly easily run deploys manually and for development)
+-   The server itself (so I can SSH in and manage directly, when things go wrong)
+
+In the end, I decided to just distribute the secrets manually. There aren't that many secrets
+and there aren't that many places to put them. In future if this gets annoying, I could probably
+find a suitable secret manager, but for now that isn't really a priority seeing as there is
+only one person (me) who has to run these deploys at this time, and likely forever.
+
+Then, so that the deploys are truly consistent, I wanted to make sure that no actual
+processes of more than one step require being performed manually. All significant
+modifications to the server from its initial state should be automated in some way.
+Far too often I have seen this requirement neglected, resulting in intimidating and
+error prone multi-step deployments requiring specific key individuals to be available.
+Inevitably in these situations, when someone else tries to do it something gets messed
+up, so those key invididuals never really get to go a break.
+
+Codifying all these steps and locking down the secret management is something I must highly
+recommend, especially early in a project when it's still easy to do. Once a process has
+more than one step, it has room for error, and it starts to feel like adding more steps and
+complicating things further is the norm. Meanwhile, if the changes are implemented
+as code, this not only makes it so that someone else can repeat exactly the same steps and
+end up with the same result, but they are able to review the changes being made and make
+suggestions, as with any other piece of code. This added visibility is a big deal.
+
+In this case, I chose to use [Ansible][], which serves a similar but different purpose to
+Terraform, and ended up with 3 Ansible Playbooks:
+1. The one time [server initialization][], creating users, etc.
+2. The full [deployment setup process][], installing dependencies and such.
+3. The actual task of [deploying the latest versions][] to the server.
+
+[server initialization]: https://github.com/foxfriends/cameldridge.com/blob/c6788140ae6990af82941d40a6e8374fd630bf3e/ansible/pre-init.yaml
+[deployment setup process]: https://github.com/foxfriends/cameldridge.com/blob/c6788140ae6990af82941d40a6e8374fd630bf3e/ansible/setup.yaml
+[deploying the latest versions]: https://github.com/foxfriends/cameldridge.com/blob/c6788140ae6990af82941d40a6e8374fd630bf3e/ansible/update.yaml
+
+The first two are only really intended to be run manually from my personal computer to
+directly manage the server as I set it up. The last is the one used in the GitHub Actions
+workflow, as well as locally by hand. These Playbooks take the secrets as input through
+[variables][].
+
+```yaml
+- name: Setup
+  hosts: cameldridge
+  remote_user: cam
+  tasks:
+    - name: Pull repo
+      ansible.builtin.git:
+        repo: git@github.com:foxfriends/cameldridge.com.git
+        dest: "cameldridge.com"
+        clone: false
+    - name: Terraform apply
+      community.general.terraform:
+        project_path: "./cameldridge.com"
+        provider_upgrade: true
+        force_init: true
+        variables:
+          digitalocean_token: "{{ digitalocean_token }}"
+          # ... a whole bunch more uninteresting variables
+```
+
+Locally I have those variables in a file, while [in the workflows][gha] they're
+just loaded in as secrets and the variables file is generated on the fly from there.
+These variables are actually just used to in turn populate Terraform variables, which are
+used to keep the secrets out of Terraform. This also makes it possible to create different
+`.tfvars` files containing values for different environments, allowing me to run an exact
+copy of my server locally for testing via my own Docker installation, before then deploying
+it using the production values on the production server.
+
+[Ansible]: https://www.redhat.com/en/ansible-collaborative
+[variables]: https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html
+[gha]: https://github.com/foxfriends/cameldridge.com/blob/c6788140ae6990af82941d40a6e8374fd630bf3e/.github/workflows/deploy.yaml#L30-L54
+
+Then to solidify even those relatively "complex" and externally implemented commands used
+to call Ansible or Terraform directly, a [Justfile][] in my server repository makes sure
+that I never forget those last details. The final result is that I type `just update` and
+the server... just updates.
+
+[Justfile]: https://github.com/foxfriends/cameldridge.com/blob/c6788140ae6990af82941d40a6e8374fd630bf3e/Justfile
+
+### Automatic deploys
+
+As a final bonus, I set up the deploy workflow so that it can be run from Repository Dispatch.
+By [dispatching][] that from the respective app repositories' push workflows, as each app
+is updated, and following a successful build, the latest version is automatically released
+on the server.
+
+Everything is self contained and nicely decoupled, yet working smoothly to provide a close
+enough experience to match any fancy hosting platform, I think. As far as deployment goes anyway...
+
+[dispatching]: https://github.com/foxfriends/mahjong/blob/ee5ddc1dc00d2f48dfa2cbd929e7d3f47b131cfe/.github/workflows/release.yml#L51-L61
