@@ -81,6 +81,11 @@ platform is also quite nice, and I have moved this blog and some other stuff ove
 price for 6 apps and 2 databases is higher than one Droplet, so I only use it for the
 "first 3 static sites free" deal. We have app platform at home.
 
+> A small amendment: I seem to have already run out of the 1GB of memory provided with $6/month
+> Droplet, so I'm back to $12/month. Makes sense I suppose, these apps require memory to run, and
+> now with so many things at once, and in containers, it gets used up quick. Or maybe I have a
+> little memory leak somewhere? More investigation required.
+
 This new server runs all apps in Docker containers. It hosts all my toy projects as well as
 ConArtist because I am pretty confident in the stability now, and also don't want to be spending
 money on a second server for no good reason (in this economy?!). The deploys and other server management
@@ -290,6 +295,14 @@ and the app containers, but I did not. Instead, currently I just expose a [port]
 the app containers and run Nginx on the host network, saving some trouble at the expense of
 polluting my host network. This is not really an issue because I wasn't using that host network
 for anything anyway.
+
+> Another amendment: when the containers are automatically rebooted after a server reboot, the
+> ports (when assigned automatically as seen above) are not necessarily the same as before the
+> reboot, meaning the pre-configured Nginx container is not able to reach them, as its environment
+> variables were set at deploy time, and not at runtime.
+>
+> Using explicit host ports---or better yet: connecting Nginx to the services via internal
+> networking---will solve this issue.
 
 ```hcl
 resource "docker_container" "nginx" {
