@@ -124,6 +124,7 @@ export async function compileArticles(force = false) {
   rss += `  <channel>\n`;
   rss += `    <title>Cameron's Blog</title>\n`;
   rss += `    <link>https://blog.cameldridge.com</link>\n`;
+  rss += `    <atom:link href="https://blog.cameldridge.com/rss.xml" rel="self" type="application/rss+xml" />\n`;
   rss += `    <description>There's not much here</description>\n`;
   rss += `    <language>en-ca</language>\n`;
   rss += `    <pubDate>${new Date().toUTCString()}</pubDate>\n`;
