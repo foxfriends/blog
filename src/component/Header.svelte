@@ -30,6 +30,11 @@
             <span class='logo'><Image name='github' alt='GitHub' /></span>
           </Link>
         </div>
+        <div class='link'>
+          <Link href='/rss.xml' external discreet>
+            <span class='logo'><Image name='rss' alt='RSS Feed' /></span>
+          </Link>
+        </div>
       </div>
     </div>
   </Paper>
