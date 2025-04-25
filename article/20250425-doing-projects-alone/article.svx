@@ -1,0 +1,175 @@
+---
+title: Doing projects alone
+subtitle: "Though I can't claim to be an expert"
+date: 2025-04-25
+tags:
+- teamwork
+- personal
+author: Cam
+---
+
+It should be noted that I have a very poor ratio of completed to abandoned projects.
+For every project I complete (or even, continue to a point where it more closely resembles
+what it's supposed to than it does Hello World), there are probably 10 more projects that lie
+abandoned as barely more than an empty repository. That is to say, by no means am I particularly
+successful in setting out to build something and actually following through with building it.
+Yet there are some similarities between projects that had any sort of continued progress,
+as opposed to projects that did not.
+
+The main observation worth making is that __working alone is slow__. There's no way
+around it. Particularly for those of us who have become accustomed to working on a team of
+developers, each committing 40 hours per week to the project, the effort of one person for
+*maybe* 10 hours a week in the evenings doesn't feel like much. It just isn't. It's a quarter
+(or less) of the time, a quarter (or less) of the people, and pretty much none of the
+consistency (if you go on vacation, everything just stops).
+
+The trick to success is to recognize this and compensate accordingly. What it comes down to
+is really one thing: __don't repeat yourself__. Avoid having to do anything twice. Don't
+make a decision twice, don't fix a bug twice, don't make yourself repeat any process twice.
+Having to repeat things leads to errors, frustration, and a shifting design, all of which
+eventually result in giving up.
+
+To this end, there are a few strategies that have provided me with some success.
+
+### Make a plan and write it down
+
+Easily the first and most important factor in succeeding at building a project is knowing
+where that project is going. If you don't know the features you need, or what the final
+goal is, how can you build towards it? Easily, the leading cause for my giving up a project is
+not really knowing what the end goal is: I'll start something, play with it a bit, and
+quickly lose interest because I don't have a clear picture of what the next step should be.
+Without confidence in the end product, why bother to work on it at all.
+
+If you make as many decisions as you can up front, _and write them down_, that's a bunch of
+decisions you won't need to make again. When it comes time to build, all you need to do is
+refer to what you decided earlier and trust in the vision.
+
+This is true for any project, not just individual projects, but I would argue it is especially
+important for solo work to have a plan documented explicitly and clearly. Where a large team
+project, such as those at work, will almost always have at least a few people with it fresh in
+their minds at any given time. There is likely to be a pretty decent coverage of the knowledge
+of the project, even without writing it down, just in people's active working memory. Meanwhile,
+a solo project has only one contributor, and if they forget something, that knowledge is gone
+for good.
+
+My two longer term projects of relative success ([ConArtist][] and [Trilogy][]) both started with
+documentation well beyond what I might have thought necessary, and in both cases, it was the
+existence of that documentation that enabled the projects' lifetimes to span many years. Because
+the documents existed, I couldn't accidentally forget what the goal was, and I was able to pick
+up after taking a break.
+
+For ConArtist, this was a Figma project covering every feature I intended for each of the apps to include.
+Having this design meant that while building, I did not have to think about entire classes of
+problems, and could focus instead on purely the implementation. From minor inconsequential details
+(font sizes, colours) to larger considerations that would have major effects on data model or API
+structure (which pages show which information), when it came time to build I only had to refer to
+the document and do as I was instructed. This was true in the early days, and after every time I
+had to take a month or two off the project.
+
+Meanwhile Trilogy has a whole [language specification][spec], which was written before starting any code.
+For such a deeply technical project as a programming language, this document proved to be very useful.
+As life got in the way, there were multiple months, even a full year, during which I hardly looked at
+Trilogy at all. Without the document, when faced with some particular edge case of how some control flow
+construct interacted with another, I would have had no option but to make some choice and hope it was
+consistent with the rest of the (barely remembered) implementation. Instead, on many occasions, I opened
+the document to find that the problem was already solved, significantly reducing the amount of effort it
+would take to get back into the project.
+
+A lot of advice out there says "if you want to get a project done, you should aim to work on it a little
+every day." Although this is entirely true and great advice, it is also not always possible. Accommodating
+for the fact that you will have to take some breaks is a good compromise in my experience.
+
+[ConArtist]: https://github.com/foxfriends/conartist
+[Trilogy]: https://github.com/foxfriends/trilogy
+[spec]: https://github.com/foxfriends/trilogy/tree/main/spec
+
+### Keep the plan up to date
+
+There is no way for the pre-implementation document to be fully accurate. There are always going
+to have been edge cases that you discover, or great new feature ideas that come in as you experience
+the product as it comes to exist. While it is tempting to simply cover those cases and add those
+features on the fly (it only takes a day anyway!), it is still valuable to hold yourself to updating
+the document before implementing, for two reasons.
+
+The first is that there may be details that were previously considered but currently forgotten. Depending
+on how long since the document was written, this can be very likely. It may be an edge case that you already
+considered and planned the solution for, so is actually not an issue after all. It may be an assumption
+you made previously, and already implemented something under, that you are about to overlook and violate.
+By referring to the document, and amending it with your most up to date information, you ensure that you
+don't contradict a previous choice.
+
+The second reason is that you need to ensure that you won't re-contradict this new choice later when you
+run into this same edge case yet again. If you implement something without amending the document, it is hard
+to know which is the actual intended behaviour. Someday you will again forget this edge case, see the
+code that does not align with your expectation, attempt to "fix" it, and instead just introduce bugs.
+
+### Write the unit tests
+
+Truly I always used to skip this, but it has come back to bite me so many times. Even for a small side
+project, unit tests are such a powerful tool for preventing unexpected breakages. Especially for small
+side projects, which may someday earn a small adjustment far in the future, the unit tests will protect
+you from all the things you once knew and forgot. Much like the plan document is like a "pre-described"
+goal, the unit tests are a "post-validated" version of that goal, locking in the intended functionality
+as a different flavour of project specification. This doesn't replace updating the planning document
+though, as if the tests and the plan do not align, which one is to be trusted?
+
+I won't go into too much detail on unit testing today, that being such a vastly covered topic already.
+I will note, however, that ConArtist, without any unit tests, experienced enough deprecated dependencies
+that I recently had to replace them in order to have any hope of maintaining the project, resulting in
+a handful of (thankfully small) regressions which went undetected for a few days due to the lack of tests.
+There have also been more small bugs discovered while using it over the years than I would have liked, some
+of which might have been found and fixed earlier had I written tests at the appropriate time.
+
+Meanwhile, Trilogy has a large enough test suite that I have been able to add or replace whole pieces
+of syntax, multiple times, and rarely have issues as a result. In fact, upon setting up the latest
+parts of the testsuite, I've felt that development velocity has *improved* significantly, despite
+also spending time writing tests, simply because there are so few bugs being introduced as I add
+each new feature, and so few previously-implemented features that I have to revisit later, having
+become newly broken. Multiple major refactors to the LLVM generation code for very complex control flow
+changes have gone over smoothly, and I have no doubt that will continue to be the case.
+
+### Accept that tools are product too
+
+Often when working on something, I run into a recurring but small point of friction. Something that doesn't
+take much time to manually resolve whenever it comes up, but it does disrupt from the flow of the work
+and make working that much less pleasant.
+
+The options in this situation are:
+1. Continue to focus on what's "important", and brush this issue under the rug one more time.
+2. Give up a day or two of making "progress", and build something that solves the issue once and for all.
+
+I would argue that, despite it feeling like you're taking a break or falling behind, the answer is always #2.
+
+My latest example of this goes back to the unit tests for Trilogy: the reason it took so long to
+start adding tests was that there was no way to run those tests, until I built the tooling. In
+this case, what I needed to test was that, given a Trilogy program, does it produce the correct output.
+Though that sounds simple, there are a currently a bunch of steps that are required to compile and run
+a Trilogy program: build the Trilogy compiler, compile the Trilogy code to LLVM IR, compile the LLVM code
+to an actual executable, then run it. None of this was something that could be handled out of the box with
+Rust's standard testing functionality, and even if it were, that would be a lot of boilerplate to have to
+write in any testing environment.
+
+After struggling in a test-less world, I spent a day setting up the first draft of the testsuite: a
+[shell script][test.sh] that would apply all those steps to a folder of Trilogy programs, and compare
+their outputs to the expected result. This day that felt like it was a waste of time at first became
+probably the largest contributor to the velocity at which language features could be implemented.
+
+Eventually even this shell script was not enough, as it just took too long to run the growing set of
+tests, taking 10 seconds for around 80 tests, but this time I had no reservations as I learned about
+Rust's support for custom test harnesses and rewrite the script as a multithreaded [Rust program][test.rs]
+that plugs in to `cargo test`, allowing my custom testsuite to be run automatically alongside the rest
+of the unit tests, taking just over 1 second for the same. These times were worse (double?) before I
+upgraded my computer, so it was more dramatic of an issue at the time.
+
+Now that these tests are such low friction to both write and run, it's reasonable to run the
+whole testsuite constantly as I iterate on each new feature, which significantly reduces turnaround
+time on finding and fixing all the bugs I have inevitably introduced.
+
+[test.sh]: https://github.com/foxfriends/trilogy/blob/6b98c0d7eda323bf8fb7f8bd45d5b72af46ba64b/testsuite-llvm/test.sh
+[test.rs]: https://github.com/foxfriends/trilogy/blob/a0f8883ea07a9808fc1d5d2044293e8861dfbea5/trilogy/test.rs
+
+In these cases it's often, but not limited to, testing-related tools. Scripts for managing data,
+UI for designing levels, improved logging and tracing, hot-reloading, or even just installing
+better linters and formatters are all tooling tasks that take a day but so quickly pay off in
+the time saved on chores and debugging later. Plus, it can be a refreshing change of pace
+to build a tool, instead of always grinding away at the "real" work.
