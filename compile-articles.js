@@ -12,20 +12,21 @@ const html = (article) => `<!DOCTYPE HTML>
 <html>
   <head>
     <title>Cam Eldridge | ${article.title}</title>
-    <meta name='viewport' content='width=device-width, initial-scale=1' />
-    <meta charset='UTF-8' />
-    <script type='module' src='./index.js' defer></script>
-    <link rel='preconnect' href='https://fonts.gstatic.com/' crossorigin />
-    <link href='https://fonts.googleapis.com/css2?family=Spectral+SC:wght@400;500&family=Vollkorn:wght@400;500;600&family=Vollkorn+SC&display=swap' rel='stylesheet' />
-    <link rel='stylesheet' href='scattered-papers/papers.css' />
-    <link rel='stylesheet' href='../../fonts.css' />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
+    <script type="module" src="./index.js" defer></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Spectral+SC:wght@400;500&family=Vollkorn:wght@400;500;600&family=Vollkorn+SC&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="scattered-papers/papers.css" />
+    <link rel="stylesheet" href="../../fonts.css" />
   </head>
   <body></body>
 </html>
 `;
 
-const js = (id) => `import Article from './article.svx';
-const app = new Article({ target: document.body });
+const js = (id) => `import { mount } from "svelte";
+import Article from "./article.svx";
+const app = mount(Article, { target: document.body });
 `;
 
 function equal(a, b) {

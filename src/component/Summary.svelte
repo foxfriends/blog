@@ -1,11 +1,9 @@
 <script>
-  import { createEventDispatcher } from "svelte";
   import Paper from "scattered-papers/Paper.svelte";
   import Text from "scattered-papers/Text.svelte";
   import Link from "scattered-papers/Link.svelte";
-  export let tags, title, subtitle, date, id;
 
-  const dispatcher = createEventDispatcher();
+  const { tags, title, subtitle, date, id, onfilter } = $props();
 
   function fmt(dateStr) {
     const date = new Date(dateStr);
@@ -40,7 +38,7 @@
           <div class="tags">
             {#each tags as tag}
               <div class="tag">
-                <Link on:click={() => dispatcher("filter", { tag })}>
+                <Link on:click={() => onfilter?.({ tag })}>
                   <Text>#{tag}</Text>
                 </Link>
               </div>

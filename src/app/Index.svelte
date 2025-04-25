@@ -17,13 +17,13 @@
     return embed;
   }
 
-  export let articles;
+  const { articles } = $props();
 
-  let filter = null;
-  let search = "";
-  let appliedSearch = "";
-  let searchLoading = false;
-  let embedded = null;
+  let filter = $state(null);
+  let search = $state("");
+  let appliedSearch = $state("");
+  let searchLoading = $state(false);
+  let embedded = $state(null);
 
   function applyFilter(event) {
     if (event.detail.tag) {
@@ -33,20 +33,22 @@
     }
   }
 
-  $: filteredArticles = articles
-    .filter(({ tags }) => (filter ? tags.includes(filter) : true))
-    .map((article) =>
-      embedded
-        ? {
-            ...article,
-            relevance: cosineSimilarity(
-              article.embedding,
-              embedded.tolist()[0],
-            ),
-          }
-        : { ...article, relevance: 1 },
-    )
-    .sort((a, b) => b.relevance - a.relevance);
+  const filteredArticles = $derived(
+    articles
+      .filter(({ tags }) => (filter ? tags.includes(filter) : true))
+      .map((article) =>
+        embedded
+          ? {
+              ...article,
+              relevance: cosineSimilarity(
+                article.embedding,
+                embedded.tolist()[0],
+              ),
+            }
+          : { ...article, relevance: 1 },
+      )
+      .sort((a, b) => b.relevance - a.relevance),
+  );
 
   async function applySearch(value) {
     appliedSearch = value;
@@ -78,15 +80,15 @@
               type="search"
               placeholder=""
               bind:value={search}
-              on:keydown={(event) =>
+              onkeydown={(event) =>
                 event.key === "Enter" && applySearch(search)}
             />
-            <button on:click={() => applySearch(search)}>&RightArrow;</button>
+            <button onclick={() => applySearch(search)}>&RightArrow;</button>
           </div>
         </Paper>
       </div>
       {#if appliedSearch}
-        <button on:click={() => applySearch("")}>
+        <button onclick={() => applySearch("")}>
           <Paper>
             <div class="button-content">
               <Text>
@@ -97,7 +99,7 @@
         </button>
       {/if}
       {#if filter}
-        <button on:click={() => (filter = null)}>
+        <button onclick={() => (filter = null)}>
           <Paper>
             <div class="button-content">
               <Text>

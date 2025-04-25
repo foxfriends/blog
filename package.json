@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/foxfriends/blog#readme",
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^3.0.1",
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "ansi-to-html": "^0.7.1",
     "front-matter": "^4.0.2",
     "glob": "^7.1.7",
@@ -29,9 +29,9 @@
     "remark-containers": "^1.2.0",
     "remark-deflist": "^1.0.0",
     "remark-math": "^6.0.0",
-    "scattered-papers": "git+https://github.com/foxfriends/scattered-papers.git#c017535",
-    "svelte": "^4.2.19",
-    "vite": "^5.0.2"
+    "scattered-papers": "git+https://github.com/foxfriends/scattered-papers.git#01bc49f",
+    "svelte": "^5.28.2",
+    "vite": "^6.3.3"
   },
   "dependencies": {
     "@huggingface/transformers": "^3.4.0",

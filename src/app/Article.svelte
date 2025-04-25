@@ -6,17 +6,20 @@
   import Content from "scattered-papers/Content.svelte";
   import { BLOG_TITLE } from "../constants";
   import ARTICLES from "../../article/manifest.json";
+
   ARTICLES.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-  export let tags, date, author, title, subtitle;
+  const { tags, date, author, title, subtitle, children } = $props();
 
-  $: dateObject = new Date(date);
-  $: nextArticle = ARTICLES.find(
-    (article) => new Date(article.date) > dateObject,
+  const dateObject = $derived(new Date(date));
+  const nextArticle = $derived(
+    ARTICLES.find((article) => new Date(article.date) > dateObject),
   );
-  $: prevArticle = [...ARTICLES]
-    .reverse()
-    .find((article) => new Date(article.date) < dateObject);
+  const prevArticle = $derived(
+    [...ARTICLES]
+      .reverse()
+      .find((article) => new Date(article.date) < dateObject),
+  );
 
   function format(date) {
     const month = [
@@ -132,7 +135,7 @@
           {/if}
         </div>
       </div>
-      <slot />
+      {@render children()}
     </Content>
   </Paper>
 </div>
