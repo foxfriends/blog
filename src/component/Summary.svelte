@@ -38,7 +38,7 @@
           <div class="tags">
             {#each tags as tag}
               <div class="tag">
-                <Link on:click={() => onfilter?.({ tag })}>
+                <Link onclick={() => onfilter?.(tag)}>
                   <Text>#{tag}</Text>
                 </Link>
               </div>

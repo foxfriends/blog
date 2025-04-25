@@ -25,9 +25,9 @@
   let searchLoading = $state(false);
   let embedded = $state(null);
 
-  function applyFilter(event) {
-    if (event.detail.tag) {
-      filter = event.detail.tag;
+  function applyFilter(tag) {
+    if (tag) {
+      filter = tag;
     } else {
       filter = null;
     }
@@ -120,7 +120,7 @@
       </div>
     {:else}
       {#each filteredArticles as article (article.id)}
-        <Summary {...article} on:filter={applyFilter} />
+        <Summary {...article} onfilter={applyFilter} />
       {/each}
     {/if}
   </div>
