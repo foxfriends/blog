@@ -73,6 +73,7 @@ export async function compileArticles(force = false) {
 
   for (const id of dir) {
     if (id === "manifest.json") continue;
+    if (id === "rss.xml") continue;
     if (id === ".DS_Store") continue; // bruh
     const article = await readFile(`./article/${id}/article.svx`, "utf8");
     const { attributes, body } = fm(article);
@@ -117,4 +118,35 @@ export async function compileArticles(force = false) {
     console.log("Replacing manifest");
     await writeFile("./article/manifest.json", JSON.stringify(articles));
   }
+
+  let rss = "";
+  rss += `<rss version="2.0">\n`;
+  rss += `  <channel>\n`;
+  rss += `    <title>Cameron's Blog</title>\n`;
+  rss += `    <link>https://blog.cameldridge.com</link>\n`;
+  rss += `    <description>There's not much here</description>\n`;
+  rss += `    <language>en-ca</language>\n`;
+  rss += `    <pubDate>${new Date().toUTCString()}</pubDate>\n`;
+  rss += `    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>\n`;
+  rss += `    <managingEditor>cam.eldridge@gmail.com (Cameron Eldridge)</managingEditor>\n`;
+  rss += `    <webMaster>cam.eldridge@gmail.com (Cameron Eldridge)</webMaster>\n`;
+  rss += `    <category>Blog</category>\n`;
+  rss += `    <category>Software Development</category>\n`;
+  rss += `    <docs>https://www.rssboard.org/rss-specification</docs>\n`;
+  for (const article of articles) {
+    rss += `    <item>\n`;
+    rss += `      <title>${article.title}</title>\n`;
+    rss += `      <description>${article.subtitle}</description>\n`;
+    rss += `      <pubDate>${article.date.toUTCString()}</pubDate>\n`;
+    rss += `      <author>cam.eldridge@gmail.com (Cameron Eldridge)</author>\n`;
+    rss += `      <link>https://blog.cameldridge.com/article/${article.id}</link>\n`;
+    rss += `      <guid>https://blog.cameldridge.com/article/${article.id}</guid>\n`;
+    for (const tag of article.tags) {
+      rss += `      <category>${tag}</category>\n`;
+    }
+    rss += `    </item>\n`;
+  }
+  rss += `  </channel>\n`;
+  rss += `</rss>\n`;
+  await writeFile("./article/rss.xml", rss);
 }

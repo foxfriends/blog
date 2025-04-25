@@ -31,7 +31,8 @@
     "remark-math": "^6.0.0",
     "scattered-papers": "git+https://github.com/foxfriends/scattered-papers.git#01bc49f",
     "svelte": "^5.28.2",
-    "vite": "^6.3.3"
+    "vite": "^6.3.3",
+    "vite-plugin-static-copy": "^2.3.1"
   },
   "dependencies": {
     "@huggingface/transformers": "^3.4.0",
