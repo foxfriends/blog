@@ -1,0 +1,381 @@
+---
+title: Decent API exceptions
+subtitle: "It's not rocket science"
+date: 2025-12-15
+tags:
+- architecture
+- webdev
+author: Cam
+---
+
+Often overlooked in the early stages of building your __Cool New REST API Service__&trade;,
+the error responses returned (if you're returning them at all) are often inconsistent,
+and nearly entirely useless for the receiver of those errors. I suspect the thought is
+"let's get the happy path working" followed by "the happy path works, and the exceptions
+won't come up because I'm calling my own API correctly, so I'm going to move on." Of
+course this never stays true, and eventually you realize you don't remember how this API
+works and cannot figure it out from all the 500 errors coming back.
+
+Then it comes time to propose to the team an "error handling reimplementation", typically
+this will take at least one week of bikeshedding the error format, then another deciding
+how to implement some magic abstractions on the backend to make this all happen invisibly.
+Then another 3 weeks to implement, in which time the rest of the team has doubled the API
+surface while using the outdated strategy, turning this into a neverending cycle and
+you never fix it.
+
+Let's avoid that.
+
+### The purpose
+
+The first and most important thing to understand is the *reason* we have error handling in
+our APIs. This is often confusing at first because there are actually multiple such reasons
+we might return an error from the same API, but all must fit into the same response format:
+
+1. Client errors (HTTP 400/405): The person writing the client code has used this API incorrectly. In this case, we want to guide the developer towards the correct usage.
+2. Server errors (HTTP 500): The person writing the server code has made a mistake. The client developer should submit a bug report.
+3. Systematic errors (HTTP 401/429): Something is wrong with the system, but there is a well-defined way to recover. This is often the case for authorization exceptions (redirect the user to login), or rate limits (wait a bit and try again).
+4. Validation errors (HTTP 422): The user of the application has entered invalid data or taken an invalid action, but has the ability to fix it on their own.
+5. External errors (HTTP 503): The intern at Cloudflare has made a mistake, and the internet is down, and we all just have to wait.
+
+The HTTP specification has already made some decisions in this regard, which gives us a hint:
+for most status codes (as noted above) there are different, but specific, situations in which
+they should be used, and in which they should be interpreted by client devices and applications.
+Since our errors fit into that framework, our errors aren't all going to be interpreted in the
+same way either.
+
+> Maybe this is another point of confusion for developers, who look at the HTTP status
+> codes and think "we barely use these error codes anyway" and fallback to using the
+> `200 OK Request Failed` strategy. This is also wrong.
+
+### The solution
+
+The error handling strategy I (and others) have landed on time and time again for its ability to
+accommodate every situation above is simple. Expressed as a JSON Schema, the error response format
+looks like this:
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "code": { "type": "string" },
+    "message": { "type": "string" },
+    "details": { "type": "object", "additionalProperties": true },
+    "trace": { "type": "string" }
+  },
+  "required": ["code", "message", "details"]
+}
+```
+
+And an example of such an error:
+
+```json
+{
+  "code": "UserNotFound",
+  "message": "a user with this ID could not be found",
+  "details": { "user_id": "3" }
+}
+```
+
+Putting this into the context of an actual API there is also the HTTP status code to consider, and the response
+format (as we're not necessarily building a JSON API), so we can codify this whole thing using OpenAPI
+(omitting irrelevant fields):
+
+```json
+{
+  "paths": {
+    "/api/v1/users/{user_id}": {
+      "get": {
+        "operationId": "getUser",
+        "responses": {
+          "404": { "$ref": "#/components/responses/ErrorResponse" },
+          "422": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "string" },
+          "message": { "type": "string" },
+          "details": { "type": "object", "additionalProperties": true },
+          "trace": { "type": "string" }
+        },
+        "required": ["code", "message", "details"]
+      }
+    },
+    "responses": {
+      "ErrorResponse": {
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+Now let's look at each of the fields:
+
+#### The HTTP status
+
+The first thing to not overlook is the HTTP status code. Systematic errors, such as authorization
+or rate limits, are typically best expressed by the corresponding HTTP status code so that they
+can be identified easily and early. It's still good to use our consistent response body for
+including more specific details, but most of these types of errors have standard fields already
+defined as headers for any relevant information.
+
+```typescript
+async function apiClientFetch(url: string, init?: RequestInit) {
+  for (let i = 0; ; i++) {
+    const response = await fetch(url, init);
+    if (response.status === 401) {
+      throw new UserMustLogInError();
+    }
+    if (response.status === 429 && i < MAX_RETRIES) {
+      let retryAfter = Number.parseInt(response.headers.get("Retry-After"));
+      if (Number.isNaN(retryAfter)) {
+        retryAfter = 2000;
+      }
+      await new Promise((resolve) => setTimeout(resolve, retryAfter));
+      continue;
+    }
+    return response;
+  }
+}
+```
+
+#### The `code`
+
+The `code` field is a machine readable identifier, preferably a string (so that it's also human readable),
+which identifies to the calling code the exact type of error that this is. When possible, I often
+make this the name of the error subclass that I have thrown, so as to automatically have these things
+defined and linked up to concrete definitions I can locate later.
+
+> Optionally, a JSON schema enum may be used to better restrict the full list in an OpenAPI specification, but
+> this is often overkill, and actually may make the API's stability guarantees harder to uphold as a
+> change here may technically qualify as a breaking change.
+>
+> Maintaining such long lists is another headache that can be avoided by not having one.
+
+This `code` needs to be unique among the possible kinds of errors for a single operation, but doesn't
+really need to be unique across every endpoint. It can be convenient to ensure that these codes are unique,
+and so client side handlers can be reused in similar situations, but this is not required. The caller should
+know which operation is being used; that plus the `code` field should uniquely identify a single error
+situation for this API.
+
+We can then use the code to handle specific errors in different ways on a per-request per-error basis:
+
+```typescript
+async function getUser(userId: string): Promise<Api.GetUserResponse | null> {
+  const response = await apiClientFetch(`/api/v1/users/${userId}`);
+  if (response.ok) return response.json();
+  const error: Api.Error = await response.json();
+  switch (error.code) {
+    case "UserNotFound":
+      // We're doing user search: not found is a null user
+      return null;
+    case "ValidationError":
+      if (validation_error.detail?.parameter === "user_id") {
+        // The user put an improperly formatted ID in the box,
+        // tell them to fix it.
+        document
+          .querySelector("input[name='user_id']")
+          // In the language they speak!
+          //
+          // user-search-invalid-id =
+          //    The value you provided ({ $userId }) is not a valid UUID.
+          //    Did you copy it incorrectly?
+          .setCustomValidity(l18n.format("user-search-invalid-id", { userId }));
+      } else {
+        // An field we don't know about had a validation error,
+        // maybe the server has changed.
+        throw new GenericApiError(error);
+      }
+      break;
+    default:
+      // Something else changed on the server, we can't handle this one
+      // so pop a toast and hope the user sends us an email with this
+      // information.
+      throw new GenericApiError(error);
+  }
+}
+```
+
+#### The `message`
+
+The `message` field is a __developer__ readable description of the error. Please note the emphasis on
+__developer__. While the error message may, incidentally, appear on the user's screen, the purpose of
+this message is not to describe to the user what happened, rather it's to give the users some words
+to tell the client application's __developer__ so that they can fix the problem. Note the lack of
+usage of the `message` field in the above example (except for presumably in the handler
+for `GenericApiError`).
+
+```typescript
+class GenericApiError extends Error {
+  code: string;
+  detail: Record<string, unknown>;
+
+  constructor(error: Api.Error) {
+    super(error.message);
+    this.code = error.code;
+    this.detail = error.detail;
+  }
+}
+
+function requestWrapper<T>(request: () => Promise<T>): Promise<T | undefined> {
+  try {
+    return await request();
+  } catch (error) {
+    if (error instanceof UserMustLogInError) {
+      window.location.href = "/login";
+      return new Promise(() => { /* never resolve */ });
+    }
+    if (error instanceof GenericApiError) {
+      toastManager.showToast(
+        `An unknown error occurred (${error.code}), please contact support:\n`
+        + error.message
+        + `\n\n\`${JSON.stringify(error.details)}\``
+      );
+      console.error(error);
+      return;
+    }
+    throw error;
+  }
+}
+```
+
+In particular, there should be no attempt to construct fully descriptive strings for a user on the
+server side here; that's a futile task. There's just too much the server doesn't know:
+* What format is the client rendering this text in? HTML? Native GUI libraries?
+* What language does the user speak?
+* Should we show a button or link to point the user elsewhere?
+
+All these are client concerns, so we should let the client handle that. The message only needs to
+be for developers. It's also worth noting that the developers have access to the `details` field,
+so we don't usually need to construct complex strings on the server for the developer message either;
+a simple description of what they should do that makes sense in the context of the `details` field
+will suffice.
+
+```typescript
+class GenericApiError extends Error {
+  status = 500;
+  headers = new Headers();
+  details: Record<string, unknown>;
+
+  constructor(
+    message: string,
+    details: Record<string, unknown> = {},
+  ) {
+    super(message)
+    this.code = this.constructor.name;
+    this.details = details;
+  }
+}
+
+class ValidationError extends GenericApiError {
+  status = 422;
+
+  constructor(
+    message: string,
+    details: { parameter: string; value: string; },
+  ) {
+    super(message, details);
+  }
+}
+
+class UserNotFound extends GenericApiError {
+  status = 404;
+
+  constructor(
+    message: string,
+    details: { user_id: string },
+  ) {
+    super(message, details);
+  }
+}
+
+app
+  .onError(({ error, set }) => {
+    if (error instanceof GenericApiError) {
+      set.status(error.status);
+      const headers = new Headers(error.headers);
+      headers.set("Content-Type", "application/json");
+      return new Response(
+        JSON.stringify({
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          trace: IS_DEV ? error.stack : undefined,
+        }),
+        { status: error.status, headers },
+      );
+    }
+  })
+  .get("/api/v1/users/:user_id", async ({ params: { user_id } }) => {
+    if (!UUID.test(user_id)) {
+      throw new ValidationError(
+        "the user_id is not a valid UUID",
+        { parameter: "user_id", value: user_id },
+      );
+    }
+    const result = await sql`SELECT * FROM user WHERE id = ${user_id}`;
+    if (result.rows.length === 0) {
+      throw new UserNotFound(
+        "a user with the provided ID was not found",
+        { user_id },
+      );
+    }
+    return { user: result.rows[0] };
+  })
+```
+
+While this server code may look a lot like what you expect, the "mistake" I see most often
+is attempting to compute the `message` value in the error constructor, rather than requiring
+the message string to be provided at construction time.
+
+In my experience, the error message should always be provided when the error value is constructed,
+not when the error class is written, as this is the moment at which the most detail is known.
+You don't really know why an error is being thrown while you're developing the error class in
+isolation, you only know why it's being thrown when you throw it.
+
+In the example above, the `ValidationError` benefits from this choice, as we are able to describe
+what was invalid at the time of throwing the error rather than having to create a new class with
+a new hard coded message specifically for this field.
+
+#### The `details`
+
+There's not much to say about the `details` field, other than that it contains various details
+that might be useful.
+
+For systematic errors, the details can include additional information that the client code
+can use to handle the error successfully.
+
+For client developer errors, we might include information pointing to which fields are incorrect,
+the invalid values they contained, or details on the validation rules that they should have
+taken into account.
+
+For user facing errors, we should include any value that might be needed to construct a high
+quality user facing error message; often this includes values the client might not have known
+but relate to the request, for example the user's balance of some currency if the error is
+"insufficient balance".
+
+#### The `trace`
+
+The last field is the `trace` field, containing the stack trace, which is most useful for
+the server developer to use to resolve their bugs. Personally, I usually disable this in
+production mode as it produces a lot of clutter and possibly reveals sensitive information
+on the structure of the server code, but in development mode this makes tracking down
+the source of an error relatively instantaneous, so is worth considering.
+
+### That's it
+
+I hardly feel like there's anything interesting that has been said here. I've been
+using this specific strategy for years, across a wide range of projects, and not yet
+run into a situation where it breaks down. It's so simple that it makes me wonder
+why we run into this problem on every new project. Skip the bikeshedding, start with
+this, and just don't worry about it.

@@ -29,7 +29,7 @@
     "remark-containers": "^1.2.0",
     "remark-deflist": "^1.0.0",
     "remark-math": "^6.0.0",
-    "scattered-papers": "git+https://github.com/foxfriends/scattered-papers.git#dfaa22b",
+    "scattered-papers": "git+https://github.com/foxfriends/scattered-papers.git#14ac469",
     "svelte": "^5.28.2",
     "vite": "^6.3.3",
     "vite-plugin-static-copy": "^2.3.1"
