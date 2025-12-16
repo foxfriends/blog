@@ -1,6 +1,6 @@
 FROM node:20
 
-RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
 RUN cargo install outline --features bin
@@ -13,11 +13,13 @@ RUN syncat install haskell
 RUN syncat install hcl
 RUN syncat install html
 RUN syncat install javascript
+RUN syncat install json
 RUN syncat install prolog
 RUN syncat install python
 RUN syncat install rust
 RUN syncat install sql
 RUN syncat install swift
+RUN syncat install typescript
 RUN syncat install yaml
 
 WORKDIR /app
