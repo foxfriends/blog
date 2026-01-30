@@ -1,0 +1,168 @@
+---
+title: Why self-host
+subtitle: 'Taking "it" back from "them"'
+date: 2026-01-29
+tags:
+- self-host
+- personal
+author: Cam
+---
+
+It's an increasingly unstable world we live in, where businesses once considered "reliable"
+and "trustworthy" can be taken out singlehandedly by the ultra-rich. Where companies previously
+led by people considered "visionaries" are now having their mental capabilities (and products)
+rotted by generative AI. As a result, I have taken to self-hosting. To taking it (my data/my money)
+back from them (the rich/corporate overlords/tyrants).
+
+I will eventually get into the "what" and the "how", but we can start with the why. I think
+there are a lot of good reasons why I made this effort, and I'm sure there are many more
+for situations I haven't even considered.
+
+### Data ownership
+
+Maybe the most critical benefit is the ownership I now hold over my data. With the increasing
+institutionalized acceptance of the theft and sale of users' information and intellectual
+property, it brings me some comfort to know that the data I store for my self-hosted services
+is under my own control.
+
+When it comes data that are want to be private, I now know exactly where that data is and how
+it's stored; who has access to it and from where. If I want that data to be encrypted, I can encrypt it.
+When I need this data destroyed, I can do so. Although it's now up to me to ensure that the
+security is sufficient and I know that I cannot claim to be a security expert, I also know that
+neither are the people we call "professional", working at the big companies,
+resulting in [this list][breaches] being very long. I've also met plenty of coworkers, past
+and present. I have seen firsthand how knowledgeable about security most people are. I'd
+like to think I work with better-than-average developers, and I wouldn't necessarily trust
+their implementation of security any better than my own. When the security is up to
+me (and the consequences are all mine as well) I know exactly how much risk I am willing to
+take, and how much careful planning I have put in to get it right.
+
+[breaches]: https://en.wikipedia.org/wiki/List_of_data_breaches
+
+Even for data that's already and intentionally public, there are still benefits to managing that
+data on my own hardware. While right now there is realistically little reason why any existing
+service provider would wish to take down content which I have posted (and I have no intention
+of getting into such content as would get my access to such services interrupted), it is worth
+considering the possibility of the service itself changing its own terms or functionality at
+any time.
+
+We can hardly say we haven't seen it before, just look at Twitter [sic]; one day it is a
+relatively normal social media platform, the next it is taken over by some volatile individual
+such that we have no idea what topic will be censored next in accordance to one rich guy's
+personal ideologies and whims. Although this hardly affects me personally, it's a matter of
+principle: we, the people, should be allowed to own and share and maintain access to the
+content that we produce and consume, regardless of the personal feelings of the people in power.
+While I may not currently be affected by any of this, and still might never be personally, if
+someday these self-hosted alternatives can fill in the gaps for any family or friends who are
+part of groups targeted by such unjust restrictions, that's a cause I can get behind.
+
+For less political reasons as well, sometimes some data I like or use disappears for something mundane
+but beyond my control. A developer might turn their repository private; if I were to depend
+so strongly on such a project, I might wish to have kept a copy of the code for myself to ensure
+I am not disrupted. Streaming services regularly lose the licenses to parts of their libraries,
+whereas if I happened to have a copy of that work (legitimately obtained of course), and had a place to store it
+and serve it from, I would still be able to watch it and share it with people around me who might
+also want it. In this world of receiving only a [license to virtual content][riot], we should take
+every opportunity to just own something instead.
+
+[riot]: https://www.riotgames.com/en/terms-of-service#:~:text=4.1.
+
+### Sustained availability
+
+Possibly even more fundamental than just the ownership and availability of the data is the fact
+that any existing hosted service can disappear (or become a paid subscription) at any time. While it's
+sometimes hard to remember them, this happens all the time, in ways that actually do affect me and
+the people I know:
+* I was using [Inbox][], then it was gone. Google is notorious for [killing services][killedbygoogle].
+* [Firefox Send][] was a useful service that disappeared, not that I used it often but when you need this kind of thing, it's nice to have available.
+* YouTube used to be entirely free, now it's riddled with ads and requires a paid subscription to remove them.
+* [Miiverse][], [Vine][], [Tiktok][] (temporarily)... the list just goes on.
+
+[Inbox]: https://en.wikipedia.org/wiki/Inbox_by_Gmail
+[killedbygoogle]: https://killedbygoogle.com/
+[Firefox Send]: https://en.wikipedia.org/wiki/Firefox_Send
+[Miiverse]: https://en.wikipedia.org/wiki/Miiverse
+[Vine]: https://en.wikipedia.org/wiki/Vine_(service)
+[Tiktok]: https://en.wikipedia.org/wiki/Efforts_to_ban_TikTok_in_the_United_States#2025_shutdown
+
+A lot of services aren't that important (I can live, sadly, without Miiverse), but occasionally something
+like [RememBear][] disappears; going from being used daily to leaving people without their passwords and forcing
+people to reevaluate and migrate to another platform. This kind of thing can be a relative nightmare to recover from,
+and it never comes at a good time.
+
+[RememBear]: https://help.remembear.com/hc/en-us/articles/7072551070363-Ending-support-for-RememBear
+
+Meanwhile, a fully self-hosted service will never really go away, unless I choose for it to go away. For
+as long as I continue to like it, my password manager will remain where it is, and I know I won't be
+forced to migrate anymore. (The same doesn't necessarily go for any others who use a service I am hosting,
+but if they wanted that guarantee... it's called *self*-hosting for a reason.)
+
+Once again, the circumstances by which a service disappears can be entirely reasonable
+financially or legally based constraints, but can also be driven by [local politics][ona],
+or physical location, or any other of a number of reasons that don't necessarily
+fit within an individual's controllable existence. I'm fortunate enough to live in a country that doesn't apply
+[nationwide Internet censorship][gfw], but this doesn't mean we won't ever be affected by even
+["seemingly well-meaning" efforts][Piracy Shield], or that we'll never have some
+new strongly-opinioned individual enter the realm of influence over what seemed like a
+stable government and suggest taking away things we might once have considered within our rights.
+You just never know.
+
+[ona]: https://en.wikipedia.org/wiki/Online_News_Act
+[Piracy Shield]: https://it.wikipedia.org/wiki/Piracy_shield
+[gfw]: https://en.wikipedia.org/wiki/Great_Firewall
+
+The other thing that takes a service away, even if it is actually still there, is my willingness to use it.
+Lately I'm trying to gradually become a more ethical consumer; avoiding giving my hard earned money
+to companies who [exploit people and our planet][Amazon], or who provide their support to [military technology][spotify]
+or [foreign genocide][Indigo], or even just the companies who are contributing to the plague of [AI slop][spotify-ai]
+that threatens our sense of human connection (that's... most apps these days). It takes time to
+free ourselves from the conveniences these institutions have hooked us with, but self-hosting my own
+alternatives is one step I can take in that process, for myself and on behalf of the people around me
+if they so choose to follow.
+
+[Amazon]: https://en.wikipedia.org/wiki/Criticism_of_Amazon
+[Indigo]: https://en.wikipedia.org/wiki/Indigo_Kills_Kids
+[spotify]: https://en.wikipedia.org/wiki/Criticism_of_Spotify#Funding_defense_technology
+[spotify-ai]: https://www.theguardian.com/technology/2025/jul/14/an-ai-generated-band-got-1m-plays-on-spotify-now-music-insiders-say-listeners-should-be-warned
+
+### It's fun
+
+The other reason, and probably the actual strongest force leading me to starting on this journey, is that it's *fun*.
+As it turns out, I might be a nerd after all: collecting and installing and configuring all these things
+was a good time, and is likely to remain a good time now that I am forced to maintain this patchwork machine.
+It's fun and interesting, despite how incredibly annoying it can be at times when the UDP packets just
+aren't getting through no matter what you try, because the feeling once you do finally solve each issue
+has no comparison.
+
+Additionally, now that the setup is (mostly) over, the result is a bunch of convenient services available to
+me and the people I choose to share my them with. Fun to build, fun to use, fun to share.
+
+### There's a lot to learn
+
+While not something I had really gone in search of, looking back after having put in much of the work on this project
+I realize I have learned *a lot* (and there's still more to go!). About running a server. About security.
+About networking. About increasingly lower levels of the Linux system. About Docker. About the
+hardware on which it all runs. All of this is simply interesting to discover, having gained a deeper
+understanding of this aspect of the world we live in, as well as genuinely useful in my life as
+a software developer and general member of a world that grows ever more reliant on technology.
+This knowledge makes me better able to reason about, design, and fix complicated and secure systems
+across networks; a useful skill for my job. It also allows me to identify potential threats to the
+people around me in my personal life, and gives me the means by which to protect them if the need arises.
+
+Not even to mention discovering the entire community that makes this possible; self-hosting isn't
+something we do alone, rather it's something we each can do individually together. I've learned
+about so much cool software written by so many cool people, who give so much to the rest of us
+and ask for little to nothing in return. By using that software and participating in this cycle,
+perhaps we might find our own way to contribute back in time, to share what we know with those
+who helped us reach the point we're already at.
+
+If you've read this far, maybe you want to try it too. I hope eventually to share more specifically
+some of what I have discovered, but in the meantime there are plenty of existing resources; maybe look at
+what people are doing on [/r/selfhosted][], or browse the nice list of apps curated by [selfh.st][] that
+you might get the chance to try hosting yourself. That's where I started, and now I'm "almost done."
+
+(I think that's a joke; I will never be done. I'm on call for all eternity now but it's self inflicted
+so I can't really complain.)
+
+[/r/selfhosted]: https://www.reddit.com/r/selfhosted/
+[selfh.st]: https://selfh.st/
